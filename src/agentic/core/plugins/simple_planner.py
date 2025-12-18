@@ -13,6 +13,7 @@ import asyncio
 import httpx
 
 from src.agentic.core.protocols import Plan
+from src.agentic.core.config import CONSTITUTION_PATH
 
 
 class SimplePlanner:
@@ -49,10 +50,8 @@ class SimplePlanner:
     def _read_constitution(self) -> str:
         """Read YBIS Constitution from project root."""
         try:
-            # Assume running from project root
-            const_path = Path("00_GENESIS/YBIS_CONSTITUTION.md")
-            if const_path.exists():
-                with open(const_path, "r", encoding="utf-8") as f:
+            if CONSTITUTION_PATH.exists():
+                with open(CONSTITUTION_PATH, "r", encoding="utf-8") as f:
                     return f.read()
             return "Constitution not found. Follow standard best practices."
         except Exception:
