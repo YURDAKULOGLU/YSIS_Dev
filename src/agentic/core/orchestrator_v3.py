@@ -40,6 +40,8 @@ from src.agentic.core.protocols import (
     GateValidator,
 )
 
+from src.agentic.core.plugins.rag_memory import RAGMemory
+
 
 class OrchestratorV3:
     """
@@ -56,6 +58,7 @@ class OrchestratorV3:
         verifier: VerifierProtocol,
         artifact_gen: ArtifactGeneratorProtocol,
         task_board: TaskBoardProtocol,
+        rag_memory: RAGMemory,
         sandbox_root: str = ".sandbox",
     ):
         self.planner = planner
@@ -63,6 +66,7 @@ class OrchestratorV3:
         self.verifier = verifier
         self.artifact_gen = artifact_gen
         self.task_board = task_board
+        self.rag_memory = rag_memory
         self.sandbox_root = sandbox_root
         self.gate = GateValidator()
 
@@ -333,12 +337,15 @@ async def main():
     from src.agentic.core.plugins.artifact_generator import ArtifactGenerator
     from src.agentic.core.plugins.task_board_manager import TaskBoardManager
 
+    rag_memory = RAGMemory()
+    
     orchestrator = OrchestratorV3(
         planner=SimplePlanner(),
         executor=SimpleExecutor(),
         verifier=SimpleVerifier(),
         artifact_gen=ArtifactGenerator(),
         task_board=TaskBoardManager(),
+        rag_memory=rag_memory,
     )
 
     print(f"[ORCHESTRATOR] Status: {orchestrator.get_status()}")
