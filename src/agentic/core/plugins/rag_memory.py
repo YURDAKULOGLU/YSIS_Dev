@@ -1,19 +1,24 @@
+import os
 from sentence_transformers import SentenceTransformer
 import chromadb
 from chromadb.config import Settings
 
 class RAGMemory:
-    def __init__(self, persist_path: str = "./.YBIS_Dev/Knowledge/LocalDB"):
+    def __init__(self):
+        # Standard Path: ProjectRoot/Knowledge/LocalDB/chroma_db
+        self.persist_path = os.path.join(os.getcwd(), "Knowledge", "LocalDB", "chroma_db")
+        
+        # Ensure parent dir exists
+        os.makedirs(os.path.dirname(self.persist_path), exist_ok=True)
+        
+        print(f"[RAGMemory] Initializing at: {self.persist_path}")
+        
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
         
-        try:
-            # Initialize ChromaDB client (Persistent)
-            self.client = chromadb.PersistentClient(path=persist_path)
-            self.collection = self.client.get_or_create_collection(name="rag_memory")
-        except Exception as e:
-            print(f"[RAGMemory] Error initializing ChromaDB: {e}")
-            self.client = None
-            self.collection = None
+        # Initialize ChromaDB client (Persistent)
+        # We let it fail if it must. No swallowing errors.
+        self.client = chromadb.PersistentClient(path=self.persist_path)
+        self.collection = self.client.get_or_create_collection(name="rag_memory")
 
     def add_text(self, text: str) -> None:
         """Add a text entry to the RAG memory."""
