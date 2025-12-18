@@ -16,13 +16,18 @@ class TaskBoardManager:
 
     def __init__(self, board_path: str = None):
         # Resolve paths
-        current_dir = Path(__file__).parent
-        self.project_root = current_dir.parent.parent.parent.parent # .YBIS_Dev -> Agentic -> Core -> plugins -> root
-        # Actually .YBIS_Dev is the root of this structure relative to c:\Projeler\YBIS
+        self.project_root = Path(os.getcwd())
         
-        # Hardcoding relative execution path
-        # Running from C:\Projeler\YBIS normally
-        self.meta_dir = Path("c:/Projeler/YBIS/.YBIS_Dev/Meta/Active")
+        # New Standard Path: Knowledge/LocalDB
+        self.meta_dir = self.project_root / "Knowledge" / "LocalDB"
+        
+        # Ensure directory exists
+        if not self.meta_dir.exists():
+            try:
+                os.makedirs(self.meta_dir, exist_ok=True)
+                print(f"[TaskBoard] Created DB directory: {self.meta_dir}")
+            except Exception as e:
+                print(f"[TaskBoard] Error creating DB dir: {e}")
         
         self.json_path = self.meta_dir / "tasks.json"
         self.md_path = self.meta_dir / "TASK_BOARD.md"
