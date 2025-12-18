@@ -1,0 +1,19 @@
+name: "User Feedback Loop"
+description: "Analyzes user logs and updates the roadmap with new tasks."
+trigger_events:
+  - "Weekly Schedule"
+  - "User request: /ybis:analyze-feedback"
+
+steps:
+  - step_id: "collect_logs"
+    action: "Read logs from .YBIS_Dev/Meta/Active/logs using LogAnalyzerTool."
+    output: "Insight Report"
+
+  - step_id: "update_roadmap"
+    action: "PM Agent reviews the Insight Report and appends new items to Roadmap/v0.1.5.md or v0.2.0.md based on priority."
+    input: "Insight Report, Roadmap Files"
+    output: "Updated Roadmap"
+
+  - step_id: "notify_team"
+    action: "Orchestrator logs the new roadmap items to TASK_BOARD.md as 'TODO'."
+    output: "Updated Task Board"

@@ -1,0 +1,6 @@
+- name: ollama/qwen2.5:14b
+  edit_format: diff
+  weak_model_name: ollama/qwen2.5:14b
+  use_repo_map: true
+  extra_params:
+    max_tokens: 8192

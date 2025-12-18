@@ -1,0 +1,11 @@
+# STRICT SANDBOX LOCKDOWN
+# Blocks EVERYTHING by default.
+*
+
+# EXCEPTIONS (Allow only these)
+!.YBIS_Dev/
+!.git/
+!.sandbox_aiderignore
+!.aider_model_settings.yml
+!.aider.conf.yml
+!docs/.internal/

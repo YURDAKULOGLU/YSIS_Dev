@@ -1,0 +1,55 @@
+name: "Automated Epic Creation"
+description: "Creates a new epic document (.md) based on a template, ensuring all mandatory sections and strategic alignment are met."
+trigger_events:
+  - "User request: /ybis:create-epic"
+
+steps:
+  - step_id: "gather_requirements"
+    action: "Prompt user for high-level epic requirements (e.g., title, strategic goal, affected areas, key stories)."
+    output: "User requirements: [requirements_summary]"
+
+  - step_id: "select_template"
+    action: "Select the appropriate epic template from templates/epic-tmpl.yaml."
+    input: "templates/epic-tmpl.yaml"
+    output: "Template selected: epic-tmpl.yaml"
+
+  - step_id: "populate_template"
+    action: "Populate the epic template with gathered requirements and project context (e.g., project vision, product roadmap)."
+    input: "Epic template, user requirements, PROJECT_VISION.md, PRODUCT_ROADMAP.md"
+    output: "Draft epic content: [epic_content]"
+
+  - step_id: "review_and_refine"
+    action: "Present the draft epic to the user for review and refinement. Ensure strategic alignment and clarity."
+    input: "Draft epic content"
+    output: "Final epic content: [final_epic_content]"
+    agents_involved:
+      - "Prompt Engineering Assistant" # For reviewing clarity and strategic alignment
+
+  - step_id: "save_epic"
+    action: "Save the final epic content to docs/epics/[epic_id].md."
+    input: "Final epic content, epic_id"
+    output: "Epic saved to: [file_path]"
+
+  - step_id: "update_roadmap"
+    action: "Suggest adding the new epic to PRODUCT_ROADMAP.md."
+    input: "Epic details, PRODUCT_ROADMAP.md"
+    output: "Roadmap updated or suggestion provided."
+
+  - step_id: "log_action"
+    action: "Log the workflow execution and its outcome in DEVELOPMENT_LOG.md."
+    input: "Workflow details, outcome"
+    output: "Logged in DEVELOPMENT_LOG.md"
+
+commands_involved:
+  - "/ybis:create-epic" # New command to be defined
+  - "/ybis:log-decision"
+
+agents_involved:
+  - "Orchestrator"
+  - "PM Agent"
+  - "Prompt Engineering Assistant"
+version: 1.0.0
+last_updated: 2025-10-28
+purpose: Guides the user through creating a new epic based on project standards and templates.
+owner: PM Agent, Orchestrator
+id: create-epic

@@ -1,0 +1,64 @@
+{
+  "version": "1.0.0",
+  "updated": "2025-12-13",
+  "agents": [
+    {
+      "id": "orchestrator",
+      "name": "YBIS Orchestrator",
+      "type": "coordinator",
+      "runtime": "cloud",
+      "model": "claude-sonnet-4",
+      "persona": "./personas/ybis-orchestrator.md",
+      "capabilities": ["task_routing", "agent_management", "workflow_execution"],
+      "tools": ["file_ops", "git_ops", "agent_invoke"]
+    },
+    {
+      "id": "architect",
+      "name": "System Architect",
+      "type": "specialist",
+      "runtime": "cloud",
+      "model": "claude-sonnet-4",
+      "persona": "./personas/architect.md",
+      "capabilities": ["system_design", "spec_writing", "impact_analysis"],
+      "tools": ["file_ops", "rag_search"]
+    },
+    {
+      "id": "developer",
+      "name": "Senior Developer",
+      "type": "specialist",
+      "runtime": "hybrid",
+      "model": {
+        "local": "deepseek-coder-v2:33b",
+        "cloud": "claude-sonnet-4"
+      },
+      "persona": "./personas/dev.md",
+      "capabilities": ["code_generation", "refactoring", "debugging"],
+      "tools": ["file_ops", "git_ops", "code_exec", "test_runner"]
+    },
+    {
+      "id": "qa-engineer",
+      "name": "QA Engineer",
+      "type": "specialist",
+      "runtime": "local",
+      "model": "qwen2.5-coder:14b",
+      "persona": "./personas/qa.md",
+      "capabilities": ["test_writing", "bug_detection", "coverage_analysis"],
+      "tools": ["file_ops", "test_runner", "lint_check"]
+    },
+    {
+      "id": "documentation",
+      "name": "Documentation Writer",
+      "type": "specialist",
+      "runtime": "local",
+      "model": "qwen2.5:14b",
+      "persona": "./personas/doc-generator.md",
+      "capabilities": ["doc_generation", "readme_update", "api_docs"],
+      "tools": ["file_ops", "rag_search"]
+    }
+  ],
+  "routing": {
+    "cost_sensitive": true,
+    "prefer_local": true,
+    "cloud_tasks": ["architecture", "critical_decisions", "complex_debugging"]
+  }
+}

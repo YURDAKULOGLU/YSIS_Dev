@@ -1,0 +1,1497 @@
+# YBIS Documentation Map
+# Machine-readable documentation registry
+# Created: 2025-10-12
+# Status: ACTIVE
+# Purpose: Track all documentation dependencies, references, and update cascades
+
+version: "2.0"
+last_updated: "2025-10-17"
+total_documents: 33
+
+# ==============================================================================
+# TIER -1: STRATEGIC LAYER (Product & Business Vision)
+# ==============================================================================
+
+tier_minus_1_strategic:
+  
+  PROJECT_VISION:
+    path: "docs/vision/PROJECT_VISION.md"
+    version: "2.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: -1
+    authority: "STRATEGIC"
+    purpose: "Why YBIS exists, target market, problem/solution"
+    audience: ["Team", "Investors", "Strategic stakeholders"]
+    scope: "Strategic - Why, Who, What (high-level)"
+    length: "Medium (~400 lines)"
+    update_frequency: "Quarterly or major pivot"
+    
+    owns:
+      - mission_statement
+      - target_market
+      - problem_statement
+      - solution_approach
+      - ai_first_design
+      - port_architecture_philosophy
+    
+    derived_from: []
+    
+    informs:
+      - PRODUCT_ROADMAP
+      - COMPETITIVE_STRATEGY
+      - YBIS_PROJE_ANAYASASI
+      - PRODUCT_REQUIREMENTS
+    
+    update_triggers:
+      - major_pivot: "Requires all strategic docs review"
+      - market_shift: "Requires MARKET_RESEARCH update"
+      - competitive_move: "Requires COMPETITIVE_STRATEGY update"
+    
+    validation:
+      - check_alignment_with: ["PRODUCT_ROADMAP", "COMPETITIVE_STRATEGY"]
+      - ensure_consistency: ["mission", "target_market"]
+  
+  PRODUCT_ROADMAP:
+    path: "docs/roadmap/PRODUCT_ROADMAP.md"
+    version: "2.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: -1
+    authority: "STRATEGIC"
+    purpose: "Timeline, phases, milestone breakdown"
+    audience: ["Team", "Stakeholders", "Investors"]
+    scope: "Strategic - When, How (phases)"
+    length: "Long (~800 lines, detailed breakdown)"
+    update_frequency: "Monthly or phase transition"
+    
+    owns:
+      - release_phases
+      - milestone_timeline
+      - feature_releases
+      - version_planning
+      - llm_evolution_strategy
+      - plugin_system_timeline
+      - conditional_growth_paths
+    
+    derived_from:
+      - PROJECT_VISION: ["goals", "target_market"]
+      - MARKET_RESEARCH: ["priorities", "market_opportunities"]
+      - COMPETITIVE_STRATEGY: ["positioning", "moats"]
+    
+    informs:
+      - TASKS
+      - DEVELOPMENT_LOG
+      - PRODUCT_REQUIREMENTS
+      - INTEGRATION_ROADMAP
+    
+    update_triggers:
+      - phase_transition: "Update milestone status, next phase details"
+      - major_delay: "Recalculate timeline, notify stakeholders"
+      - scope_change: "Update feature releases, validate with PRD"
+    
+    validation:
+      - check_alignment_with: ["TASKS", "DEVELOPMENT_LOG"]
+      - ensure_milestones_achievable: true
+      - cross_check_phases_with: "PROJECT_VISION"
+  
+  MARKET_RESEARCH:
+    path: "docs/strategy/MARKET_RESEARCH.md"
+    version: "2.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: -1
+    authority: "STRATEGIC"
+    purpose: "Market analysis, TAM/SAM/SOM, competitor landscape"
+    audience: ["Product Manager", "Marketing", "Investors"]
+    scope: "Strategic - Market, Users, Competition"
+    length: "Very long (~1,100 lines, comprehensive)"
+    update_frequency: "Quarterly, Open Beta refresh (competitor deep-dive)"
+    
+    owns:
+      - market_size (TAM/SAM/SOM)
+      - competitor_analysis
+      - user_research
+      - market_opportunities
+      - customer_segments
+      - porters_five_forces
+    
+    derived_from: []
+    
+    informs:
+      - COMPETITIVE_STRATEGY
+      - PRODUCT_ROADMAP
+      - PROJECT_VISION
+      - PRODUCT_REQUIREMENTS
+    
+    update_triggers:
+      - quarterly_review: "Update market trends, competitor moves"
+      - open_beta_start: "Execute competitor deep-dive (Week 5-6)"
+      - major_competitor_move: "Update competitive landscape"
+    
+    validation:
+      - check_tam_sam_som_consistency: true
+      - validate_competitor_data: "App Store, Reddit, social media"
+      - cross_check_with: "COMPETITIVE_STRATEGY"
+    
+    planned_updates:
+      - open_beta_competitor_deep_dive:
+          timeline: "Open Beta Week 5-6 (January 2026)"
+          scope: ["Motion", "Reclaim.ai", "Akiflow", "Notion AI", "New entrants"]
+          output: "Updated Section 3.4"
+  
+  COMPETITIVE_STRATEGY:
+    path: "docs/strategy/COMPETITIVE_STRATEGY.md"
+    version: "2.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: -1
+    authority: "STRATEGIC"
+    purpose: "Positioning, moats, competitive response scenarios"
+    audience: ["Product Manager", "Marketing", "Strategic team"]
+    scope: "Strategic - How to compete, Win"
+    length: "Very long (~900 lines, detailed scenarios)"
+    update_frequency: "Quarterly, major competitor move"
+    
+    owns:
+      - positioning
+      - differentiation
+      - go_to_market
+      - competitive_advantages
+      - moats (7 moats documented)
+      - competitive_response_scenarios
+    
+    derived_from:
+      - MARKET_RESEARCH: ["competitor_analysis"]
+      - PROJECT_VISION: ["core_values", "mission"]
+    
+    informs:
+      - PRODUCT_ROADMAP
+      - YBIS_PROJE_ANAYASASI
+      - PRODUCT_REQUIREMENTS
+      - tech_stack (performance targets)
+    
+    update_triggers:
+      - competitor_feature_launch: "Update competitive scenarios"
+      - major_acquisition: "Update competitive landscape"
+      - market_positioning_change: "Update differentiation strategy"
+    
+    validation:
+      - check_moat_strength: "Validate against actual implementation"
+      - cross_check_positioning: "MARKET_RESEARCH"
+      - validate_response_scenarios: "Feasibility check"
+
+# ==============================================================================
+# TIER 0: CANONICAL SOURCES (Single Source of Truth)
+# ==============================================================================
+
+  DEVELOPMENT_ROADMAP:
+    path: "docs/roadmap/DEVELOPMENT_ROADMAP.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 1
+    authority: "REFERENCE"
+    purpose: "Technical implementation timeline and milestones"
+    audience: ["Development team", "Technical stakeholders"]
+    scope: "Technical - Code delivery phases, architecture decisions"
+    length: "Medium (~260 lines)"
+    update_frequency: "Weekly"
+    
+    owns:
+      - technical_milestones
+      - code_delivery_timeline
+      - architecture_decisions
+      - plugin_system_implementation
+      - performance_targets
+      - quality_gates
+    
+    derived_from:
+      - PRODUCT_ROADMAP: ["business_milestones", "feature_delivery"]
+      - PROJECT_VISION: ["technical_principles", "architecture_goals"]
+      - YBIS_PROJE_ANAYASASI: ["technical_constraints", "port_architecture"]
+    
+    informs:
+      - TASKS
+      - DEVELOPMENT_LOG
+      - TECH_STACK
+    
+    update_triggers:
+      - weekly_review: "Update progress, adjust timeline"
+      - architecture_change: "Requires TECH_STACK update"
+      - milestone_completion: "Requires TASKS update"
+    
+    cross_references:
+      - PRODUCT_ROADMAP: "Business milestones → Technical implementation"
+      - TASKS: "Technical milestones → Task breakdown"
+      - DEVELOPMENT_LOG: "Architecture decisions → AD-XXX"
+
+tier_0_canonical:
+  
+  YBIS_PROJE_ANAYASASI:
+    path: "docs/YBIS_PROJE_ANAYASASI.md"
+    version: "3.1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 0
+    authority: "CANONICAL - Technical Constitution"
+    purpose: "Technical constitution - Port Architecture, quality gates, forbidden patterns"
+    audience: ["Developers", "Architects"]
+    scope: "Canonical - Architecture principles, Tech constraints"
+    length: "Long (~500 lines, detailed rules)"
+    update_frequency: "Major architecture decision (rare)"
+    
+    owns:
+      - port_architecture_principles
+      - tier_1_port_catalog:
+          - AuthPort
+          - DatabasePort
+          - LLMPort
+          - ChatPort
+          - ThemePort
+          - LanguagePort
+          - StoragePort
+          - DeploymentPort
+      - quality_gates
+      - forbidden_patterns
+      - tech_constraints
+      - build_for_scale_ship_minimal_principle
+    
+    derived_from:
+      - PROJECT_VISION: ["product_principles"]
+      - COMPETITIVE_STRATEGY: ["moats", "tech_advantages"]
+    
+    informs:
+      - DEVELOPMENT_LOG
+      - Architecture_better
+      - service_integration_strategy
+      - quality_standards
+      - package_structure
+      - tech_stack
+    
+    update_triggers:
+      - major_architecture_change: "CRITICAL - Requires approval, affects ALL derived docs"
+      - new_port_addition: "Update port catalog, notify all agents"
+      - quality_gate_change: "Update quality_standards, notify QA"
+    
+    validation:
+      - requires_approval: true
+      - notify_agents: ["ALL"]
+      - cascade_check: "All derived documents must align"
+      - severity: "CRITICAL"
+  
+  DEVELOPMENT_LOG:
+    path: "docs/Güncel/DEVELOPMENT_LOG.md"
+    version: "AD-032"
+    status: "ACTIVE"
+    last_updated: "2025-10-16"
+    tier: 0
+    authority: "CANONICAL - Decision Registry"
+    purpose: "Decision registry - Architecture Decisions (AD-XXX), timeline, issues"
+    audience: ["Developers", "Team"]
+    scope: "Canonical - Historical record, Decisions"
+    length: "Very long (grows over time, ~800 lines now)"
+    update_frequency: "Daily (progress), On decision (AD-XXX)"
+    
+    owns:
+      - architecture_decisions:
+          - AD_001: "Monorepo with npm workspaces"
+          - AD_002: "React 19.1.0"
+          - AD_003: "Expo SDK 54"
+          - AD_015: "Expo Auth Session"
+          - AD_016: "DeploymentPort Strategy"
+          - AD_017: "Build for Scale, Ship Minimal"
+          - AD_018: "Web Dashboard (Open Beta)"
+          - AD_019: "Navigation Design (Widget-based)"
+          - AD_020: "MCP Integration Timeline"
+          - AD_031: "Mobile App Edge-to-Edge Safe Area & Keyboard-Aware Animations"
+          - AD_032: "Demo Mode Navigation Bug Resolution"
+      - completed_tasks_log
+      - issues_and_fixes
+      - daily_progress
+      - week_completion_status
+    
+    derived_from:
+      - YBIS_PROJE_ANAYASASI: ["architecture_constraints"]
+      - PRODUCT_ROADMAP: ["timeline", "milestones"]
+    
+    informs:
+      - tech_stack
+      - package_structure
+      - TASKS
+      - README
+      - Architecture_better
+    
+    update_triggers:
+      - architecture_decision: "Add AD-XXX, cascade to all references"
+      - task_completion: "Log completion, update TASKS"
+      - issue_resolution: "Document fix, update DEVELOPMENT_GUIDELINES"
+      - week_transition: "Update completion %, notify team"
+    
+    validation:
+      - check_ad_sequence: "AD-XXX numbers sequential"
+      - validate_references: "All AD-XXX referenced in derived docs"
+      - cross_check_tasks: "Task completion logged"
+    
+    cascade_rules:
+      - on_ad_xxx_added:
+          - check: ["tech_stack", "package_structure", "TASKS"]
+          - notify: ["DevAgent", "ArchAgent", "DocAgent"]
+          - checklist: "documentation-consistency-checklist.md"
+
+# ==============================================================================
+# TIER 1: REFERENCE DOCUMENTS (Derived, Read-Only)
+# ==============================================================================
+
+tier_1_reference:
+  
+  tech_stack:
+    path: "docs/Güncel/tech-stack.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 1
+    authority: "DERIVED"
+    purpose: "Technical reference - All package versions, migration paths"
+    audience: ["Developers"]
+    scope: "Reference - What tech, What versions"
+    length: "Long (~400 lines, comprehensive)"
+    update_frequency: "Every AD-XXX (tech decision)"
+    
+    owns: null  # All content derived
+    
+    derived_from:
+      - DEVELOPMENT_LOG:
+          - AD_002: "React 19.1.0"
+          - AD_003: "Expo SDK 54"
+          - AD_015: "Expo Auth Session"
+          - AD_016: "DeploymentPort (Vercel, Cloudflare, Node.js)"
+      - YBIS_PROJE_ANAYASASI: ["tech_constraints"]
+    
+    used_by:
+      - Developers: "Daily reference"
+      - package_json: "Version source"
+      - README: "Tech stack display"
+      - QUICKSTART: "Setup instructions"
+    
+    update_triggers:
+      - ad_xxx_tech_change: "Auto-update from DEVELOPMENT_LOG"
+      - package_version_bump: "Update version table"
+    
+    validation:
+      - verify_all_ad_xxx_referenced: true
+      - check_version_consistency: "package.json vs tech-stack.md"
+      - no_manual_edits: "Warn if derived content manually changed"
+  
+  package_structure:
+    path: "docs/Güncel/package-structure.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 1
+    authority: "DERIVED"
+    purpose: "Implementation blueprint - Package layout, code examples"
+    audience: ["Developers"]
+    scope: "Reference - How to implement (packages, ports, adapters)"
+    length: "Very long (~1,700 lines, detailed code)"
+    update_frequency: "Every AD-XXX (structure change)"
+    
+    owns: null  # All content derived
+    
+    derived_from:
+      - DEVELOPMENT_LOG:
+          - AD_001: "Monorepo structure"
+          - AD_002: "React 19.1.0"
+          - AD_003: "Expo SDK 54"
+          - AD_015: "ExpoAuthAdapter"
+          - AD_016: "DeploymentPort"
+      - YBIS_PROJE_ANAYASASI: ["port_architecture"]
+    
+    used_by:
+      - Developers: "Implementation guide"
+      - Story_writers: "Technical context"
+      - Code_reviews: "Structure validation"
+    
+    update_triggers:
+      - ad_xxx_structure_change: "Auto-update package layout"
+      - new_port_added: "Add port implementation example"
+    
+    validation:
+      - verify_port_implementations: "Match YBIS_PROJE_ANAYASASI"
+      - check_code_examples_valid: "TypeScript compilation"
+      - no_manual_edits: "Warn if derived content manually changed"
+  
+  README:
+    path: "docs/README.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 1
+    authority: "DERIVED"
+    purpose: "Project overview - Quick start, tech stack, status"
+    audience: ["New developers", "Stakeholders", "GitHub visitors"]
+    scope: "Reference - High-level overview"
+    length: "Short (~100 lines, concise)"
+    update_frequency: "Weekly (progress update)"
+    
+    owns: null  # All content derived
+    
+    derived_from:
+      - DEVELOPMENT_LOG: ["status", "progress_%"]
+      - tech_stack: ["versions"]
+      - TASKS: ["completion_%"]
+      - PROJECT_VISION: ["mission_statement"]
+    
+    used_by:
+      - New_team_members: "Onboarding"
+      - GitHub_visitors: "Project intro"
+    
+    update_triggers:
+      - weekly_progress_update: "Auto-update progress %"
+      - major_milestone: "Update status section"
+    
+    validation:
+      - check_progress_accuracy: "Match TASKS completion"
+      - verify_tech_stack: "Match tech-stack.md"
+  
+  Architecture_better:
+    path: "docs/Güncel/Architecture_better.md"
+    version: "2.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 1
+    authority: "DERIVED"
+    purpose: "Architecture deep-dive - Detailed tech decisions, rationale"
+    audience: ["Architects", "Senior developers"]
+    scope: "Reference - Why architecture (detailed)"
+    length: "Long (~550 lines)"
+    update_frequency: "Major architecture change"
+    
+    owns: null  # All content derived
+    
+    derived_from:
+      - YBIS_PROJE_ANAYASASI: ["principles"]
+      - DEVELOPMENT_LOG: ["AD-XXX", "rationale"]
+    
+    used_by:
+      - Architects: "Design reference"
+      - Story_writers: "Technical context"
+    
+    update_triggers:
+      - major_ad_xxx: "Update architecture section"
+      - port_architecture_change: "Update port details"
+    
+    validation:
+      - check_alignment_with: "YBIS_PROJE_ANAYASASI"
+      - verify_ad_xxx_rationale: "Match DEVELOPMENT_LOG"
+    
+    notes: "Recently updated (Firebase → Expo Auth, React 18.3 → 19.1)"
+  
+  PRODUCT_REQUIREMENTS:
+    path: "docs/prd/PRODUCT_REQUIREMENTS.md"
+    version: "2.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 1
+    authority: "HYBRID - Product + Tech"
+    purpose: "Product requirements - Features, UX, technical decisions"
+    audience: ["Product Manager", "Developers", "QA"]
+    scope: "Reference - What to build (requirements)"
+    length: "Very long (~1,200 lines, comprehensive)"
+    update_frequency: "Feature change, major tech decision"
+    
+    owns:
+      - feature_requirements: "PRODUCT-OWNED"
+      - ux_specifications: "PRODUCT-OWNED"
+    
+    derived_from:
+      - PROJECT_VISION: ["product_vision"]
+      - DEVELOPMENT_LOG:
+          - AD_015: "Auth strategy"
+          - AD_016: "Deployment strategy"
+          - AD_017: "Build for Scale principle"
+          - AD_018: "Web Dashboard"
+          - AD_019: "Navigation Design"
+          - AD_020: "MCP Integration"
+      - YBIS_PROJE_ANAYASASI: ["architecture_constraints"]
+    
+    used_by:
+      - Developers: "Feature implementation"
+      - QA: "Test scenarios"
+      - Story_writers: "Requirements breakdown"
+    
+    update_triggers:
+      - feature_addition: "Update feature list, validate with Vision"
+      - ad_xxx_ui_ux: "Update UX specs (e.g., AD-019 Navigation)"
+      - tech_constraint_change: "Update technical decisions"
+    
+    validation:
+      - check_feature_alignment: "PROJECT_VISION"
+      - verify_tech_decisions: "DEVELOPMENT_LOG AD-XXX"
+      - cross_check_ux: "Actual UI implementation"
+    
+    notes: "Marked bottom tab bar DEPRECATED, gestures TBD"
+
+# ==============================================================================
+# TIER 2: EXECUTION DOCUMENTS (Hybrid - Derived + Dynamic)
+# ==============================================================================
+
+tier_2_execution:
+  
+  CHAT_KARARLASTIRMA:
+    path: "docs/Güncel/CHAT_KARARLASTIRMA.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-15"
+    tier: 2
+    authority: "DERIVED - From AD-026"
+    purpose: "Chat UI strategy decision and feature implementation roadmap"
+    audience: ["Developers", "AI Agents"]
+    scope: "Execution - Chat UI strategy"
+    length: "Medium (~200 lines, decision analysis)"
+    update_frequency: "As-needed (strategy changes)"
+    
+    owns:
+      - chat_strategy_decisions: "STATIC"
+      - feature_implementation_roadmap: "STATIC"
+      - tamagui_vs_chatkit_analysis: "STATIC"
+    
+    derived_from:
+      - DEVELOPMENT_LOG: ["AD-026"]
+      - COMPONENT_ABSTRACTION_STRATEGY: ["Implementation plan"]
+    
+    informs:
+      - DEVELOPMENT_LOG: ["AD-026 documentation reference"]
+      - COMPONENT_ABSTRACTION_STRATEGY: ["Chat implementation"]
+      - session-context: ["Current chat strategy"]
+    
+    update_triggers:
+      - chat_strategy_changes: "Major strategy shifts"
+      - feature_implementation: "New feature requirements"
+    
+    cross_references:
+      - "DEVELOPMENT_LOG.md#AD-026"
+      - "COMPONENT_ABSTRACTION_STRATEGY.md"
+      - "session-context.md"
+  
+  TASKS:
+    path: "docs/Güncel/tasks.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 2
+    authority: "HYBRID - Structure derived, Status dynamic"
+    purpose: "Task list - 165 tasks, checkbox status, week breakdown"
+    audience: ["Developers"]
+    scope: "Execution - What to do (tasks)"
+    length: "Very long (~1,100 lines, detailed tasks)"
+    update_frequency: "Daily (checkbox), Weekly (new tasks)"
+    
+    owns:
+      - task_checkboxes: "DYNAMIC"
+      - task_completion_dates: "DYNAMIC"
+    
+    derived_from:
+      - DEVELOPMENT_LOG: ["AD-XXX → tasks"]
+      - PRODUCT_ROADMAP: ["phases → weeks"]
+      - package_structure: ["implementation → tasks"]
+    
+    used_by:
+      - Developers: "Daily work"
+      - DEVELOPMENT_LOG: "Completion logging"
+      - README: "Progress %"
+    
+    update_triggers:
+      - task_checkbox_checked: "Update DEVELOPMENT_LOG, README"
+      - new_ad_xxx: "Generate new tasks"
+      - week_transition: "Validate completion, plan next week"
+    
+    validation:
+      - check_completion_logged: "DEVELOPMENT_LOG has note"
+      - verify_week_breakdown: "Align with PRODUCT_ROADMAP"
+    
+    status_tracking:
+      total_tasks: 165
+      completed: 24
+      pending: 141
+      week_1_completion: "80% (24/30 tasks)"
+  
+  DEVELOPMENT_GUIDELINES:
+    path: "docs/Güncel/DEVELOPMENT_GUIDELINES.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 2
+    authority: "HYBRID - Core derived, Examples dynamic"
+    purpose: "Developer rules - Code patterns, error solutions, best practices"
+    audience: ["Developers"]
+    scope: "Execution - How to code (rules)"
+    length: "Long (~600 lines, practical)"
+    update_frequency: "Weekly (learned lessons), On pattern (new rule)"
+    
+    owns:
+      - code_patterns: "CURATED"
+      - error_solutions: "CURATED"
+      - practical_examples: "DYNAMIC"
+    
+    derived_from:
+      - YBIS_PROJE_ANAYASASI: ["core_rules"]
+      - DEVELOPMENT_LOG: ["learned_lessons", "issues"]
+    
+    used_by:
+      - Developers: "Daily coding"
+      - Code_reviews: "Standards"
+    
+    update_triggers:
+      - new_pattern_discovered: "Add to code patterns"
+      - issue_resolved: "Document solution"
+    
+    validation:
+      - check_alignment_with: "YBIS_PROJE_ANAYASASI"
+      - verify_examples_current: "Code still compiles"
+  
+  story_1_1_mobile_app_foundation:
+    path: "docs/stories/1.1.mobile-app-foundation.md"
+    version: "1.0"
+    status: "ACTIVE (IN PROGRESS)"
+    last_updated: "2025-10-12"
+    tier: 2
+    authority: "HYBRID - Template derived, Content dynamic"
+    purpose: "Story execution - Foundation story, checkboxes, Dev Agent Record"
+    audience: ["Developers", "QA"]
+    scope: "Execution - Story details (tasks, context, DOD)"
+    length: "Long (~400 lines, detailed)"
+    update_frequency: "Daily (checkboxes), On completion (Dev Agent Record)"
+    
+    owns:
+      - story_checkboxes: "DYNAMIC"
+      - dev_agent_record: "DYNAMIC"
+    
+    derived_from:
+      - TASKS: ["related_tasks"]
+      - PRODUCT_REQUIREMENTS: ["feature_requirements"]
+      - YBIS_PROJE_ANAYASASI: ["architecture_constraints"]
+    
+    used_by:
+      - Developers: "Implementation"
+      - QA: "Testing context"
+    
+    update_triggers:
+      - checkbox_checked: "Update progress"
+      - story_complete: "Run DOD checklist, update DEVELOPMENT_LOG"
+    
+    validation:
+      - check_dod: ".YBIS_Dev/Veriler/checklists/story-dod-checklist.md"
+      - verify_qa_gate: "docs/qa/gates/1.1-mobile-app-foundation.yml"
+  
+  story_1_2_backend_api_foundation:
+    path: "docs/stories/1.2.backend-api-foundation.md"
+    version: "1.0"
+    status: "ACTIVE (PENDING)"
+    tier: 2
+    authority: "HYBRID"
+    purpose: "Story execution - Backend API foundation"
+    notes: "Same pattern as 1.1"
+  
+  epic_tier_1_port_architecture:
+    path: "docs/epics/tier-1-port-architecture.md"
+    version: "1.0"
+    status: "ACTIVE"
+    tier: 2
+    authority: "HYBRID"
+    purpose: "Epic definition - Tier 1 Port Architecture scope"
+    audience: ["Product Manager", "Developers"]
+    scope: "Execution - Epic scope (high-level stories)"
+    length: "Medium (~200 lines)"
+    
+    derived_from:
+      - PRODUCT_REQUIREMENTS: ["epic_scope"]
+      - YBIS_PROJE_ANAYASASI: ["port_architecture"]
+    
+    used_by:
+      - Story_creation: "Breakdown"
+      - PRODUCT_ROADMAP: "Epic tracking"
+
+# ==============================================================================
+# TIER 3: SUPPORT DOCUMENTS (Detailed, Specialized)
+# ==============================================================================
+
+tier_3_support:
+  
+  ESLINT_CONFIG:
+    path: "packages/eslint-config/"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-15"
+    tier: 3
+    authority: "SPECIALIZED - Shared configuration package"
+    purpose: "ESLint configuration - Monorepo shared configuration"
+    audience: ["All developers", "AI agents"]
+    scope: "Support - Code quality enforcement"
+    length: "Medium (~200 lines across 3 files)"
+    update_frequency: "Rule changes, New packages"
+    
+    owns:
+      - eslint_rules: "STATIC"
+      - typescript_config: "STATIC"
+      - react_config: "STATIC"
+    
+    derived_from:
+      - DEVELOPMENT_LOG: ["AD-027"]
+      - YBIS_PROJE_ANAYASASI: ["zero-tolerance rules"]
+    
+    informs:
+      - All packages: ["ESLint configuration"]
+      - DEVELOPMENT_LOG: ["AD-027 implementation"]
+    
+    update_triggers:
+      - rule_changes: "ESLint rule updates"
+      - new_packages: "New workspace packages"
+    
+    cross_references:
+      - "DEVELOPMENT_LOG.md#AD-027"
+      - "eslint.config.js"
+      - "All package.json files"
+  
+  INTEGRATION_ROADMAP:
+    path: "docs/Güncel/INTEGRATION_ROADMAP.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 3
+    authority: "HYBRID - Strategy from ROADMAP, Details specialized"
+    purpose: "Integration strategy - Third-party service integration phases"
+    audience: ["Backend developers", "Integration engineers"]
+    scope: "Support - Integration details (Google, Notion, Todoist)"
+    length: "Long (~350 lines)"
+    update_frequency: "Phase transition, New integration"
+    
+    derived_from:
+      - PRODUCT_ROADMAP: ["integration_phases"]
+      - YBIS_PROJE_ANAYASASI: ["port_architecture"]
+    
+    used_by:
+      - Integration_engineers: "Implementation"
+      - TASKS: "Integration tasks"
+  
+  service_integration_strategy:
+    path: "docs/Güncel/service-integration-strategy.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 3
+    authority: "HYBRID - From ANAYASA, Patterns specialized"
+    purpose: "Integration patterns - Port Architecture implementation patterns"
+    audience: ["Backend developers"]
+    scope: "Support - Integration patterns (detailed)"
+    length: "Very long (~950 lines, comprehensive patterns)"
+    update_frequency: "New port, New pattern"
+    
+    derived_from:
+      - YBIS_PROJE_ANAYASASI: ["port_principles"]
+      - DEVELOPMENT_LOG: ["AD-XXX integration decisions"]
+    
+    used_by:
+      - Developers: "Port implementation"
+      - Code_reviews: "Pattern validation"
+  
+  quality_standards:
+    path: "docs/Güncel/quality-standards.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 3
+    authority: "HYBRID - From ANAYASA, Details specialized"
+    purpose: "Quality standards - Testing, code quality, performance benchmarks"
+    audience: ["QA", "Developers"]
+    scope: "Support - Quality details (tests, standards)"
+    length: "Very long (~1,300 lines, comprehensive)"
+    update_frequency: "New standard, Quality gate change"
+    
+    derived_from:
+      - YBIS_PROJE_ANAYASASI: ["quality_gates"]
+      - DEVELOPMENT_LOG: ["quality_lessons"]
+    
+    used_by:
+      - QA: "Test design"
+      - Developers: "Code quality"
+      - CI_CD: "Automated checks"
+  
+  TESTING_STRATEGY:
+    path: "docs/TESTING_STRATEGY.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 3
+    authority: "HYBRID"
+    purpose: "Testing strategy - Test levels, frameworks, coverage targets"
+    audience: ["QA", "Developers"]
+    scope: "Support - Testing approach (strategy)"
+    length: "Long (~400 lines)"
+    
+    derived_from:
+      - quality_standards: ["quality_gates"]
+      - YBIS_PROJE_ANAYASASI: ["testing_principles"]
+  
+  qa_gate_1_1:
+    path: "docs/qa/gates/1.1-mobile-app-foundation.yml"
+    version: "1.0"
+    status: "ACTIVE"
+    tier: 3
+    authority: "DERIVED"
+    purpose: "Quality gate - Story 1.1 specific quality checks"
+    
+    derived_from:
+      - quality_standards: ["quality_criteria"]
+      - story_1_1_mobile_app_foundation: ["story_context"]
+  
+  expo_sdk54_migration_plan:
+    path: "docs/Güncel/expo-sdk54-migration-plan.md"
+    version: "1.0"
+    status: "ACTIVE (migration pending)"
+    last_updated: "2025-10-12"
+    tier: 3
+    authority: "SPECIALIZED"
+    purpose: "Migration plan - Expo SDK 54 upgrade details"
+    audience: ["Developers"]
+    
+    derived_from:
+      - DEVELOPMENT_LOG: ["AD-002"]
+      - tech_stack: ["Expo_version"]
+    
+    notes: "Will be archived once migration completes"
+
+# ==============================================================================
+# TIER 4: NAVIGATION & META (Auto-Generated, Guides)
+# ==============================================================================
+
+tier_4_meta:
+  
+  DOCUMENTATION_INDEX:
+    path: "docs/DOCUMENTATION_INDEX.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 4
+    authority: "AUTO_GENERATED"
+    purpose: "Navigation - All docs index, quick links"
+    audience: ["Everyone"]
+    scope: "Meta - Navigation (auto-generated)"
+    
+    generated_from:
+      - all_document_frontmatter
+      - file_structure
+  
+  QUICKSTART:
+    path: "docs/QUICKSTART.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 4
+    authority: "HYBRID - Structure auto, Content curated"
+    purpose: "Quick start - Setup steps, first tasks"
+    audience: ["New developers"]
+    
+    derived_from:
+      - TASKS: ["first_tasks"]
+      - tech_stack: ["versions"]
+      - README: ["overview"]
+  
+  AI_Asistan_Gorev_Dagilimi:
+    path: "docs/AI_Asistan_Gorev_Dagilimi.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 4
+    authority: "HYBRID"
+    purpose: "AI workflow - Agent roles, task distribution"
+    audience: ["AI agents", "Team"]
+    
+    derived_from:
+      - .YBIS_Dev/Veriler/agents/: "agent_definitions"
+      - .YBIS_Dev/AI_BASLANGIC_REHBERI.md: "workflow"
+
+# ==============================================================================
+# .YBIS_Dev META LAYER
+# ==============================================================================
+
+ybis_dev_meta:
+  
+  AI_BASLANGIC_REHBERI:
+    path: ".YBIS_Dev/AI_BASLANGIC_REHBERI.md"
+    tier: "META"
+    authority: "META - AI System Guide"
+    purpose: "Master AI workflow guide - Entry point for all AI agents"
+    
+    points_to:
+      - AI_GENEL_ANAYASA
+      - YBIS_PROJE_ANAYASASI
+  
+  AI_GENEL_ANAYASA:
+    path: ".YBIS_Dev/AI_GENEL_ANAYASA.md"
+    tier: "META"
+    authority: "META - Universal AI Constitution"
+    purpose: "Universal AI constitution - General AI behavior rules"
+  
+  core_config:
+    path: ".YBIS_Dev/core-config.yaml"
+    tier: "META"
+    authority: "META - System Configuration"
+    purpose: "System configuration - Paths, commands, workflows"
+  
+  documentation_architecture:
+    path: ".YBIS_Dev/Veriler/documentation-architecture.md"
+    tier: "META"
+    authority: "META - 5-Tier System Definition"
+    purpose: "5-Tier documentation system definition"
+    status: "ACTIVE"
+  
+  documentation_taxonomy:
+    path: ".YBIS_Dev/Veriler/documentation-taxonomy.md"
+    tier: "META"
+    authority: "META - Document Functions"
+    purpose: "Document functions, purpose, audience, scope"
+    status: "ACTIVE"
+  
+  documentation_map:
+    path: ".YBIS_Dev/Veriler/documentation-map.yaml"
+    tier: "META"
+    authority: "META - Document Registry"
+    purpose: "Machine-readable documentation registry"
+    status: "ACTIVE"
+  
+  session_todos:
+    path: ".YBIS_Dev/Veriler/session-todos.md"
+    tier: "META"
+    authority: "META - Session Management"
+    purpose: "Current session TODO tracking"
+    status: "ACTIVE"
+    current_completion: "14/17 tasks (82%)"
+  
+  session_context:
+    path: ".YBIS_Dev/Veriler/memory/session-context.md"
+    tier: "META"
+    authority: "META - AI Memory"
+    purpose: "Session context memory"
+    status: "ACTIVE"
+
+# ==============================================================================
+# UPDATE CASCADE RULES
+# ==============================================================================
+
+cascade_rules:
+  
+  rule_architecture_decision:
+    trigger: "DEVELOPMENT_LOG.md AD-XXX modified or added"
+    cascade:
+      - check: "tech_stack references"
+      - check: "package_structure references"
+      - check: "TASKS affected tasks"
+      - check: "YBIS_PROJE_ANAYASASI alignment"
+    notification:
+      agents: ["DevAgent", "ArchAgent", "DocAgent"]
+      checklist: ".YBIS_Dev/Veriler/checklists/documentation-consistency-checklist.md"
+  
+  rule_constitution_change:
+    trigger: "YBIS_PROJE_ANAYASASI.md modified"
+    cascade:
+      - check: "ALL derived documents"
+      - check: "service_integration_strategy"
+      - check: "quality_standards"
+    notification:
+      severity: "CRITICAL"
+      agents: ["ALL"]
+      approval_required: true
+  
+  rule_task_completion:
+    trigger: "TASKS.md checkbox checked"
+    cascade:
+      - update: "DEVELOPMENT_LOG (add completion note)"
+      - update: "README (update progress %)"
+    notification:
+      agents: ["DevAgent"]
+      checklist: ".YBIS_Dev/Veriler/checklists/story-dod-checklist.md"
+  
+  rule_strategic_change:
+    trigger: "Any TIER -1 document modified"
+    cascade:
+      - check: "Alignment with other TIER -1 docs"
+      - check: "TIER 0 implications (ANAYASA, DEVELOPMENT_LOG)"
+      - check: "TIER 1 derived docs"
+    notification:
+      severity: "HIGH"
+      agents: ["PMAgent", "POAgent", "ArchAgent"]
+      approval_required: true
+
+# ==============================================================================
+# VALIDATION RULES
+# ==============================================================================
+
+validation_rules:
+  
+  canonical_source_integrity:
+    - name: "DEVELOPMENT_LOG AD-XXX sequence"
+      check: "AD numbers sequential (no gaps)"
+      severity: "HIGH"
+    
+    - name: "ANAYASA port catalog complete"
+      check: "All 8 Tier 1 ports documented"
+      severity: "CRITICAL"
+  
+  derived_document_consistency:
+    - name: "tech_stack versions match AD-XXX"
+      check: "All versions reference DEVELOPMENT_LOG AD-XXX"
+      severity: "HIGH"
+    
+    - name: "package_structure ports match ANAYASA"
+      check: "All ports in package_structure exist in ANAYASA"
+      severity: "HIGH"
+  
+  strategic_alignment:
+    - name: "ROADMAP aligns with VISION"
+      check: "Timeline supports vision goals"
+      severity: "MEDIUM"
+    
+    - name: "COMPETITIVE_STRATEGY aligns with MARKET_RESEARCH"
+      check: "Positioning matches market analysis"
+      severity: "MEDIUM"
+  
+  cross_reference_integrity:
+    - name: "All informs relationships bidirectional"
+      check: "If A informs B, B references A"
+      severity: "LOW"
+    
+    - name: "All derived_from sources exist"
+      check: "No broken dependencies"
+      severity: "HIGH"
+
+# ==============================================================================
+# TIER 4: META LAYER (New AI System - v2.0)
+# ==============================================================================
+
+tier_4_meta:
+  
+  AI_BASLANGIC_REHBERI_V2:
+    path: ".YBIS_Dev/AI_BASLANGIC_REHBERI_V2.md"
+    version: "2.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 4
+    authority: "META"
+    purpose: "Token-optimized AI agent onboarding (3-Tier lazy loading)"
+    audience: ["All AI Agents"]
+    scope: "Meta - Agent onboarding workflow"
+    length: "Medium (~300 lines)"
+    update_frequency: "On documentation taxonomy change"
+    
+    owns:
+      - lazy_loading_strategy
+      - tier_1_2_3_definitions
+      - token_optimization_rules
+      - dual_write_enforcement
+    
+    derived_from:
+      - DOCUMENTATION_TAXONOMY: ["tier_system", "file_hierarchy"]
+      - QUICK_INDEX: ["file_to_tier_mapping"]
+    
+    informs:
+      - AI_Asistan_Gorev_Dagilimi: ["workflow", "loading_strategy"]
+      - session_context: ["tier_1_files"]
+    
+    update_triggers:
+      - documentation_taxonomy_change: "Update tier definitions"
+      - new_tier_added: "Update lazy loading rules"
+    
+    validation:
+      - check_tier_consistency: "All tiers match DOCUMENTATION_TAXONOMY"
+      - verify_token_limits: "TIER 1 < 5K tokens"
+  
+  QUICK_INDEX:
+    path: ".YBIS_Dev/Veriler/QUICK_INDEX.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 4
+    authority: "META"
+    purpose: "'Hangi dosya ne zaman?' decision tree for agents"
+    audience: ["All AI Agents"]
+    scope: "Meta - Documentation navigation"
+    length: "Short (~150 lines)"
+    update_frequency: "On new document addition"
+    
+    owns:
+      - file_to_tier_mapping
+      - when_to_read_decisions
+      - command_triggered_files
+      - quick_decision_tree
+    
+    derived_from:
+      - DOCUMENTATION_TAXONOMY: ["tier_definitions"]
+      - DOCUMENTATION_MAP: ["all_file_paths"]
+    
+    informs:
+      - AI_BASLANGIC_REHBERI_V2: ["tier_1_files"]
+      - All_AI_Agents: ["reading_strategy"]
+    
+    update_triggers:
+      - new_document_created: "Add to appropriate tier"
+      - document_moved: "Update path and tier"
+    
+    validation:
+      - check_all_docs_listed: "No orphan documents"
+      - verify_tier_assignments: "Match DOCUMENTATION_TAXONOMY"
+  
+  AI_PIPELINE_REVIEW_2025_10_16:
+    path: ".YBIS_Dev/Veriler/docs/ai-pipeline-review-2025-10-16.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-16"
+    tier: 4
+    authority: "META"
+    purpose: "Findings and remediation plan for AI onboarding pipeline awareness gaps"
+    audience: ["AI System Maintainers", "AI Agents"]
+    scope: "Meta - Pipeline audit report"
+    length: "Short (~70 lines)"
+    update_frequency: "On subsequent pipeline reviews"
+    
+    derived_from:
+      - AI_BASLANGIC_REHBERI_V2: ["tier_flow"]
+      - QUICK_INDEX: ["document_routing"]
+      - AGENTS: ["agent_guidelines"]
+      - AI_SYSTEM_GUIDE: ["command_catalog"]
+    
+    informs:
+      - QUICK_INDEX: ["follow_up_actions"]
+      - AI_BASLANGIC_REHBERI_V2: ["next_steps_section"]
+      - core_config: ["loading_policy_alignment"]
+    
+    update_triggers:
+      - pipeline_change: "Re-run review and refresh recommendations"
+      - new_agent_instruction: "Validate consistency across personas"
+    
+    validation:
+      - ensure_actions_tracked: "Open recommendations assigned or scheduled"
+      - confirm_doc_links: "References to upstream docs remain valid"
+  
+  ONBOARDING_PIPELINE_ACTION_STEPS:
+    path: ".YBIS_Dev/Veriler/docs/onboarding-pipeline-action-steps.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-17"
+    tier: 4
+    authority: "META"
+    purpose: "Actionable remediation backlog derived from the 2025-10-16 onboarding audits"
+    audience: ["AI System Maintainers", "Implementation Agents"]
+    scope: "Meta - Task tracker"
+    length: "Short (~50 lines)"
+    update_frequency: "Whenever an action is completed or reprioritised"
+    
+    derived_from:
+      - AI_PIPELINE_REVIEW_2025_10_16: ["recommendations"]
+      - ybis_pipeline_kusurlari_raporu: ["critical_actions"]
+      - YBIS_Dev_Surec_Analiz_Raporu: ["process_gaps"]
+    
+    informs:
+      - session_todos: ["meta_task_sync"]
+      - documentation_map: ["document_registration"]
+      - AI_BASLANGIC_REHBERI_V2: ["future_revisions"]
+    
+    update_triggers:
+      - action_completed: "Mark checkbox complete, add completion date"
+      - new_audit_report: "Cross-check and append new items"
+    
+    validation:
+      - ensure_checkboxes_synced: "Reflect current completion status"
+      - confirm_dual_write: "Decisions mirrored in session-context + DEVELOPMENT_LOG"
+  
+  SESSION_CONTEXT_V2:
+    path: ".YBIS_Dev/Veriler/memory/session-context.md"
+    version: "2.1"
+    status: "ACTIVE"
+    last_updated: "2025-10-16"
+    tier: 4
+    authority: "HYBRID"
+    purpose: "Active session state (max 100 lines, <500 tokens)"
+    audience: ["All AI Agents"]
+    scope: "Meta - Current session state"
+    length: "Short (max 100 lines, strict limit)"
+    update_frequency: "Every session update"
+    
+    owns:
+      - current_focus
+      - last_3_ad_decisions
+      - next_3_steps
+      - active_blockers
+    
+    derived_from:
+      - DEVELOPMENT_LOG: ["recent_AD", "recent_tasks"]
+      - TASKS: ["active_tasks"]
+    
+    informs:
+      - All_AI_Agents: ["current_state"]
+      - DEVELOPMENT_LOG: ["dual_write_sync"]
+    
+    update_triggers:
+      - session_update: "Update current state + DEVELOPMENT_LOG entry"
+      - ad_decision: "Add to last_3_ad + full entry in DEVELOPMENT_LOG"
+    
+    validation:
+      - enforce_100_line_limit: "Must stay under 100 lines"
+      - check_dual_write: "Every update must have DEVELOPMENT_LOG entry"
+      - verify_ad_sync: "AD-XXX numbers match DEVELOPMENT_LOG"
+  
+  DOCUMENTATION_TAXONOMY:
+    path: ".YBIS_Dev/Veriler/documentation-taxonomy.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 4
+    authority: "META"
+    purpose: "5-Tier documentation system definition"
+    audience: ["Documentation Architects", "AI Agents"]
+    scope: "Meta - Documentation architecture"
+    length: "Long (~1000 lines)"
+    update_frequency: "On system architecture change"
+    
+    owns:
+      - tier_definitions
+      - documentation_hierarchy
+      - dual_write_rule
+      - update_cascade_rules
+    
+    derived_from: []
+    
+    informs:
+      - DOCUMENTATION_MAP: ["tier_structure"]
+      - AI_BASLANGIC_REHBERI_V2: ["tier_system"]
+      - QUICK_INDEX: ["tier_definitions"]
+    
+    update_triggers:
+      - new_tier_created: "Update all meta docs"
+      - hierarchy_change: "Cascade to all documentation"
+    
+    validation:
+      - check_tier_integrity: "All tiers properly defined"
+      - verify_cross_references: "All refs bidirectional"
+  
+  DOCUMENTATION_MAP:
+    path: ".YBIS_Dev/Veriler/documentation-map.yaml"
+    version: "2.0"
+    status: "ACTIVE"
+    last_updated: "2025-10-12"
+    tier: 4
+    authority: "META"
+    purpose: "Machine-readable documentation registry"
+    audience: ["Automation Scripts", "AI Agents"]
+    scope: "Meta - Documentation metadata"
+    length: "Long (~1000+ lines)"
+    update_frequency: "On any document change"
+    
+    owns:
+      - document_registry
+      - dependencies_graph
+      - update_cascade_definitions
+      - validation_rules
+    
+    derived_from:
+      - DOCUMENTATION_TAXONOMY: ["all_documents"]
+    
+    informs:
+      - Validation_Scripts: ["consistency_checks"]
+      - QUICK_INDEX: ["file_paths"]
+    
+    update_triggers:
+      - document_created: "Add entry"
+      - document_moved: "Update path"
+      - dependency_changed: "Update graph"
+    
+    validation:
+      - check_all_docs_registered: "No missing documents"
+      - verify_paths_exist: "All paths valid"
+      - check_circular_dependencies: "No dependency loops"
+
+  MASTER_PIPELINE_FIXES:
+    path: ".YBIS_Dev/Veriler/docs/MASTER_PIPELINE_FIXES.md"
+    version: "2.0"
+    status: "ACTIVE"
+    last_updated: "2025-01-16"
+    tier: 4
+    authority: "META"
+    purpose: "Consolidated action plan for YBIS pipeline fixes"
+    audience: ["Development Team", "AI Agents"]
+    scope: "Meta - Pipeline improvement plan"
+    length: "Long (~800 lines)"
+    update_frequency: "On action completion"
+    
+    owns:
+      - pipeline_fix_actions
+      - priority_matrix
+      - success_criteria
+      - execution_tracking
+    
+    derived_from:
+      - ybis_pipeline_kusurlari_raporu: ["critical_issues"]
+      - ai_pipeline_review_2025_10_16: ["gap_analysis"]
+      - YBIS_Dev_Surec_Analiz_Raporu: ["process_defects"]
+    
+    informs:
+      - PIPELINE_FIXES_PROGRESS: ["tracking"]
+      - session_context: ["current_fixes"]
+    
+    update_triggers:
+      - action_completed: "Update progress tracking"
+      - new_issue_found: "Add to action plan"
+    
+    validation:
+      - check_action_completion: "All P0 actions tracked"
+      - verify_success_criteria: "Metrics align with goals"
+
+  PIPELINE_FIXES_PROGRESS:
+    path: ".YBIS_Dev/Veriler/docs/PIPELINE_FIXES_PROGRESS.md"
+    version: "1.0"
+    status: "ACTIVE"
+    last_updated: "2025-01-16"
+    tier: 4
+    authority: "META"
+    purpose: "Progress tracking for pipeline fixes implementation"
+    audience: ["Development Team", "AI Agents"]
+    scope: "Meta - Progress tracking"
+    length: "Medium (~200 lines)"
+    update_frequency: "Daily during implementation"
+    
+    owns:
+      - progress_tracking
+      - success_metrics
+      - issue_detection
+      - next_session_prep
+    
+    derived_from:
+      - MASTER_PIPELINE_FIXES: ["action_plan"]
+    
+    informs:
+      - session_context: ["current_progress"]
+      - DEVELOPMENT_LOG: ["fix_completion"]
+    
+    update_triggers:
+      - action_completed: "Update progress"
+      - script_run: "Update detected issues"
+    
+    validation:
+      - check_progress_accuracy: "Match actual completion"
+      - verify_metrics: "Success criteria alignment"
+
+# ==============================================================================
+# DUAL-WRITE RULE REGISTRATION
+# ==============================================================================
+
+dual_write_rule:
+  name: "Session Context ↔ Development Log Synchronization"
+  status: "ACTIVE"
+  enforcement: "MANDATORY"
+  
+  trigger:
+    file: ".YBIS_Dev/Veriler/memory/session-context.md"
+    event: "ANY_UPDATE"
+  
+  actions:
+    - action: "Update session-context.md"
+      constraints:
+        - "Max 100 lines"
+        - "Last 3 AD only"
+        - "Next 3 steps only"
+    
+    - action: "Simultaneously update DEVELOPMENT_LOG.md"
+      constraints:
+        - "Add Day X entry"
+        - "Full AD-XXX details if decision made"
+        - "Match AD numbers exactly"
+        - "Match dates exactly"
+  
+  validation:
+    - check: "AD-XXX numbers sequential in both files"
+    - check: "Dates match between files"
+    - check: "No duplicate detailed information"
+  
+  token_benefit:
+    without_rule: "~10K tokens (read full DEVELOPMENT_LOG)"
+    with_rule: "~500 tokens (read session-context only)"
+    savings: "95%"
+
+# ==============================================================================
+# STATISTICS (UPDATED v2.0)
+# ==============================================================================
+
+statistics:
+  total_documents: 36  # Updated with new pipeline fix documents
+  
+  by_tier:
+    tier_minus_1: 4  # Strategic (Vision, Roadmap, Market, Competitive)
+    tier_0: 2        # Canonical (ANAYASA, DEVELOPMENT_LOG)
+    tier_1: 5        # Reference (tech-stack, package-structure, Architecture, PRD, README)
+    tier_2: 6        # Execution (tasks, stories, epics, DEVELOPMENT_GUIDELINES, QA gates, CHAT_KARARLASTIRMA)
+    tier_3: 7        # Support (INTEGRATION_ROADMAP, service-integration, quality-standards, TESTING_STRATEGY, expo-migration, ESLINT_CONFIG)
+    tier_4: 11       # Meta (DOCUMENTATION_INDEX, QUICKSTART, AI_Asistan, AI_BASLANGIC_V2, QUICK_INDEX, session-context, DOCUMENTATION_TAXONOMY, DOCUMENTATION_MAP, MASTER_PIPELINE_FIXES, PIPELINE_FIXES_PROGRESS, onboarding action plan)
+  
+  by_status:
+    active: 36  # Updated with new pipeline fix documents
+    archived: 1  # AI_BASLANGIC_REHBERI.md v1.0 → .YBIS_Dev/Archive/
+  
+  by_authority:
+    canonical: 2
+    derived: 8
+    hybrid: 11  # +1 session-context
+    auto_generated: 1
+    specialized: 4
+    meta: 7  # Meta docs including MASTER_PIPELINE_FIXES and PIPELINE_FIXES_PROGRESS
+  
+  update_status:
+    up_to_date: 36  # Updated with new pipeline fix documents
+    needs_minor_update: 0
+    needs_major_update: 0
+    archived: 1  # v1.0 AI_BASLANGIC_REHBERI → .YBIS_Dev/Archive/
+  
+  token_efficiency:
+    old_system_v1: "20-30K tokens (7 files)"
+    new_system_v2: "3-5K tokens (4 files)"
+    optimization: "80-85% token savings"
+
+# ==============================================================================
+# MAINTENANCE SCHEDULE
+# ==============================================================================
+
+maintenance_schedule:
+  
+  daily:
+    - DEVELOPMENT_LOG: "Add progress, log completions"
+    - TASKS: "Check off completed tasks"
+    - stories: "Update checkboxes"
+    - session_context: "Update current state (DUAL-WRITE with DEVELOPMENT_LOG)"
+  
+  weekly:
+    - README: "Update progress %"
+    - DEVELOPMENT_GUIDELINES: "Add learned lessons"
+    - DOCUMENTATION_INDEX: "Auto-regenerate"
+    - QUICK_INDEX: "Verify all docs listed, update tier assignments"
+  
+  monthly:
+    - PRODUCT_ROADMAP: "Phase transition checks"
+    - INTEGRATION_ROADMAP: "Integration status updates"
+    - DOCUMENTATION_TAXONOMY: "Review tier structure, update rules"
+  
+  quarterly:
+    - PROJECT_VISION: "Strategic review"
+    - MARKET_RESEARCH: "Market trends update"
+    - COMPETITIVE_STRATEGY: "Competitor analysis refresh"
+    - DOCUMENTATION_MAP: "Full validation, dependency check"
+  
+  on_event:
+    - architecture_decision: "DEVELOPMENT_LOG + session_context (DUAL-WRITE), cascade to derived docs"
+    - constitution_change: "YBIS_PROJE_ANAYASASI, ALL doc review"
+    - major_milestone: "PRODUCT_ROADMAP, README, DEVELOPMENT_LOG"
+    - session_update: "session_context + DEVELOPMENT_LOG (MANDATORY DUAL-WRITE)"
+    - new_document_created: "DOCUMENTATION_MAP, QUICK_INDEX, DOCUMENTATION_TAXONOMY"
+
+# ==============================================================================
+# END OF DOCUMENTATION MAP
+# ==============================================================================
+

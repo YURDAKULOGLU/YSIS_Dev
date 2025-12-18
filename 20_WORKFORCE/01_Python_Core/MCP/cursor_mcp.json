@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "ybis-core": {
+      "command": "C:\\Projeler\\YBIS\\.YBIS_Dev\\Agentic\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\Projeler\\YBIS\\.YBIS_Dev\\Agentic\\MCP\\servers\\ybis_server.py"
+      ]
+    },
+    "ybis-filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Projeler\\YBIS"
+      ]
+    }
+  }
+}

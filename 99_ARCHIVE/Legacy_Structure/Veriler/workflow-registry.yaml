@@ -1,0 +1,114 @@
+# YBIS Workflow Registry
+<<<<<<< Updated upstream:.YBIS_Dev/99_ARCHIVE/Legacy_Structure/Veriler/workflow-registry.yaml
+# This file maps user intents to standardized workflows.
+# It serves as the routing logic for the YBIS Orchestrator.
+# Version: 1.0
+
+- intent: "feature_development"
+  keywords: ["yeni özellik", "ekle", "new feature", "add", "create", "implement", "geliştir", "yap"]
+  workflows:
+    - name: "Brownfield Fullstack"
+      description: "Mevcut sistemde (Brownfield) uçtan uca özellik ekleme (BE + FE)."
+      command: "/ybis:brownfield-full"
+      file: ".YBIS_Dev/Veriler/workflows/brownfield-fullstack.yaml"
+    - name: "Hızlı Implementasyon"
+      description: "Analiz aşamasını geçip doğrudan kodlamaya odaklanan hızlı akış."
+      command: "/ybis:implement"
+      file: ".YBIS_Dev/Veriler/workflows/feature-development-workflow.yaml"
+    - name: "Kapsamlı Story Oluşturma"
+      description: "Detaylı analiz, BMad uyumlu story ve planlama süreci."
+      command: "/ybis:create-story"
+      file: ".YBIS_Dev/Veriler/workflows/create-story.yaml"
+
+- intent: "code_improvement"
+  keywords: ["refactor", "iyileştir", "optimize", "temizle", "fix", "düzelt", "hata", "bug"]
+  workflows:
+    - name: "Kod İnceleme ve Refactoring"
+      description: "Kod kalitesini artırmak, review yapmak ve teknik borcu azaltmak."
+      command: "/ybis:review"
+      file: ".YBIS_Dev/Veriler/workflows/code-review.yaml"
+    - name: "Proaktif Çözüm"
+      description: "Karmaşık sorunları ve bugları analiz edip çözmek."
+      command: "/ybis:solve"
+      file: ".YBIS_Dev/Veriler/workflows/proactive-solve.yaml"
+
+- intent: "project_planning"
+  keywords: ["plan", "epic", "başlat", "start", "init", "roadmap"]
+  workflows:
+    - name: "Epic Oluşturma"
+      description: "Büyük bir özelliği veya projeyi Epic olarak tanımlama."
+      command: "/ybis:epic"
+      file: ".YBIS_Dev/Veriler/workflows/create-epic.yaml"
+    - name: "Greenfield Fullstack"
+      description: "Sıfırdan yeni bir proje veya modül başlatma."
+      command: "/ybis:greenfield-full"
+      file: ".YBIS_Dev/Veriler/workflows/greenfield-fullstack.yaml"
+
+- intent: "documentation"
+  keywords: ["dokümantasyon", "belge", "doc", "update docs", "güncelle", "yaz"]
+  workflows:
+    - name: "Dokümantasyon Bakımı"
+      description: "Mevcut dokümanları kodla senkronize etme ve güncelleme."
+      command: "/ybis:docs"
+      file: ".YBIS_Dev/Veriler/workflows/documentation-maintenance.yaml"
+
+- intent: "system_check"
+  keywords: ["kontrol et", "sağlık", "health", "check", "verify", "durum", "analiz"]
+  workflows:
+    - name: "Sistem Sağlık Kontrolü"
+      description: "Proje yapısını, konfigürasyonları ve bütünlüğü kontrol eder."
+      command: "/ybis:health"
+      file: ".YBIS_Dev/Veriler/workflows/health-check.yaml"
+    - name: "Bilgi Bankası Sorgusu"
+      description: "Proje bilgi bankasından (Knowledge Base) bilgi çeker."
+      command: "/ybis:kb"
+      file: ".YBIS_Dev/Veriler/workflows/query-kb.yaml"
+=======
+# Maps User Intents to Standardized Workflows
+# Source of Truth for the "Routine"
+
+- intent: "new_feature"
+  keywords: ["add feature", "create", "implement", "build", "new"]
+  workflows:
+    - name: "Standard Feature Implementation"
+      description: "Complete flow: Spec -> Shard -> Code -> Verify"
+      file: "Agentic/Workflows/feature_workflow.yaml" # Conceptual path
+      steps:
+        - "Planner: Analyze and Create Plan"
+        - "SpecWriter: Create PRD"
+        - "Sharder: Break down into Stories"
+        - "Coder: Implement Stories (Loop)"
+        - "Verifier: Verify Changes"
+
+- intent: "refactor"
+  keywords: ["refactor", "clean", "optimize", "improve", "fix technical debt"]
+  workflows:
+    - name: "Refactoring Loop"
+      description: "Safe refactoring with strict verification"
+      steps:
+        - "Planner: Identify Refactoring Scope"
+        - "Coder: Apply Refactoring"
+        - "Verifier: Run Regression Tests"
+
+- intent: "bug_fix"
+  keywords: ["fix", "bug", "error", "issue", "repair", "failing"]
+  workflows:
+    - name: "Quick Fix"
+      description: "Rapid fix for a specific error"
+      steps:
+        - "Planner: Analyze Error"
+        - "Coder: Fix Code"
+        - "Verifier: Verify Fix"
+
+- intent: "bootstrap"
+  keywords: ["install", "setup", "bootstrap", "init", "configure"]
+  workflows:
+    - name: "Bootstrap Agent"
+      description: "Install and configure a new system/agent"
+      steps:
+        - "Snapshot: Capture Current State"
+        - "Planner: Create Installation Plan"
+        - "Coder: Execute Installation"
+        - "Verifier: Smoke Test"
+        - "Snapshot: Verify State Change"
+>>>>>>> Stashed changes:.YBIS_Dev/Veriler/workflow-registry.yaml

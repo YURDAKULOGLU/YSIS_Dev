@@ -1,0 +1,16 @@
+{
+  "claude": {
+    "status": "idle",
+    "current_task": null,
+    "last_update": "2025-12-15T01:30:00Z",
+    "capabilities": ["architecture", "documentation", "strategic_planning"],
+    "load": 0
+  },
+  "gemini": {
+    "status": "idle",
+    "current_task": null,
+    "last_update": "2025-12-15T01:30:00Z",
+    "capabilities": ["implementation", "testing", "optimization"],
+    "load": 0
+  }
+}

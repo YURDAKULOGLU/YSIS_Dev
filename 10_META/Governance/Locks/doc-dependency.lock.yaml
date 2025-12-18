@@ -1,0 +1,129 @@
+dependencies:
+- source_pattern: .YBIS_Dev/10_META/Strategy/*.md
+  target: docs/PRODUCT_REQUIREMENTS.md
+  status: active
+  tracked_files:
+    .YBIS_Dev/10_META/Strategy/DEVELOPMENT_ROADMAP.md: 5a9d0c5799700016e3e91e6a6d3ba433
+    .YBIS_Dev/10_META/Strategy/PRODUCT_ROADMAP.md: d7f489063482656d9b099f873278e5b0
+- source_pattern: docs/PRODUCT_REQUIREMENTS.md
+  target: docs/Architecture.md
+  status: active
+  tracked_files:
+    docs/PRODUCT_REQUIREMENTS.md: 27dd7f49d05fbfbbea8604508807932b
+- source_pattern: docs/Architecture.md
+  target: .YBIS_Dev/40_KNOWLEDGE_BASE/Templates/*.md
+  status: active
+  tracked_files:
+    docs/Architecture.md: ca049614f7ea4cf90925e74ae39e8c4b
+- source_pattern: .YBIS_Dev/40_KNOWLEDGE_BASE/Specs_Draft/SPEC_*.md
+  target: apps/**/*.ts
+  status: active
+  tracked_files:
+    .YBIS_Dev/40_KNOWLEDGE_BASE/Specs_Draft/SPEC_001_AutoGen_Handshake.md: 03b6495f390ef02d2a84dcdd639cddf9
+    .YBIS_Dev/40_KNOWLEDGE_BASE/Specs_Draft/SPEC_T019.md: dfc8b4182d1d54f165db12c375244d8a
+- source_pattern: .YBIS_Dev/00_GENESIS/*.md
+  target: .YBIS_Dev/10_META/Governance/1_PRINCIPLES.md
+  status: active
+  tracked_files:
+    .YBIS_Dev/00_GENESIS/AI_SYSTEM_GUIDE.md: e718c1f65df2aae3779031463d39c200
+    .YBIS_Dev/00_GENESIS/ONBOARDING.md: a13b16a5d75a6f6f8d1930459f908d2f
+    .YBIS_Dev/00_GENESIS/YBIS_CONSTITUTION.md: b2d7d214cf3a393f28dcc94d0547e031
+- source_pattern: .YBIS_Dev/10_META/Governance/INFORMATION_HIERARCHY.md
+  target: .YBIS_Dev/00_GENESIS/ONBOARDING.md
+  status: active
+  tracked_files:
+    .YBIS_Dev/10_META/Governance/INFORMATION_HIERARCHY.md: 09900c15f76421a78ccfbb8a3cac6022
+- source_pattern: .YBIS_Dev/10_META/Governance/*.md
+  target: .YBIS_Dev/10_META/Governance/3_PROTOCOLS.md
+  status: active
+  tracked_files:
+    .YBIS_Dev/10_META/Governance/1_PRINCIPLES.md: 1170c198353d8cd2c394522d5f0d9e38
+    .YBIS_Dev/10_META/Governance/2_ROLES.md: 9e3b999d79840196a400a14104a1a11f
+    .YBIS_Dev/10_META/Governance/3_PROTOCOLS.md: 499ac396e079f38336bb8cd95118d0d2
+    .YBIS_Dev/10_META/Governance/4_SECURITY.md: 6c273fdf53543dc8728c3dc8fd68a687
+    .YBIS_Dev/10_META/Governance/INFORMATION_HIERARCHY.md: 09900c15f76421a78ccfbb8a3cac6022
+- source_pattern: .YBIS_Dev/40_KNOWLEDGE_BASE/Memory/LEARNINGS.md
+  target: .YBIS_Dev/10_META/Governance/1_PRINCIPLES.md
+  status: active
+  tracked_files:
+    .YBIS_Dev/40_KNOWLEDGE_BASE/Memory/LEARNINGS.md: 8fd4563f6d64e82764a0d3f039ffa8a9
+- source_pattern: .YBIS_Dev/10_META/Agent_Profiles/*.md
+  target: .YBIS_Dev/10_META/Agent_Registry/Agent_Registry.yaml
+  status: active
+  tracked_files:
+    .YBIS_Dev/10_META/Agent_Profiles/PROFILE_Architect.md: 4696f425bec9178fca83141aaccf94be
+    .YBIS_Dev/10_META/Agent_Profiles/PROFILE_Developer.md: aca73f7aa30ad958a03dbc6058b1f993
+    .YBIS_Dev/10_META/Agent_Profiles/PROFILE_ProductManager.md: eee3a25a23419d26d7c65793e65304f0
+    .YBIS_Dev/10_META/Agent_Profiles/PROFILE_QA.md: e8bbefecb6e883b199378ebf2346af81
+    .YBIS_Dev/10_META/Agent_Profiles/PROFILE_UX.md: a370747e2328a0fb5cf7ad37ccf399cb
+- source_pattern: .YBIS_Dev/10_META/Governance/3_PROTOCOLS.md
+  target: docs/Architecture.md
+  status: active
+  tracked_files:
+    .YBIS_Dev/10_META/Governance/3_PROTOCOLS.md: 499ac396e079f38336bb8cd95118d0d2
+- source_pattern: .YBIS_Dev/30_INFRASTRUCTURE/Docker/*
+  target: .YBIS_Dev/30_INFRASTRUCTURE/Bridges/Ollama/local-agent-runner.ts
+  status: active
+  tracked_files:
+    .YBIS_Dev/30_INFRASTRUCTURE/Docker/docker-compose.yml: 9223a462d820f49ac13243943ac3a185
+    .YBIS_Dev/30_INFRASTRUCTURE/Docker/Dockerfile: 00cd558ce05bdfe0545b9111d91943e6
+- source_pattern: .YBIS_Dev/20_WORKFORCE/01_Python_Core/**/*
+  target: .YBIS_Dev/10_META/Governance/3_PROTOCOLS.md
+  status: active
+  tracked_files:
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/ACTIVE_AGENTS.md: 495a91492c234d73c2892c0e2697ba67
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/AGENT_IMPROVEMENTS.md: 46a20f2edbd004c25db755afb13eddba
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/AGENT_ONBOARDING.md: 9a388baad8fc820e24aee5e53838bd53
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/AGENT_STARTUP.md: 3ca9b4a8ae135112af51da743371fe3d
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/AGENT_STRENGTHS_ANALYSIS.md: bdb1e7b4fc27fea0c39ffa3d891ea0f8
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/COLLABORATION_SYSTEM.md: c83151fa9a1b51333bc5a998950afdc6
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/communication_log.md: 9c7c77a285acd1e367378bea4ac2af1c
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/LOCAL_MODELS_PRATIK_KULLANIM.md: ab4743771af6554150cb477802351eac
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/POWER_USER_SETUP.md: ad28cb9fea6b10efef2f15bdc1a99f3c
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/README.md: f165d02be69cc2138f70b5c4ef91e352
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/TECHNICAL_INFRASTRUCTURE.md: 0a2f249580dc8addc69f463971a16415
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/antigravity/blockers.md: f3f0e185cd4de40bed33cc9e68906f2f
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/antigravity/reviews.md: bd215ecf83486429eb7daa6265e9c902
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/antigravity/status.md: f6b90778fb4ed70b53252c989d7c47c6
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/antigravity/WELCOME.md: 0fa5e983a592d52349b70fc8fa7e08e1
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/archive/AGENT_STARTUP_GUIDE.md: efdc4ca0dcf4ba745db6f39782d1c13a
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/archive/communication_log_2025-11-26_session1.md: 68de8d4c382d6e22ddd3ca73a7fa552b
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/archive/communication_log_append.md: 45f47ce034ff7dce8c027859ad3463f0
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/archive/communication_log_final.md: fda5566bd6febdd312cac8975141a16b
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/archive/communication_log_temp.md: 111ecebbd0ebfbd2f29e4555431c67a4
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/archive/DAILY_STANDUP.md: a3ce0d83b1e12ff0b72dcd541c8bc494
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/archive/github-copilot-cli-status.md: c88b19e79ed104268d2555c60d852dde
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/archive/log_pre-restore_2025-11-26.md: 19f5529740f16f6710e57278142664f1
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/archive/SPRINT_STATUS.md: c5669d323286ddff70ba36558d37602a
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/archive/WORKSPACE_AUDIT.md: 4747d6d3891479256ddf868ea75e8ed6
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/claude/blockers.md: 6fa1c3bec0e273300cfdea634c595092
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/claude/ERROR_ANALYSIS.md: 4c7360306cd2d35948834e24d65d9e03
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/claude/FIXES_SUMMARY.md: 5f5129450115ad02cd00435272604247
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/claude/reviews.md: 8a0472ff154c6beb7810f0e0f7ac231d
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/claude/status.md: e73aa1c9db82bacd7a6def54c41bc97b
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/claude/STATUS_UPDATE.md: aa1fb7598c727af7859f17cc3a967a18
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/claude/TEST_FIX_REPORT.md: 9df33393ffb33c665362e7a598e7018f
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/codex/COMPREHENSIVE_CODE_AUDIT.md: 0509a5cfa1fa3fa03b7fb63d272b656b
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/codex/DEVELOPER_FEEDBACK.md: 2bd1892fc8e633b6e5e6fdbaccd36955
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/codex/status.md: 75ce62ccb01ca8527c10bd8305104f66
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/codex/STRATEGIC_APP_ASSESSMENT.md: 3734cccb0ae9f9ec2bd74bd3f4f1a43e
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/gemini/analysis.md: 421b5f373bb7f3061d6fbfb9417e9711
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/gemini/concerns.md: f9c0dfce8bff3f56fa7c27509fe63c1a
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/gemini/reviews.md: 70ecd0ef57e85738ff5fd897d1dce7df
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/gemini/status.md: 32a26e4823d4e482c1ffa8734d2a8c3e
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/gemini/WELCOME.md: 3eec7524c22d4efd6190a86b071eb704
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/shared/ACTIVE_PROBLEMS.md: 1ef1a52ee088d27088686e6daef1930a
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/shared/blockers.md: 15b777e187b962d6672b6909f20ac4ff
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/shared/communication_log.md: aba0eecb6612aa07c86d399b9ab90e22
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/shared/CURRENT_ISSUES.md: f732f654c97791aa15cf37a089137d0e
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/shared/decisions.md: 323c29af482942c7c039060e594e8e53
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/shared/FILE_LOCKS.md: 31dae26474be881c706133a8c9ba0bd2
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/shared/learnings.md: cba5d5579d2ca1a9d648a1125d3d9c6d
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/shared/presence.md: e7d4705a3b8ad38d95297274a811a51a
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/shared/PROGRESS_DASHBOARD.md: 49e6ff9cd0b65f575156e8d5763a59d8
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/125325kas2025/shared/TASK_BOARD.md: bd1e8718582d95d829dc9430b3e36828
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/Core/main.py: 89e4bb671376f05ba9562c6e41823b2c
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/MCP/README.md: 593d0d9c63fcc6cfad4d3a83671eeba6
+    .YBIS_Dev/20_WORKFORCE/01_Python_Core/MCP/servers/claude_code_server.py: c0fbddd4bb43ec99b26bb9360c99760e
+settings:
+  root_mode: git_root

@@ -1,0 +1,27 @@
+# YBIS_Dev Dependencies (Hybrid Architecture)
+
+# MCP Server
+fastmcp>=0.2.0
+
+# Utilities
+python-dotenv>=1.0.0
+gitignore-parser>=0.1.11
+rich>=13.0.0
+requests>=2.31.0
+
+# LangGraph (Orchestration)
+langgraph>=0.0.10
+langchain>=0.1.0
+langchain-core>=0.1.10
+langchain-community>=0.0.10
+
+# CrewAI (Agents & Tasks)
+crewai>=0.1.0
+crewai-tools>=0.1.0
+
+# RAG & Memory
+chromadb>=0.4.0
+sentence-transformers>=2.2.2
+
+# Legacy/Helpers (Optional)
+parse_llm_code>=0.0.7

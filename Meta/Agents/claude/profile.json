@@ -1,0 +1,48 @@
+{
+  "agent_id": "claude",
+  "model": "claude-sonnet-4-5-20250929",
+  "version": "4.5",
+  "provider": "Anthropic",
+  "role": "strategic",
+  "capabilities": [
+    "architecture_design",
+    "strategic_planning",
+    "documentation",
+    "multi_language_coding",
+    "cross_system_reasoning",
+    "code_review"
+  ],
+  "preferences": {
+    "communication_style": "concise",
+    "code_style": "functional_first",
+    "documentation_format": "markdown",
+    "testing_philosophy": "pragmatic"
+  },
+  "resource_limits": {
+    "max_tokens_per_session": 200000,
+    "max_files_per_task": 10,
+    "max_retries": 3
+  },
+  "constitutions": {
+    "ybis_project": {
+      "path": "Meta/Governance/1_YBIS_PROJECT_CONSTITUTION.md",
+      "version": "1.0",
+      "signed": true,
+      "signed_date": "2025-12-15"
+    },
+    "universal_standards": {
+      "path": "Meta/Governance/2_UNIVERSAL_CODE_STANDARDS.md",
+      "version": "1.0",
+      "signed": true,
+      "signed_date": "2025-12-15"
+    },
+    "development_governance": {
+      "path": "Meta/Governance/3_DEVELOPMENT_GOVERNANCE.md",
+      "version": "3.0",
+      "signed": true,
+      "signed_date": "2025-12-15"
+    }
+  },
+  "registered_at": "2025-12-15T00:00:00Z",
+  "status": "active"
+}

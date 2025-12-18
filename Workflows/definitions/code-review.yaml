@@ -1,0 +1,56 @@
+name: "Automated Code Review"
+description: "Performs an automated code review, checking for compliance with coding standards, quality gates, and suggesting improvements."
+trigger_events:
+  - "Agent completes a coding task."
+  - "User request: /ybis:code-review <file_path_or_pr_id>"
+
+steps:
+  - step_id: "identify_code_to_review"
+    action: "Identify the code changes to be reviewed (e.g., specific files, a PR diff)."
+    input: "File path or PR ID"
+    output: "Code to review: [code_details]"
+
+  - step_id: "check_coding_standards"
+    action: "Check the code against DEVELOPMENT_GUIDELINES.md and YBIS_PROJE_ANAYASASI.md for compliance with coding standards and forbidden patterns."
+    input: "Code, DEVELOPMENT_GUIDELINES.md, YBIS_PROJE_ANAYASASI.md"
+    output: "Coding standard violations: [list_of_violations]"
+
+  - step_id: "run_static_analysis"
+    action: "Execute static analysis tools (ESLint, TypeScript type check) on the code."
+    input: "Code"
+    output: "Static analysis results: [eslint_output, typescript_output]"
+
+  - step_id: "check_test_coverage"
+    action: "Verify test coverage for the changed code against targets in TESTING_STRATEGY.md."
+    input: "Code, test reports, TESTING_STRATEGY.md"
+    output: "Test coverage status: [status], Gaps: [list_of_gaps]"
+
+  - step_id: "generate_report"
+    action: "Compile all findings into a structured code review report, highlighting issues and suggesting improvements."
+    input: "Violations, static analysis results, coverage status"
+    output: "Code review report: [report_content]"
+
+  - step_id: "report_to_user"
+    action: "Present the code review report to the user, suggesting remediation actions or a PR creation."
+    input: "Code review report"
+    output: "Report presented to user."
+
+  - step_id: "log_action"
+    action: "Log the workflow execution and its outcome in DEVELOPMENT_LOG.md."
+    input: "Workflow details, outcome"
+    output: "Logged in DEVELOPMENT_LOG.md"
+
+commands_involved:
+  - "/ybis:code-review" # New command to be defined
+  - "/ybis:log-decision"
+
+agents_involved:
+  - "Orchestrator"
+  - "QA Agent"
+  - "Dev Agent"
+  - "Prompt Engineering Assistant" # For reviewing report clarity and suggestions
+version: 1.0.0
+last_updated: 2025-10-28
+purpose: Automates the process of reviewing code against project standards, generating a structured report, and suggesting improvements.
+owner: QA Agent, Dev Agent, Orchestrator
+id: code-review

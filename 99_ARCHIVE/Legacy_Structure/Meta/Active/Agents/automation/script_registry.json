@@ -1,0 +1,64 @@
+{
+  "scripts": [
+    {
+      "name": "check-lock-versions",
+      "description": "Checks if the lock file versions match package.json versions.",
+      "command": "node scripts/check-lock-versions.js",
+      "type": "utility"
+    },
+    {
+      "name": "test-commands",
+      "description": "A test script for shell commands.",
+      "command": "sh .YBIS_Dev/scripts/test-commands.sh",
+      "type": "test"
+    },
+    {
+      "name": "mobile",
+      "description": "Starts the mobile application in development mode using Expo.",
+      "command": "pnpm run mobile",
+      "type": "run"
+    },
+    {
+      "name": "web",
+      "description": "Starts the web application in development mode.",
+      "command": "pnpm run web",
+      "type": "run"
+    },
+    {
+      "name": "backend",
+      "description": "Starts the backend server in development mode.",
+      "command": "pnpm run backend",
+      "type": "run"
+    },
+    {
+      "name": "build",
+      "description": "Builds all packages in the monorepo.",
+      "command": "pnpm run build",
+      "type": "build"
+    },
+    {
+      "name": "test",
+      "description": "Runs tests for all packages in the monorepo.",
+      "command": "pnpm run test",
+      "type": "test"
+    },
+    {
+      "name": "lint",
+      "description": "Lints all packages in the monorepo.",
+      "command": "pnpm run lint",
+      "type": "quality"
+    },
+    {
+      "name": "format",
+      "description": "Formats all files using Prettier.",
+      "command": "pnpm run format",
+      "type": "quality"
+    },
+    {
+      "name": "type-check",
+      "description": "Runs TypeScript type checking for all packages.",
+      "command": "pnpm run type-check",
+      "type": "quality"
+    }
+  ]
+}

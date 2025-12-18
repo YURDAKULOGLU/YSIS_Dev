@@ -1,0 +1,26 @@
+dependencies:
+  # --- PROJECT LEVEL CHAIN (The work being done) ---
+  
+  # PRD triggers Architecture updates
+  - source: "docs/PRODUCT_REQUIREMENTS.md"
+    target: "docs/Architecture.md"
+    status: "valid"
+    source_hash: "initial_placeholder"
+
+  # Architecture triggers Specs (Templates for now)
+  - source: "docs/Architecture.md"
+    target: ".YBIS_Dev/Veriler/templates/spec-template.md"
+    status: "valid"
+    source_hash: "initial_placeholder"
+
+  # --- SYSTEM LEVEL CHAIN (The way we work) ---
+  
+  # Governance triggers Automation Rules
+  - source: ".YBIS_Dev/Meta/Governance/ONBOARDING_PROTOCOL.md"
+    target: ".YBIS_Dev/Meta/System/doc-dependency.lock.yaml"
+    status: "valid"
+    source_hash: "initial_placeholder"
+
+settings:
+  # Paths are relative to the GIT ROOT (Project Root)
+  root_mode: "git_root"

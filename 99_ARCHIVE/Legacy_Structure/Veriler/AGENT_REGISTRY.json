@@ -1,0 +1,307 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "updated": "2025-12-16T17:51:31Z",
+  "description": "Central registry of all YBIS agents with their capabilities and coordination rules",
+  "agents": {
+    "claude-code": {
+      "id": "claude-code",
+      "name": "Claude Code",
+      "type": "orchestrator",
+      "model": "claude-sonnet-4.5",
+      "runtime": "terminal",
+      "status": "active",
+      "capabilities": [
+        "file_operations",
+        "shell_execution",
+        "code_analysis",
+        "task_management",
+        "agent_coordination",
+        "git_operations"
+      ],
+      "tools": [
+        "read",
+        "write",
+        "edit",
+        "glob",
+        "grep",
+        "bash",
+        "task",
+        "todo"
+      ],
+      "communication": {
+        "input": ["terminal", "slash_commands", "mcp", "subprocess"],
+        "output": ["terminal", "subprocess", "mcp"]
+      },
+      "file": "Veriler/agents/claude-code.md",
+      "priority": 1
+    },
+    "ybis-orchestrator": {
+      "id": "ybis-orchestrator",
+      "name": "YBIS Orchestrator",
+      "type": "orchestrator",
+      "runtime": "claude",
+      "status": "active",
+      "capabilities": [
+        "workflow_coordination",
+        "agent_transformation",
+        "context_management",
+        "user_guidance"
+      ],
+      "commands": [
+        "help",
+        "agent",
+        "workflow",
+        "chat-mode",
+        "kb-mode",
+        "party-mode",
+        "status"
+      ],
+      "file": "Veriler/agents/ybis-orchestrator.md",
+      "priority": 1
+    },
+    "analyst": {
+      "id": "analyst",
+      "name": "Business Analyst",
+      "type": "specialist",
+      "runtime": "claude",
+      "status": "active",
+      "capabilities": [
+        "requirements_analysis",
+        "stakeholder_interviews",
+        "process_mapping",
+        "data_analysis"
+      ],
+      "file": "Veriler/agents/analyst.md",
+      "priority": 2
+    },
+    "architect": {
+      "id": "architect",
+      "name": "Software Architect",
+      "type": "specialist",
+      "runtime": "claude",
+      "status": "active",
+      "capabilities": [
+        "system_design",
+        "technology_selection",
+        "architecture_documentation",
+        "technical_review"
+      ],
+      "file": "Veriler/agents/architect.md",
+      "priority": 2
+    },
+    "dev": {
+      "id": "dev",
+      "name": "Developer",
+      "type": "specialist",
+      "runtime": "claude",
+      "status": "active",
+      "capabilities": [
+        "code_implementation",
+        "refactoring",
+        "debugging",
+        "unit_testing"
+      ],
+      "file": "Veriler/agents/dev.md",
+      "priority": 2
+    },
+    "qa": {
+      "id": "qa",
+      "name": "QA Engineer",
+      "type": "specialist",
+      "runtime": "claude",
+      "status": "active",
+      "capabilities": [
+        "test_planning",
+        "test_execution",
+        "bug_reporting",
+        "quality_assessment"
+      ],
+      "file": "Veriler/agents/qa.md",
+      "priority": 2
+    },
+    "pm": {
+      "id": "pm",
+      "name": "Product Manager",
+      "type": "specialist",
+      "runtime": "claude",
+      "status": "active",
+      "capabilities": [
+        "product_strategy",
+        "roadmap_planning",
+        "stakeholder_management",
+        "prioritization"
+      ],
+      "file": "Veriler/agents/pm.md",
+      "priority": 2
+    },
+    "po": {
+      "id": "po",
+      "name": "Product Owner",
+      "type": "specialist",
+      "runtime": "claude",
+      "status": "active",
+      "capabilities": [
+        "backlog_management",
+        "story_writing",
+        "acceptance_criteria",
+        "sprint_planning"
+      ],
+      "file": "Veriler/agents/po.md",
+      "priority": 2
+    },
+    "sm": {
+      "id": "sm",
+      "name": "Scrum Master",
+      "type": "specialist",
+      "runtime": "claude",
+      "status": "active",
+      "capabilities": [
+        "scrum_facilitation",
+        "impediment_removal",
+        "team_coaching",
+        "process_improvement"
+      ],
+      "file": "Veriler/agents/sm.md",
+      "priority": 3
+    },
+    "ux-expert": {
+      "id": "ux-expert",
+      "name": "UX Expert",
+      "type": "specialist",
+      "runtime": "claude",
+      "status": "active",
+      "capabilities": [
+        "user_research",
+        "interface_design",
+        "usability_testing",
+        "design_systems"
+      ],
+      "file": "Veriler/agents/ux-expert.md",
+      "priority": 3
+    },
+    "doc-generator": {
+      "id": "doc-generator",
+      "name": "Documentation Generator",
+      "type": "specialist",
+      "runtime": "claude",
+      "status": "active",
+      "capabilities": [
+        "api_documentation",
+        "technical_writing",
+        "diagram_generation",
+        "knowledge_base_creation"
+      ],
+      "file": "Veriler/agents/doc-generator.md",
+      "priority": 3
+    },
+    "prompt-engineer": {
+      "id": "prompt-engineer",
+      "name": "Prompt Engineer",
+      "type": "specialist",
+      "runtime": "claude",
+      "status": "active",
+      "capabilities": [
+        "prompt_optimization",
+        "ai_workflow_design",
+        "context_engineering",
+        "prompt_testing"
+      ],
+      "file": "Veriler/agents/prompt-engineer.md",
+      "priority": 3
+    },
+    "ybis-master": {
+      "id": "ybis-master",
+      "name": "YBIS Master",
+      "type": "meta",
+      "runtime": "claude",
+      "status": "active",
+      "capabilities": [
+        "system_administration",
+        "meta_coordination",
+        "knowledge_curation",
+        "agent_lifecycle"
+      ],
+      "file": "Veriler/agents/ybis-master.md",
+      "priority": 1
+    }
+  },
+  "coordination_rules": {
+    "orchestrator_priority": [
+      "claude-code",
+      "ybis-orchestrator",
+      "ybis-master"
+    ],
+    "delegation_matrix": {
+      "code_tasks": ["dev", "architect"],
+      "requirements": ["analyst", "pm", "po"],
+      "quality": ["qa"],
+      "documentation": ["doc-generator"],
+      "design": ["ux-expert", "architect"],
+      "process": ["sm"]
+    },
+    "collaboration_patterns": {
+      "feature_development": [
+        "pm → analyst → architect → dev → qa"
+      ],
+      "bug_fix": [
+        "qa → dev → qa"
+      ],
+      "architecture_review": [
+        "architect → dev → qa"
+      ],
+      "documentation": [
+        "dev → doc-generator"
+      ]
+    }
+  },
+  "external_agents": {
+    "aider": {
+      "id": "aider",
+      "name": "Aider AI Pair Programmer",
+      "type": "external",
+      "runtime": "docker",
+      "status": "available",
+      "capabilities": [
+        "ai_pair_programming",
+        "code_refactoring",
+        "git_operations"
+      ],
+      "invocation": "docker exec ybis-core aider",
+      "priority": 1
+    },
+    "crewai": {
+      "id": "crewai",
+      "name": "CrewAI Multi-Agent",
+      "type": "external",
+      "runtime": "docker",
+      "status": "available",
+      "capabilities": [
+        "multi_agent_orchestration",
+        "task_delegation",
+        "agent_collaboration"
+      ],
+      "invocation": "docker exec ybis-core python .YBIS_Dev/Agentic/Crews/",
+      "priority": 1
+    },
+    "langgraph": {
+      "id": "langgraph",
+      "name": "LangGraph Workflow",
+      "type": "external",
+      "runtime": "docker",
+      "status": "available",
+      "capabilities": [
+        "state_machine_workflows",
+        "graph_based_agents",
+        "complex_orchestration"
+      ],
+      "invocation": "docker exec ybis-core python .YBIS_Dev/Agentic/graphs/",
+      "priority": 2
+    }
+  },
+  "mcp_config": {
+    "enabled": true,
+    "servers": [],
+    "clients": []
+  }
+}

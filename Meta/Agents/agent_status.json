@@ -1,0 +1,20 @@
+{
+  "claude": {
+    "status": "working",
+    "current_task": "TASK-INT-001",
+    "last_update": "2025-12-15T13:58:00Z",
+    "capabilities": ["architecture", "documentation", "strategic_planning"],
+    "load": 40,
+    "constitutions_signed": true,
+    "session_tokens_used": 90000
+  },
+  "gemini": {
+    "status": "idle",
+    "current_task": null,
+    "last_update": "2025-12-15T12:05:00Z",
+    "capabilities": ["implementation", "testing", "optimization"],
+    "load": 0,
+    "constitutions_signed": true,
+    "session_tokens_used": 0
+  }
+}

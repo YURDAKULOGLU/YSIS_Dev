@@ -1,0 +1,71 @@
+# <!-- Powered by BMAD™ Core -->
+name: "Yeni Özellik Geliştirme İş Akışı (BMad)"
+version: 1.0
+
+description: "Bu iş akışı, bir kullanıcı hikayesinin (story) spesifikasyonunun oluşturulmasından, uygulanmasına ve gözden geçirilmesine kadar olan tüm süreci tanımlar."
+
+trigger_command: "/ybis:specify"
+
+actors:
+  - PO (Product Owner)
+  - SM (Scrum Master)
+  - Dev (Developer Agent)
+  - QA (Quality Assurance Agent)
+
+steps:
+  - step: 1
+    name: "Specify (Spesifikasyon Oluşturma)"
+    actor: SM
+    description: "Stratejik dokümanları temel alarak, geliştirilecek özellik için detaylı bir story dosyası oluşturur."
+    inputs:
+      - "docs/roadmap/PRODUCT_ROADMAP.md"
+      - "docs/prd/PRODUCT_REQUIREMENTS.md"
+    template: "templates/story-tmpl.yaml"
+    output: "docs/stories/{{epic_num}}.{{story_num}}.{{story_title_short}}.md"
+    instruction: |
+      <!-- 
+      AI TALİMATI: Kullanıcıdan veya roadmap'ten gelen ihtiyacı analiz et.
+      `story-tmpl.yaml` şablonunu kullanarak yeni bir story dosyası oluştur.
+      Story'nin 'Acceptance Criteria' ve 'Tasks/Subtasks' bölümlerini doldur.
+      En önemlisi, story'nin en başına, bu işin hangi anayasa prensiplerine uyularak yapılacağını beyan eden 'Anayasa Uyum Kontrolü' bölümünü ekle.
+      -->
+
+  - step: 2
+    name: "Implement (Uygulama)"
+    actor: Dev
+    trigger: "/ybis:implement {{story_path}}"
+    description: "Belirtilen story dosyasındaki teknik görevleri uygular."
+    inputs:
+      - "{{story_path}}" # Örn: docs/stories/2.1.tasks-screen-ui.md
+    compliance_check: # ZORUNLU ADIM
+      - "story.constitutional-compliance"
+      - "docs/YBIS_PROJE_ANAYASASI.md"
+      - "docs/Güncel/DEVELOPMENT_GUIDELINES.md"
+    output: "Kod değişiklikleri ve güncellenmiş story dosyası (tamamlanan görevler işaretlenir)."
+    instruction: |
+      <!-- 
+      AI TALİMATI: Sadece sana verilen story dosyasını oku.
+      İlk olarak 'Anayasa Uyum Kontrolü' bölümünü dikkatlice incele ve planını bu kurallara göre yap.
+      Story'deki teknik görevleri sırasıyla tamamla.
+      Her tamamladığın görevin yanına `[x]` işareti koy.
+      İşin bittiğinde, story'nin durumunu 'Review' olarak güncelle.
+      -->
+
+  - step: 3
+    name: "Review (Gözden Geçirme)"
+    actor: QA
+    trigger: "/ybis:review-story {{story_path}}"
+    description: "Tamamlanan implementasyonu, story'deki kabul kriterlerine ve kalite standartlarına göre kontrol eder."
+    inputs:
+      - "{{story_path}}"
+      - "İlgili kod değişiklikleri (git diff)"
+    checklist: "checklists/story-dod-checklist.md"
+    output: "Onay, revizyon talebi veya hata raporu."
+    instruction: |
+      <!-- 
+      AI TALİMATI: Geliştirici tarafından 'Review' olarak işaretlenen story'yi aç.
+      `story-dod-checklist.md` kontrol listesindeki her bir maddeyi, yapılan işe göre kontrol et.
+      Story'nin kabul kriterlerinin karşılanıp karşılanmadığını doğrula.
+      Anayasa prensiplerine uyulup uyulmadığını denetle.
+      Sonucu story'nin 'QA Results' bölümüne yaz.
+      -->

@@ -1,0 +1,6 @@
+{
+  "id": "task_spec_for_S004",
+  "type": "execution_request",
+  "instruction": "You are a Systems Architect for the YBIS Dev environment. Task: 'S004: **Performance Monitor:** Create a Python script in `20_WORKFORCE/01_Python_Core/Tools` that analyzes `Inbox/Outbox` timestamps to calculate agent speed.'. Create a technical spec file named 'SPEC_S004.md' in '.YBIS_Dev/40_KNOWLEDGE_BASE/Specs_Draft/'. Use 'write_file'. The spec must define a Python script to be placed in '20_WORKFORCE/01_Python_Core/Tools/'.",
+  "target_agent": "Node_Agent_v1"
+}

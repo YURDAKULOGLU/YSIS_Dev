@@ -1,0 +1,65 @@
+{
+  "backlog": [
+    {
+      "id": "TASK-T4-001",
+      "goal": "Create 'Code Health Scanner'",
+      "details": "Script that scores files by complexity and lack of tests.",
+      "assignee": "Unassigned",
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "TASK-T4-002",
+      "goal": "Upgrade Sandbox to Shadow Workspace",
+      "details": "Implement copy-on-write filesystem mirroring like Cursor 2.0.",
+      "assignee": "Unassigned",
+      "priority": "HIGH"
+    },
+    {
+      "id": "TASK-T4-003",
+      "goal": "Implement Semantic Grep",
+      "details": "Hybrid regex+vector search for instant code navigation.",
+      "assignee": "Unassigned",
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "TASK-T4-005",
+      "goal": "Implement LSP-Check in Sandbox",
+      "details": "Run linter/type-check in sandbox before user review.",
+      "assignee": "Unassigned",
+      "priority": "HIGH"
+    },
+    {
+      "id": "TASK-T5-001",
+      "goal": "Setup Log Ingestion Pipeline",
+      "details": "Connect system to local mock logs for testing.",
+      "assignee": "Unassigned",
+      "priority": "LOW"
+    }
+  ],
+  "in_progress": [],
+  "done": [
+    {
+      "id": "TASK-META-002",
+      "goal": "Refactor Task Board Manager to JSON",
+      "details": "Switch from regex-markdown parsing to reliable JSON structured storage for tasks.",
+      "scope": ".YBIS_Dev/Agentic/Core/plugins/task_board_manager.py only.",
+      "assignee": "@Gemini",
+      "priority": "HIGH"
+    },
+    {
+      "id": "TASK-META-003",
+      "goal": "Implement Central Log Rotation",
+      "details": "Prevent agent_activity.log from growing indefinitely.",
+      "scope": ".YBIS_Dev/Agentic/Meta/Active/logs only.",
+      "assignee": "Unassigned",
+      "priority": "MEDIUM"
+    },
+    {
+      "id": "TASK-T4-004",
+      "goal": "Implement Parallel Execution",
+      "details": "Enable Orchestrator to run multiple agents (e.g. FE/BE) simultaneously.",
+      "assignee": "@Gemini",
+      "priority": "HIGH"
+    }
+  ]
+}

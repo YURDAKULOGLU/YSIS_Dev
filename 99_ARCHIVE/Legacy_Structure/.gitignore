@@ -1,0 +1,40 @@
+# .YBIS_Dev specific gitignore
+# This prevents agent-generated temp files from polluting the repo
+
+# Temporary work
+.temp/**
+!.temp/.keep
+
+# Sandbox environments
+.sandbox/**
+.sandbox_hybrid/**
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Logs
+*.log
+logs/
+
+# Agent memory (ephemeral)
+Meta/Memory/Sessions/
+Meta/Active/temp_*
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keep structure files
+!**/.keep

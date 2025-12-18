@@ -1,0 +1,55 @@
+registry_version: "1.0"
+last_updated: "2025-12-16"
+
+agents:
+  # ---------------------------------------------------
+  # 🧠 TIER 1: STRATEGIC & MANAGEMENT (Meta-Agents)
+  # ---------------------------------------------------
+  - id: "strategist_01"
+    name: "Gemini Strategist"
+    role: "CEO / CTO"
+    location: "System Prompt"
+    capabilities:
+      - "Orchestration"
+      - "Governance Management"
+      - "Code Generation"
+    access_level: "ROOT"
+    status: "ACTIVE"
+
+  - id: "auditor_01"
+    name: "Iron Chain Guardian"
+    role: "Quality Assurance & Integrity"
+    location: ".YBIS_Dev/10_META/Governance/Auditors/verify_doc_integrity.py"
+    type: "Script (Python)"
+    capabilities:
+      - "File Integrity Check"
+      - "Dependency Verification"
+    access_level: "READ_WRITE (Lock Files)"
+    status: "ACTIVE"
+
+  # ---------------------------------------------------
+  # 👷‍♂️ TIER 2: WORKFORCE (The Factory)
+  # ---------------------------------------------------
+  - id: "crew_core_01"
+    name: "The Dog (Python Core)"
+    role: "Heavy Lifter / Reasoner"
+    location: ".YBIS_Dev/20_WORKFORCE/01_Python_Core"
+    framework: "LangChain / CrewAI"
+    runtime: "Docker (ybis-core)"
+    capabilities:
+      - "Complex Reasoning"
+      - "Tool Use (File, Web)"
+      - "Memory Management (ChromaDB)"
+    dependencies:
+      - ".YBIS_Dev/30_INFRASTRUCTURE/Docker/docker-compose.yml"
+    status: "STANDBY"
+
+  - id: "bridge_ollama_01"
+    name: "Local Agent Runner"
+    role: "Local LLM Bridge"
+    location: ".YBIS_Dev/30_INFRASTRUCTURE/Bridges/Ollama/local-agent-runner.ts"
+    framework: "Node.js"
+    capabilities:
+      - "Ollama Connection"
+      - "Local File System Ops"
+    status: "STANDBY"

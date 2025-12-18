@@ -1,0 +1,60 @@
+services:
+  # 1. The Dog (Core Agent Runtime)
+  ybis-core:
+    build:
+      context: ../../.. # Root of Monorepo (C:\Projeler\YBIS)
+      dockerfile: .YBIS_Dev/30_INFRASTRUCTURE/Docker/Dockerfile
+    container_name: ybis-core
+    volumes:
+      # Map the entire .YBIS_Dev structure
+      - ../../../.YBIS_Dev:/app/.YBIS_Dev
+      # Map the project code
+      - ../../../apps:/app/apps
+      - ../../../packages:/app/packages
+      - ../../../docs:/app/docs # Added docs mapping
+      - ../../../.git:/app/.git
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - OLLAMA_HOST=host.docker.internal:11434
+      # Point PYTHONPATH to the new Core location
+      - PYTHONPATH=/app/.YBIS_Dev/20_WORKFORCE/01_Python_Core
+    depends_on:
+      - redis
+      - chromadb
+    networks:
+      - ybis-net
+
+  # 2. Redis (The Nervous System)
+  redis:
+    image: redis:7-alpine
+    container_name: ybis-redis
+    ports:
+      - '6379:6379'
+    networks:
+      - ybis-net
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # 3. ChromaDB (The Cortex)
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: ybis-chromadb
+    ports:
+      - '8000:8000'
+    networks:
+      - ybis-net
+    volumes:
+      - chroma-data:/chroma/chroma
+
+networks:
+  ybis-net:
+    driver: bridge
+
+volumes:
+  chroma-data:

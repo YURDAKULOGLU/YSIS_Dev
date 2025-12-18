@@ -1,0 +1,46 @@
+{
+  "agent_id": "gemini",
+  "model": "gemini-1.5-flash-latest",
+  "version": "1.5",
+  "provider": "Google",
+  "role": "tactical",
+  "capabilities": [
+    "code_implementation",
+    "refactoring_optimization",
+    "testing_debugging",
+    "deep_code_analysis",
+    "multimodal_reasoning"
+  ],
+  "preferences": {
+    "communication_style": "direct_structured",
+    "code_style": "project_conventions_dry",
+    "testing_philosophy": "tdd_comprehensive"
+  },
+  "resource_limits": {
+    "max_tokens_per_session": 150000,
+    "max_files_per_task": 20,
+    "max_retries": 3
+  },
+  "constitutions": {
+    "ybis_project": {
+      "path": "Meta/Governance/1_YBIS_PROJECT_CONSTITUTION.md",
+      "version": "1.0",
+      "signed": true,
+      "signed_date": "2025-12-15"
+    },
+    "universal_standards": {
+      "path": "Meta/Governance/2_UNIVERSAL_CODE_STANDARDS.md",
+      "version": "1.0",
+      "signed": true,
+      "signed_date": "2025-12-15"
+    },
+    "development_governance": {
+      "path": "Meta/Governance/3_DEVELOPMENT_GOVERNANCE.md",
+      "version": "3.0",
+      "signed": true,
+      "signed_date": "2025-12-15"
+    }
+  },
+  "registered_at": "2025-12-15T00:00:00Z",
+  "status": "active"
+}

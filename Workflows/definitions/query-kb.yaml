@@ -1,0 +1,54 @@
+name: "Knowledge Base Query and Refinement"
+description: "Provides a structured way for agents to query the project's knowledge base and refine it if information is missing or unclear."
+trigger_events:
+  - "Agent needs specific information not in current context."
+  - "User request: /ybis:query-kb <query_string>"
+
+steps:
+  - step_id: "formulate_query"
+    action: "Formulate a precise query based on the agent's information need."
+    input: "Agent's current context, information need"
+    output: "Formulated query: [query_string]"
+
+  - step_id: "search_knowledge_base"
+    action: "Search relevant knowledge files (data/, docs/) and documentation-map.yaml for information matching the query."
+    input: "Query string, data/, docs/, documentation-map.yaml"
+    output: "Search results: [list_of_relevant_documents_and_snippets]"
+
+  - step_id: "present_results"
+    action: "Present the search results to the agent/user. If no direct answer, highlight relevant sections."
+    input: "Search results"
+    output: "Knowledge base query results presented."
+
+  - step_id: "identify_knowledge_gaps"
+    action: "If information is missing, unclear, or contradictory, identify it as a knowledge gap."
+    input: "Search results, agent's understanding"
+    output: "Knowledge gap identified: [description_of_gap]"
+
+  - step_id: "propose_refinement"
+    action: "If a knowledge gap is identified, propose creating a new knowledge document or updating an existing one."
+    input: "Knowledge gap"
+    output: "Refinement proposal: [proposal_details]"
+    agents_involved:
+      - "Doc Generator"
+      - "Prompt Engineering Assistant" # For structuring the new/updated document
+
+  - step_id: "log_action"
+    action: "Log the workflow execution and its outcome in DEVELOPMENT_LOG.md."
+    input: "Workflow details, outcome"
+    output: "Logged in DEVELOPMENT_LOG.md"
+
+commands_involved:
+  - "/ybis:query-kb" # New command to be defined
+  - "/ybis:log-decision"
+
+agents_involved:
+  - "Orchestrator"
+  - "Gemini" # For research and analysis
+  - "Doc Generator"
+  - "Prompt Engineering Assistant"
+version: 1.0.0
+last_updated: 2025-10-28
+purpose: Provides a structured way for agents to query the project's knowledge base and refine it if information is missing or unclear.
+owner: Gemini, Orchestrator
+id: query-kb
