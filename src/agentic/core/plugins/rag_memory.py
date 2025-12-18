@@ -5,8 +5,9 @@ from chromadb.config import Settings
 
 class RAGMemory:
     def __init__(self):
-        # Standard Path: ProjectRoot/Knowledge/LocalDB/chroma_db
-        self.persist_path = os.path.join(os.getcwd(), "Knowledge", "LocalDB", "chroma_db")
+        from src.agentic.core.config import CHROMA_DB_PATH
+
+        self.persist_path = CHROMA_DB_PATH
         
         # Ensure parent dir exists
         os.makedirs(os.path.dirname(self.persist_path), exist_ok=True)

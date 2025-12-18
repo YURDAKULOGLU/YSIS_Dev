@@ -6,11 +6,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    # Path fix: src/dashboard/app.py -> src/dashboard -> src -> ROOT -> Knowledge/LocalDB
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    # Go up 2 levels to reach root
-    project_root = os.path.dirname(os.path.dirname(base_dir))
-    json_path = os.path.join(project_root, 'Knowledge', 'LocalDB', 'tasks.json')
+    from src.agentic.core.config import TASKS_DB_PATH
+
+    json_path = TASKS_DB_PATH
     
     try:
         with open(json_path, 'r', encoding='utf-8') as file:

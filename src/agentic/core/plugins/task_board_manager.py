@@ -15,11 +15,9 @@ class TaskBoardManager:
     """Manages Task Board Persistence via JSON"""
 
     def __init__(self, board_path: str = None):
-        # Resolve paths
-        self.project_root = Path(os.getcwd())
-        
-        # New Standard Path: Knowledge/LocalDB
-        self.meta_dir = self.project_root / "Knowledge" / "LocalDB"
+        from src.agentic.core.config import DATA_DIR
+
+        self.meta_dir = DATA_DIR
         
         # Ensure directory exists
         if not self.meta_dir.exists():
@@ -29,8 +27,10 @@ class TaskBoardManager:
             except Exception as e:
                 print(f"[TaskBoard] Error creating DB dir: {e}")
         
-        self.json_path = self.meta_dir / "tasks.json"
-        self.md_path = self.meta_dir / "TASK_BOARD.md"
+        from src.agentic.core.config import TASKS_DB_PATH
+
+        self.json_path = TASKS_DB_PATH
+        self.md_path = DATA_DIR / "TASK_BOARD.md"
         # Backward compatibility for ybis_server.list_all_tasks
         self.board_path = str(self.md_path)
 
