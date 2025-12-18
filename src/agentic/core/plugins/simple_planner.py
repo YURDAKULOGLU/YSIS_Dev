@@ -8,6 +8,7 @@ No CrewAI, no LangChain, no heavy dependencies.
 import json
 import os
 from typing import Dict, Any
+from pathlib import Path
 import asyncio
 import httpx
 
@@ -45,9 +46,26 @@ class SimplePlanner:
     # IMPLEMENTATION
     # ========================================================================
 
+    def _read_constitution(self) -> str:
+        """Read YBIS Constitution from project root."""
+        try:
+            # Assume running from project root
+            const_path = Path("00_GENESIS/YBIS_CONSTITUTION.md")
+            if const_path.exists():
+                with open(const_path, "r", encoding="utf-8") as f:
+                    return f.read()
+            return "Constitution not found. Follow standard best practices."
+        except Exception:
+            return "Error reading constitution."
+
     def _build_prompt(self, task: str, context: Dict[str, Any]) -> str:
-        """Build planning prompt"""
+        """Build planning prompt with Constitution injection"""
+        constitution = self._read_constitution()
+        
         return f"""You are a software architect. Analyze this task and create a detailed execution plan.
+
+### SYSTEM CONSTITUTION (MUST FOLLOW):
+{constitution}
 
 TASK: {task}
 
