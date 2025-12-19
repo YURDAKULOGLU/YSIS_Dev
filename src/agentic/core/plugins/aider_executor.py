@@ -46,18 +46,23 @@ class AiderExecutor(ExecutorProtocol):
         
         normalized_files = []
         for f in files:
+            # We want to edit files in the REAL project, not the sandbox.
+            # Planner usually returns paths relative to project root (e.g. "src/main.py").
+            
+            # Treat all paths as relative to git_root unless absolute
             f_path = Path(f)
-            if not f_path.is_absolute():
-                full_path = current_path / f_path
-            else:
+            if f_path.is_absolute():
                 full_path = f_path
+            else:
+                full_path = git_root / f_path
             
             try:
-                # Calculate path relative to Git Root
+                # Calculate path relative to Git Root (Aider expects relative paths usually)
                 rel_to_root = full_path.relative_to(git_root)
                 normalized_files.append(str(rel_to_root))
             except ValueError:
-                normalized_files.append(str(f))
+                # If path is not inside git root, use absolute path
+                normalized_files.append(str(full_path))
                 
         print(f"[AiderExecutor] Normalized Files: {normalized_files}")
 
@@ -83,6 +88,7 @@ class AiderExecutor(ExecutorProtocol):
         cmd.extend(["--aiderignore", ".YBIS_Dev/Veriler/.sandbox_aiderignore"])
 
         cmd.extend(["--yes"])
+        cmd.extend(["--no-auto-commits"]) # Let Orchestrator handle commits after verification
 
         print(f"[AiderExecutor] Running command: {' '.join(cmd)}")
 

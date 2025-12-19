@@ -92,7 +92,9 @@ class SentinelVerifier(VerifierProtocol):
             if os.path.exists("tests"):
                 for t_name in potential_test_names:
                     t_path = os.path.join("tests", t_name)
+                    print(f"[Sentinel DEBUG] Checking path: {t_path}")
                     if os.path.exists(t_path):
+                        print(f"[Sentinel DEBUG] Found test: {t_path}")
                         candidates.append(t_path)
             
             # Check adjacent test file

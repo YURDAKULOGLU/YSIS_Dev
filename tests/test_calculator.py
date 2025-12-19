@@ -31,3 +31,16 @@ def test_power(calculator):
     assert calculator.power(2, 0) == 1
     assert calculator.power(10, 3) == 1000
     assert calculator.power(2, -2) == pytest.approx(0.25)
+
+def test_power(calculator):
+    assert calculator.power(2, 3) == 8
+    assert calculator.power(5, 0) == 1
+    assert calculator.power(0, 5) == 0
+    assert calculator.power(3, 2.5) == pytest.approx(15.588457)
+    with pytest.raises(ValueError):
+        calculator.power(0, -1)  # Test for zero base and negative exponent
+    with pytest.raises(ValueError):
+        calculator.power(-1, 0.5)  # Test for negative base and fractional exponent
+    assert calculator.power(2, 0) == 1
+    assert calculator.power(10, 3) == 1000
+    assert calculator.power(2, -2) == pytest.approx(0.25)

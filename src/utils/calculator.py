@@ -19,4 +19,16 @@ class Calculator:
 
     def power(self, base: float, exponent: float) -> float:
         """Raise base to the power of exponent."""
+        if base == 0 and exponent < 0:
+            raise ValueError("Cannot raise zero to a negative power.")
+        if base < 0 and not isinstance(exponent, int):
+            raise ValueError("Cannot raise a negative number to a non-integer power.")
+        return base ** exponent
+
+    def power(self, base: float, exponent: float) -> float:
+        """Raise base to the power of exponent."""
+        if base == 0 and exponent < 0:
+            raise ValueError("Cannot raise zero to a negative power.")
+        if base < 0 and not isinstance(exponent, int):
+            raise ValueError("Cannot raise a negative number to a non-integer power.")
         return base ** exponent
