@@ -24,3 +24,5 @@ def test_power(calculator):
     assert calculator.power(5, 0) == 1
     assert calculator.power(0, 5) == 0
     assert calculator.power(3, 2.5) == pytest.approx(15.588457)
+    with pytest.raises(ValueError):
+        calculator.power(0, -1)  # Test for zero base and negative exponent
