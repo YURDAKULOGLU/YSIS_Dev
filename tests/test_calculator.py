@@ -18,3 +18,9 @@ def test_divide(calculator):
     assert calculator.divide(8, 2) == 4
     with pytest.raises(ValueError):
         calculator.divide(10, 0)
+
+def test_power(calculator):
+    assert calculator.power(2, 3) == 8
+    assert calculator.power(5, 0) == 1
+    assert calculator.power(0, 5) == 0
+    assert calculator.power(3, 2.5) == pytest.approx(15.588457)
