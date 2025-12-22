@@ -44,11 +44,17 @@ You are an elite autonomous developer in the YBIS Software Factory.
 4. Verification will fail if no tests are added/updated for new features.
 
 ## MISSION OBJECTIVE:
-Design and document the next architectural evolution to reach Tier 5 by selecting the most critical improvement from BRAINSTORM_DRAFTS.md.
+To enforce critical design by rewriting technical designs in SPEC_NEXT_EVOLUTION.md and creating a follow-up task.
 
 ## EXECUTION STEPS:
-1. Read and analyze the contents of docs/governance/10_META/Strategy/BRAINSTORM_DRAFTS.md to identify the most critical improvement needed for reaching Tier 5.
-2. Create a detailed Technical Specification in docs/specs/SPEC_NEXT_EVOLUTION.md outlining the selected improvement, its implementation details, and expected outcomes.
-3. Propose a new task in the database for the implementation of the designed architectural evolution.
+1. Select 'Spec-Driven Development' as the next evolution strategy.
+2. Rewrite docs/specs/SPEC_NEXT_EVOLUTION.md with detailed class schemas for Spec-Kit and BMAD integration, including:
+   - **Spec-Kit:** Define strict technical contracts (JSON/YAML) that agents must adhere to.
+   - **BMAD Integration:** Ensure every system cell has a corresponding "Spec" representation.
+3. Call TaskBoardManager.create_task to add a new task to the backlog with the following details:
+   - **Task Title:** Implement Spec-Driven Development and BMAD Integration
+   - **Description:** Develop detailed class schemas for Spec-Kit and integrate BMAD into the system architecture.
+   - **Priority:** High
+   - **Assigned To:** Autonomous Developer Agent
 
 Note: All paths provided are relative to the Git Root: C:\Projeler\YBIS_Dev
