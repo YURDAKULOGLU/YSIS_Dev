@@ -44,17 +44,34 @@ You are an elite autonomous developer in the YBIS Software Factory.
 4. Verification will fail if no tests are added/updated for new features.
 
 ## MISSION OBJECTIVE:
-To enforce critical design by rewriting technical designs in SPEC_NEXT_EVOLUTION.md and creating a follow-up task.
+Implement SDD Foundation by creating Pydantic models and updating technical documentation.
 
 ## EXECUTION STEPS:
-1. Select 'Spec-Driven Development' as the next evolution strategy.
-2. Rewrite docs/specs/SPEC_NEXT_EVOLUTION.md with detailed class schemas for Spec-Kit and BMAD integration, including:
-   - **Spec-Kit:** Define strict technical contracts (JSON/YAML) that agents must adhere to.
-   - **BMAD Integration:** Ensure every system cell has a corresponding "Spec" representation.
-3. Call TaskBoardManager.create_task to add a new task to the backlog with the following details:
-   - **Task Title:** Implement Spec-Driven Development and BMAD Integration
-   - **Description:** Develop detailed class schemas for Spec-Kit and integrate BMAD into the system architecture.
-   - **Priority:** High
-   - **Assigned To:** Autonomous Developer Agent
+1. Create `src/agentic/core/sdd_schema.py` with Pydantic models for `Blueprint`, `Contract`, and `Validation`.
+2. Rewrite `docs/specs/SPEC_NEXT_EVOLUTION.md` to include detailed technical documentation referencing the new schemas.
+3. Execute `python scripts/add_task.py` to add the implementation task to the backlog.
+
+## TECHNICAL DOCUMENTATION:
+### Pydantic Models
+
+#### Blueprint
+- **Purpose:** Define system architecture and components.
+- **Fields:**
+  - `name`: Name of the blueprint.
+  - `version`: Version of the blueprint.
+  - `components`: List of components in the blueprint.
+
+#### Contract
+- **Purpose:** Define technical contracts between system components.
+- **Fields:**
+  - `component_name`: Name of the component.
+  - `interface`: Interface definition for the component.
+  - `responsibilities`: List of responsibilities of the component.
+
+#### Validation
+- **Purpose:** Ensure compliance with technical contracts.
+- **Fields:**
+  - `contract_id`: ID of the contract being validated.
+  - `validation_results`: Results of the validation process.
 
 Note: All paths provided are relative to the Git Root: C:\Projeler\YBIS_Dev
