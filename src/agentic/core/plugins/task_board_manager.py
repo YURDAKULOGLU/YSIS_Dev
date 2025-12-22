@@ -8,95 +8,109 @@ And optionally syncs to TASK_BOARD.md for visibility.
 import os
 import json
 import asyncio
-import time
 from typing import Optional, Dict, Any, List
 from pathlib import Path
+from src.agentic.infrastructure.db import TaskDatabase
 
 class TaskBoardManager:
-    """Manages Task Board Persistence via JSON with File-based Locking."""
+    """Manages Task Board Persistence via SQLite."""
 
-    def __init__(self, board_path: str = None):
-        from src.agentic.core.config import DATA_DIR
-
-        self.meta_dir = DATA_DIR
+    def __init__(self, db_path: str = None):
+        from src.agentic.core.config import DATA_DIR, PROJECT_ROOT
         
-        # Ensure directory exists
-        if not self.meta_dir.exists():
-            try:
-                os.makedirs(self.meta_dir, exist_ok=True)
-                print(f"[TaskBoard] Created DB directory: {self.meta_dir}")
-            except Exception as e:
-                print(f"[TaskBoard] Error creating DB dir: {e}")
+        # Determine paths
+        self.db_path = db_path or str(DATA_DIR / "tasks.db")
+        self.json_path = PROJECT_ROOT / "Knowledge" / "LocalDB" / "tasks.json"
         
-        from src.agentic.core.config import TASKS_DB_PATH
+        self.db = TaskDatabase(self.db_path)
+        self._initialized = False
 
-        self.json_path = TASKS_DB_PATH
-        self.lock_path = str(self.json_path) + ".lock"
-        self.md_path = DATA_DIR / "TASK_BOARD.md"
-        # Backward compatibility for ybis_server.list_all_tasks
-        self.board_path = str(self.md_path)
+    async def _ensure_db(self):
+        """Lazy initialization of the database."""
+        if not self._initialized:
+            await self.db.initialize()
+            # AUTO-MIGRATION: If JSON exists, move to DB
+            if os.path.exists(self.json_path):
+                await self._migrate_from_json()
+            self._initialized = True
 
-    async def _acquire_lock(self, timeout=10):
-        """Acquire atomic file lock."""
-        start_time = time.time()
-        while time.time() - start_time < timeout:
-            try:
-                # Atomic creation
-                fd = os.open(self.lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-                os.close(fd)
-                return True
-            except FileExistsError:
-                # Check for stale lock (older than 30s)
-                try:
-                    if time.time() - os.path.getmtime(self.lock_path) > 30:
-                        os.remove(self.lock_path)
-                except:
-                    pass
-                await asyncio.sleep(0.1)
-        return False
-
-    def _release_lock(self):
-        """Release file lock."""
+    async def _migrate_from_json(self):
+        """Migrate existing tasks from JSON to SQLite."""
+        print(f"[TaskBoard] Migrating data from {self.json_path} to SQLite...")
         try:
-            if os.path.exists(self.lock_path):
-                os.remove(self.lock_path)
-        except:
-            pass
+            with open(self.json_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            for list_name, status in [("backlog", "BACKLOG"), ("in_progress", "IN_PROGRESS"), ("done", "DONE")]:
+                for task in data.get(list_name, []):
+                    task['status'] = status
+                    await self.db.add_task(task)
+            
+            # Archive the old JSON to avoid repeated migration
+            os.rename(self.json_path, str(self.json_path) + ".migrated")
+            print("[TaskBoard] Migration successful. JSON archived.")
+        except Exception as e:
+            print(f"[TaskBoard] Migration failed: {e}")
+
+    async def get_next_task(self) -> Optional[Dict[str, Any]]:
+        """Get next available task (Priority to IN_PROGRESS, then BACKLOG)."""
+        await self._ensure_db()
+        tasks = await self.db.get_all_tasks()
+        
+        # Sort by status priority
+        in_prog = [t for t in tasks if t['status'] == "IN_PROGRESS"]
+        if in_prog:
+            return in_prog[0]
+            
+        backlog = [t for t in tasks if t['status'] == "BACKLOG"]
+        if backlog:
+            return backlog[0]
+            
+        return None
+
+    async def create_task(self, title: str, description: str, priority: str = "MEDIUM") -> str:
+        """Create new task in database."""
+        await self._ensure_db()
+        import random
+        task_id = f"TASK-New-{random.randint(100,999)}"
+        
+        new_task = {
+            "id": task_id,
+            "goal": title,
+            "details": description,
+            "assignee": "Unassigned",
+            "priority": priority,
+            "status": "BACKLOG"
+        }
+        await self.db.add_task(new_task)
+        return task_id
+
+    async def update_task_status(self, task_id: str, status: str, metadata: Dict[str, Any]) -> None:
+        """Update task status in database."""
+        await self._ensure_db()
+        status = status.upper()
+        final_status = "UNKNOWN"
+        
+        if status in ["DONE", "COMPLETED"]:
+            final_status = "SUCCESS"
+            status = "DONE"
+        elif status == "FAILED":
+            final_status = "FAILED"
+            status = "DONE"
+        elif status == "IN_PROGRESS":
+            status = "IN_PROGRESS"
+        
+        await self.db.update_task_status(task_id, status, final_status)
 
     async def _read_db(self) -> Dict[str, Any]:
-        """Read JSON DB with locking."""
-        if not await self._acquire_lock():
-            print(f"[TaskBoard] Timeout acquiring lock for READ")
-            return {"backlog": [], "in_progress": [], "done": []}
-
-        try:
-            if not self.json_path.exists():
-                return {"backlog": [], "in_progress": [], "done": []}
-                
-            with open(self.json_path, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except Exception as e:
-            print(f"[TaskBoard] Error reading JSON: {e}")
-            return {"backlog": [], "in_progress": [], "done": []}
-        finally:
-            self._release_lock()
-
-    async def _save_db(self, data: Dict[str, Any]):
-        """Save JSON DB and Sync MD with locking."""
-        if not await self._acquire_lock():
-            print(f"[TaskBoard] Timeout acquiring lock for SAVE")
-            return
-
-        try:
-            with open(self.json_path, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=2)
-            
-            # Sync to Markdown
-            self._sync_to_markdown(data)
-        except Exception as e:
-            print(f"[TaskBoard] Error saving JSON: {e}")
-        finally:
-            self._release_lock()
+        """Backward compatibility for worker.py loop."""
+        await self._ensure_db()
+        tasks = await self.db.get_all_tasks()
+        return {
+            "backlog": [t for t in tasks if t['status'] == "BACKLOG"],
+            "in_progress": [t for t in tasks if t['status'] == "IN_PROGRESS"],
+            "done": [t for t in tasks if t['status'] == "DONE"]
+        }
 
     def _sync_to_markdown(self, data: Dict[str, Any]):
         """Generate TASK_BOARD.md from data."""
@@ -182,49 +196,23 @@ class TaskBoardManager:
             "goal": title,
             "details": description,
             "assignee": "Unassigned",
-            "priority": priority
+            "priority": priority,
+            "status": "BACKLOG"
         }
-        
-        data.setdefault("backlog", []).append(new_task)
-        await self._save_db(data)
+        await self.db.add_task(new_task)
         return task_id
 
     async def update_task_status(self, task_id: str, status: str, metadata: Dict[str, Any]) -> None:
-        """Move task between lists."""
-        data = await self._read_db()
-        
-        # Find task and remove from current list
-        target_task = None
-        source_list = None
-        
-        for list_name in ["backlog", "in_progress", "done"]:
-            lst = data.get(list_name, [])
-            for i, task in enumerate(lst):
-                if task["id"] == task_id:
-                    target_task = task
-                    source_list = list_name
-                    del lst[i]
-                    break
-            if target_task:
-                break
-        
-        if not target_task:
-            print(f"[TaskBoard] Task {task_id} not found.")
-            return
-
-        # Prepare for moving
+        """Update task status in database."""
+        await self._ensure_db()
         status = status.upper()
+        final_status = "UNKNOWN"
         
-        if status == "DONE" or status == "COMPLETED":
-            target_task["final_status"] = "SUCCESS"
-            data.setdefault("done", []).append(target_task)
+        if status in ["DONE", "COMPLETED"]:
+            final_status = "SUCCESS"
+            status = "DONE"
         elif status == "FAILED":
-             target_task["final_status"] = "FAILED"
-             data.setdefault("done", []).append(target_task) # Move failed tasks to done to stop loop
-        elif status == "IN PROGRESS":
-             data.setdefault("in_progress", []).append(target_task)
-        else:
-             print(f"[TaskBoard] Unknown status '{status}'. Moving to Backlog.")
-             data.setdefault("backlog", []).append(target_task)
-             
-        await self._save_db(data)
+            final_status = "FAILED"
+            status = "DONE"
+        
+        await self.db.update_task_status(task_id, status, final_status)

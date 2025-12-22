@@ -1,45 +1,46 @@
-"""
-KNOWLEDGE INGESTOR
-Reads markdown files from Knowledge/API_References and embeds them into Mem0.
-User ID for docs: "technical_docs"
-"""
-
-import os
 import sys
+import os
+import glob
+from pathlib import Path
+import asyncio
 
-# Add project root to path
+# Setup path
 sys.path.insert(0, os.getcwd())
+from src.agentic.core.plugins.rag_memory import RAGMemory
+from src.agentic.core.config import PROJECT_ROOT
 
-from src.agentic.bridges.mem0_bridge import Mem0Bridge
+async def ingest_all():
+    print("[KnowledgeIngester] Starting massive ingestion to Vector DB...")
+    
+    rag = RAGMemory()
+    knowledge_dir = PROJECT_ROOT / "Knowledge"
+    
+    # Supported file types
+    extensions = ["*.md", "*.py", "*.json"]
+    files_to_index = []
+    
+    for ext in extensions:
+        files_to_index.extend(glob.glob(str(knowledge_dir / "**" / ext), recursive=True))
+    
+    # Also index the current codebase (important for self-awareness)
+    files_to_index.extend(glob.glob(str(PROJECT_ROOT / "src" / "**" / "*.py"), recursive=True))
 
-def ingest_docs():
-    print("📚 STARTING KNOWLEDGE INGESTION...")
+    print(f"[KnowledgeIngester] Found {len(files_to_index)} files to digest.")
     
-    docs_dir = "Knowledge/API_References"
-    if not os.path.exists(docs_dir):
-        print(f"❌ Directory not found: {docs_dir}")
-        return
-
-    # Initialize Mem0 for Docs
-    mem = Mem0Bridge(user_id="technical_docs")
-    
-    files = [f for f in os.listdir(docs_dir) if f.endswith(".md")]
-    
-    print(f"found {len(files)} documents.")
-    
-    for filename in files:
-        filepath = os.path.join(docs_dir, filename)
-        print(f"   Processing: {filename}...")
-        
-        with open(filepath, "r", encoding="utf-8") as f:
-            content = f.read()
+    for file_path in files_to_index:
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
             
-        # Mem0 automatically chunks text, but we can provide metadata
-        mem.add(content, metadata={"source": filename, "type": "documentation"})
-        print(f"   ✅ Indexed: {filename}")
+            rel_path = os.path.relpath(file_path, PROJECT_ROOT)
+            
+            # Use add_text instead of add
+            rag.add_text(f"FILE: {rel_path}\n\nCONTENT:\n{content}", metadata={"path": rel_path})
+            print(f"[KnowledgeIngester] Digested: {rel_path}")
+        except Exception as e:
+            print(f"[KnowledgeIngester] Failed to digest {file_path}: {e}")
 
-    print("\n🎉 INGESTION COMPLETE. Mem0 is now a Technical Expert.")
+    print("[KnowledgeIngester] MASSIVE INGESTION COMPLETE. The factory is now Super-Aware.")
 
 if __name__ == "__main__":
-    ingest_docs()
-
+    asyncio.run(ingest_all())

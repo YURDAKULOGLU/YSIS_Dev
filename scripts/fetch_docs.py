@@ -1,45 +1,54 @@
+import sys
 import os
 import requests
-from bs4 import BeautifulSoup
+import asyncio
+from pathlib import Path
+from typing import Optional
 
-DOCS_MAP = {
-    "streamlit": "https://docs.streamlit.io/get-started/fundamentals/main-concepts",
-    "fastapi": "https://fastapi.tiangolo.com/tutorial/first-steps/",
-    "transformers": "https://huggingface.co/docs/transformers/quicktour",
-    "whisper": "https://github.com/openai/whisper" # GitHub genelde HTML döner, metni ayıklamak yeter.
-}
+# Setup path
+sys.path.insert(0, os.getcwd())
+from src.agentic.core.config import PROJECT_ROOT
 
-TARGET_DIR = "Knowledge/API_References"
-
-def fetch_and_save(name, url):
-    print(f"📚 Fetching docs for: {name}...")
-    headers = {'User-Agent': 'Mozilla/5.0'} # Bazı siteler botları engeller
+def fetch_markdown(url: str) -> Optional[str]:
+    """
+    Fetches clean markdown from a URL using jina.ai reader.
+    Industry best practice for agentic context.
+    """
+    print(f"[KnowledgeFetcher] Harvesting from: {url}")
+    jina_url = f"https://r.jina.ai/{url}"
+    
     try:
-        response = requests.get(url, headers=headers, timeout=15)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            # Ana metni al (basitçe body, script/style hariç)
-            for script in soup(["script", "style"]):
-                script.extract()
-                
-            text = soup.get_text(separator='\n', strip=True)
-            
-            # Kaydet
-            path = os.path.join(TARGET_DIR, f"{name}_docs.md")
-            os.makedirs(TARGET_DIR, exist_ok=True)
-            
-            with open(path, "w", encoding="utf-8") as f:
-                f.write(f"# {name.upper()} DOCUMENTATION\n")
-                f.write(f"Source: {url}\n\n")
-                f.write(text[:50000]) # Çok uzunsa kes (Token limiti)
-                
-            print(f"✅ Saved to {path}")
-        else:
-            print(f"❌ Failed to fetch {url}: {response.status_code}")
+        response = requests.get(jina_url, timeout=30)
+        response.raise_for_status()
+        return response.text
     except Exception as e:
-        print(f"❌ Error fetching {name}: {e}")
+        print(f"[KnowledgeFetcher] Error fetching: {e}")
+        return None
+
+async def main():
+    if len(sys.argv) < 3:
+        print("Usage: python scripts/fetch_docs.py <library_name> <url>")
+        return
+
+    lib_name = sys.argv[1]
+    url = sys.argv[2]
+    
+    content = fetch_markdown(url)
+    
+    if content:
+        target_dir = PROJECT_ROOT / "Knowledge" / "API_References"
+        target_dir.mkdir(parents=True, exist_ok=True)
+        
+        file_path = target_dir / f"{lib_name}.md"
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        
+        print(f"[KnowledgeFetcher] Successfully saved {lib_name} docs to {file_path}")
+        
+        # NEXT: We can automatically trigger RAG ingestion here
+        print("[KnowledgeFetcher] Ingestion to Vector DB will follow...")
+    else:
+        print("[KnowledgeFetcher] Harvest failed.")
 
 if __name__ == "__main__":
-    for name, url in DOCS_MAP.items():
-        fetch_and_save(name, url)
+    asyncio.run(main())

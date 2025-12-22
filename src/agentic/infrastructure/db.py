@@ -1,101 +1,64 @@
-import sqlite3
-from typing import Dict, List
+import aiosqlite
+import json
+from typing import Dict, List, Optional, Any
 
 class TaskDatabase:
+    """Async SQLite Database for YBIS Task Management."""
+    
     def __init__(self, db_path: str):
-        self.connection = sqlite3.connect(db_path)
-        self.cursor = self.connection.cursor()
-        self._create_table()
+        self.db_path = db_path
 
-    def _create_table(self):
-        create_table_query = """
-        CREATE TABLE IF NOT EXISTS tasks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            goal TEXT NOT NULL,
-            details TEXT,
-            status TEXT NOT NULL,
-            priority INTEGER,
-            metadata TEXT
-        );
-        """
-        self.cursor.execute(create_table_query)
-        self.connection.commit()
+    async def initialize(self):
+        """Create tables if they don't exist."""
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute("""
+                CREATE TABLE IF NOT EXISTS tasks (
+                    id TEXT PRIMARY KEY,
+                    goal TEXT NOT NULL,
+                    details TEXT,
+                    status TEXT NOT NULL,
+                    priority TEXT,
+                    assignee TEXT,
+                    final_status TEXT,
+                    metadata TEXT,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+            await db.commit()
 
-    def add_task(self, task: Dict):
-        insert_query = """
-        INSERT INTO tasks (goal, details, status, priority, metadata)
-        VALUES (?, ?, ?, ?, ?);
-        """
-        self.cursor.execute(insert_query, (
-            task['goal'],
-            task.get('details', ''),
-            task['status'],
-            task.get('priority', 0),
-            task.get('metadata', '')
-        ))
-        self.connection.commit()
+    async def add_task(self, task: Dict[str, Any]):
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute("""
+                INSERT OR REPLACE INTO tasks (id, goal, details, status, priority, assignee, final_status, metadata)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+            """, (
+                task['id'],
+                task['goal'],
+                task.get('details', ''),
+                task['status'],
+                task.get('priority', 'MEDIUM'),
+                task.get('assignee', 'Unassigned'),
+                task.get('final_status', 'UNKNOWN'),
+                json.dumps(task.get('metadata', {}))
+            ))
+            await db.commit()
 
-    def get_task(self, task_id: int) -> Dict:
-        select_query = """
-        SELECT * FROM tasks WHERE id = ?;
-        """
-        self.cursor.execute(select_query, (task_id,))
-        row = self.cursor.fetchone()
-        if row:
-            return {
-                'id': row[0],
-                'goal': row[1],
-                'details': row[2],
-                'status': row[3],
-                'priority': row[4],
-                'metadata': row[5]
-            }
-        return None
+    async def get_all_tasks(self) -> List[Dict[str, Any]]:
+        async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute("SELECT * FROM tasks") as cursor:
+                rows = await cursor.fetchall()
+                tasks = []
+                for row in rows:
+                    t = dict(row)
+                    t['metadata'] = json.loads(t['metadata']) if t['metadata'] else {}
+                    tasks.append(t)
+                return tasks
 
-    def update_task(self, task_id: int, updates: Dict):
-        update_query = """
-        UPDATE tasks SET
-            goal = ?,
-            details = ?,
-            status = ?,
-            priority = ?,
-            metadata = ?
-        WHERE id = ?;
-        """
-        self.cursor.execute(update_query, (
-            updates.get('goal', ''),
-            updates.get('details', ''),
-            updates.get('status', ''),
-            updates.get('priority', 0),
-            updates.get('metadata', ''),
-            task_id
-        ))
-        self.connection.commit()
-
-    def delete_task(self, task_id: int):
-        delete_query = """
-        DELETE FROM tasks WHERE id = ?;
-        """
-        self.cursor.execute(delete_query, (task_id,))
-        self.connection.commit()
-
-    def get_all_tasks(self) -> List[Dict]:
-        select_all_query = """
-        SELECT * FROM tasks;
-        """
-        self.cursor.execute(select_all_query)
-        rows = self.cursor.fetchall()
-        return [
-            {
-                'id': row[0],
-                'goal': row[1],
-                'details': row[2],
-                'status': row[3],
-                'priority': row[4],
-                'metadata': row[5]
-            }
-            for row in rows
-        ]
-
-    def close(self):
-        self.connection.close()
+    async def update_task_status(self, task_id: str, status: str, final_status: str = None):
+        async with aiosqlite.connect(self.db_path) as db:
+            if final_status:
+                await db.execute("UPDATE tasks SET status = ?, final_status = ? WHERE id = ?", (status, final_status, task_id))
+            else:
+                await db.execute("UPDATE tasks SET status = ? WHERE id = ?", (status, task_id))
+            await db.commit()
