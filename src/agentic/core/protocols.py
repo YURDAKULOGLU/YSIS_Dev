@@ -40,8 +40,14 @@ class VerificationResult(BaseModel):
     warnings: List[str] = Field(default_factory=list)
     logs: Dict[str, Any] = Field(default_factory=dict)
 
+class ProposedTask(BaseModel):
+    """A task proposed by an agent to be added to the backlog."""
+    title: str
+    description: str
+    priority: str = "MEDIUM"
+
 class TaskState(BaseModel):
-    """The central State object for the entire factory. Fields are optional to support partial updates."""
+    """The central State object for the entire factory. Supports task chaining."""
     task_id: str = Field(default="UNKNOWN")
     task_description: str = Field(default="")
     artifacts_path: str = Field(default=".sandbox_worker/default")
@@ -59,6 +65,7 @@ class TaskState(BaseModel):
     files_modified: List[str] = Field(default_factory=list)
     quality_score: float = 0.0
     final_status: str = "UNKNOWN"
+    proposed_tasks: List[ProposedTask] = Field(default_factory=list)
 
     class Config:
         arbitrary_types_allowed = True

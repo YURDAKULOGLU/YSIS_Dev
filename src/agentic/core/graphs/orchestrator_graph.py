@@ -140,6 +140,25 @@ class OrchestratorGraph:
             
         return "retry"
 
+    async def _chainer_node(self, s: TaskState) -> Dict[str, Any]:
+        if not s.proposed_tasks:
+            return {}
+            
+        print(f"\n[Graph:CHAINER] Processing {len(s.proposed_tasks)} proposed tasks...")
+        
+        # We need a board manager to add tasks
+        from src.agentic.core.plugins.task_board_manager import TaskBoardManager
+        board = TaskBoardManager()
+        
+        for task in s.proposed_tasks:
+            try:
+                new_id = await board.create_task(task.title, task.description, task.priority)
+                print(f"[Graph:CHAINER] [OK] Added follow-up task: {new_id}")
+            except Exception as e:
+                print(f"[Graph:CHAINER] [!] Failed to add task: {e}")
+                
+        return {"proposed_tasks": []} # Clear list after processing
+
     def _build_graph(self):
         # Use Pydantic TaskState directly as the state schema
         builder = StateGraph(TaskState) 
@@ -149,6 +168,7 @@ class OrchestratorGraph:
         builder.add_node("verifier", self._verifier_node)
         builder.add_node("commit", self._commit_node)
         builder.add_node("artifacts", self._artifact_node)
+        builder.add_node("chainer", self._chainer_node)
         builder.add_node("failed", self._failed_node)
 
         builder.add_edge(START, "planner")
@@ -166,7 +186,8 @@ class OrchestratorGraph:
         )
 
         builder.add_edge("commit", "artifacts")
-        builder.add_edge("artifacts", END)
+        builder.add_edge("artifacts", "chainer")
+        builder.add_edge("chainer", END)
         builder.add_edge("failed", END)
 
         return builder.compile()
