@@ -1,18 +1,11 @@
 {
-  "backlog": [
+  "backlog": [],
+  "in_progress": [
     {
       "id": "STRESS-F",
       "goal": "Refactor src/utils/text_processor.py to make count_vowels case-insensitive",
       "details": "Make sure the function handles both uppercase and lowercase vowels correctly.",
       "priority": "HIGH"
-    }
-  ],
-  "in_progress": [
-    {
-      "id": "STRESS-E",
-      "goal": "Create unit test in tests/unit/test_text_processor.py for count_vowels",
-      "details": "Ensure it covers normal cases, case-insensitivity (if applicable), and empty strings.",
-      "priority": "MEDIUM"
     }
   ],
   "done": [
@@ -28,6 +21,13 @@
       "details": "Write a simple python script that prints Hello World. Ensure it has a docstring and type hints for a main function. Also CREATE A TEST in tests/unit/test_hello.py to verify it.",
       "assignee": "Unassigned",
       "priority": "HIGH",
+      "final_status": "SUCCESS"
+    },
+    {
+      "id": "STRESS-E",
+      "goal": "Create unit test in tests/unit/test_text_processor.py for count_vowels",
+      "details": "Ensure it covers normal cases, case-insensitivity (if applicable), and empty strings.",
+      "priority": "MEDIUM",
       "final_status": "SUCCESS"
     }
   ],
