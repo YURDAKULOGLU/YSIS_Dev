@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ollama list:*)",
+      "Bash(python run_t100.py:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(python:*)",
+      "Bash(if not exist \"C:\\\\Projeler\\\\YBIS_Dev\\\\Knowledge\\\\Tasks\\\\done\" mkdir \"C:\\\\Projeler\\\\YBIS_Dev\\\\Knowledge\\\\Tasks\\\\done\")"
+    ]
+  }
+}

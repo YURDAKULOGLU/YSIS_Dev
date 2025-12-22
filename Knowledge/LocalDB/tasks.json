@@ -1,13 +1,22 @@
 {
   "backlog": [
     {
-      "id": "TASK-New-123",
-      "goal": "Test Memory",
-      "details": "Verify JSON persistence works",
+      "id": "T-102",
+      "goal": "Build plugin architecture core + infrastructure",
+      "details": "ToolProtocol, ToolRegistry, PluginLoader + LangFuse + LiteLLM. See: Knowledge/Tasks/backlog/T-102_P0_Plugin_Architecture_Core.md",
       "assignee": "Unassigned",
-      "priority": "MEDIUM"
+      "priority": "HIGH"
     }
   ],
   "in_progress": [],
-  "done": []
+  "done": [
+    {
+      "id": "T-100",
+      "goal": "Implement retry loop in OrchestratorGraph",
+      "details": "Added conditional edge with retry logic, error_history tracking, and failed state handling.",
+      "assignee": "OrchestratorGraph (via Aider + Claude strategic fixes)",
+      "priority": "HIGH",
+      "completed_at": "2025-12-20"
+    }
+  ]
 }

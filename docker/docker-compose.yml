@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  sandbox:
+    build:
+      context: .
+      dockerfile: Dockerfile.sandbox
+    volumes:
+      - .:/app
+    command: ["python", "src/agentic/core/plugins/docker_executor.py"]
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "5000:80"

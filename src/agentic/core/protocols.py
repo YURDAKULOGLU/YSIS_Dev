@@ -5,7 +5,7 @@ This module defines the contracts that all plugins must implement.
 Allows easy swapping of implementations without changing core logic.
 """
 
-from typing import Protocol, Any, Dict, List, Optional
+from typing import Protocol, Any, Dict, List, Optional, TypedDict
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -47,21 +47,21 @@ class VerificationResult:
     logs: Dict[str, str]  # log_type -> content
 
 
-@dataclass
-class TaskState:
-    """Complete state of a task execution"""
+class TaskState(TypedDict):
     task_id: str
     task_description: str
     phase: str  # init, plan, execute, verify, commit, done, failed
-    plan: Optional[Plan] = None
-    code_result: Optional[CodeResult] = None
-    verification: Optional[VerificationResult] = None
-    retry_count: int = 0
-    max_retries: int = 3
-    error: Optional[str] = None
-    started_at: datetime = None
-    completed_at: Optional[datetime] = None
-    artifacts_path: str = ".sandbox"
+    plan: Optional[Plan]
+    code_result: Optional[CodeResult]
+    verification: Optional[VerificationResult]
+    retry_count: int
+    max_retries: int
+    error: Optional[str]
+    started_at: datetime
+    completed_at: Optional[datetime]
+    artifacts_path: str
+    error_history: List[str]  # Added field for error history
+    failed_at: Optional[datetime]  # Added field for failure timestamp
 
 
 # ============================================================================
@@ -110,13 +110,15 @@ class ExecutorProtocol(Protocol):
     - etc.
     """
 
-    async def execute(self, plan: Plan, sandbox_path: str) -> CodeResult:
+    async def execute(self, plan: Plan, sandbox_path: str, error_history: Optional[List[str]] = None, retry_count: int = 0) -> CodeResult:
         """
         Execute the plan and generate code.
 
         Args:
             plan: Structured plan from planner
             sandbox_path: Where to write files (isolated)
+            error_history: Previous errors from failed attempts (for retry feedback)
+            retry_count: Current retry attempt number
 
         Returns:
             CodeResult with files modified

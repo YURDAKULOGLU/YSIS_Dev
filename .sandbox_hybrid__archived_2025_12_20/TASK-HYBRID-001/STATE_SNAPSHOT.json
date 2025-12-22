@@ -1,0 +1,10 @@
+{
+  "task_id": "TASK-HYBRID-001",
+  "phase": "done",
+  "started_at": "2025-12-15T23:47:35.643085",
+  "completed_at": "2025-12-15T23:47:46.107155",
+  "retry_count": 1,
+  "max_retries": 3,
+  "error": null,
+  "success": true
+}

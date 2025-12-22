@@ -14,7 +14,7 @@ class AiderExecutor(ExecutorProtocol):
     def name(self) -> str:
         return "Aider-CLI-Executor"
 
-    async def execute(self, plan: Plan, sandbox_path: str) -> CodeResult:
+    async def execute(self, plan: Plan, sandbox_path: str, error_history: List[str] = None, retry_count: int = 0) -> CodeResult:
         """
         Execute the plan by constructing a prompt for Aider and running it.
         """

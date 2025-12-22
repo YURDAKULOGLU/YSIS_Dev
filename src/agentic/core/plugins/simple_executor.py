@@ -35,7 +35,7 @@ class SimpleExecutor:
         self.router = IntelligentRouter(router_config)
         self.developer = DeveloperAgent(router=self.router)
 
-    async def execute(self, plan: Plan, sandbox_path: str) -> CodeResult:
+    async def execute(self, plan: Plan, sandbox_path: str, error_history: List[str] = None, retry_count: int = 0) -> CodeResult:
         """Execute plan using DeveloperAgent"""
 
         print(f"[SimpleExecutor] Executing plan in {sandbox_path}")

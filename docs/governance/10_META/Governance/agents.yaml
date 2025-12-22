@@ -1,0 +1,32 @@
+version: 1
+updated_at: "2025-12-18"
+
+# Minimal capability registry for routing work across CLI agents.
+# Keep it short and editable by humans.
+
+agents:
+  codex:
+    modes: ["terminal"]
+    strengths: ["implementation", "typecheck/test loops", "repeatable patterns", "automation"]
+    weak_spots: ["underspecified UI/UX", "large architectural decisions without explicit constraints"]
+  claude:
+    modes: ["terminal"]
+    strengths: ["debugging", "refactoring", "multi-file reasoning", "integration work"]
+    weak_spots: ["can overshoot scope if task is vague", "can generate too much code when asked for concepts"]
+  cursor:
+    modes: ["interactive"]
+    strengths: ["UI edits", "mechanical refactors", "fast iteration", "string/i18n sweeps"]
+    weak_spots: ["apply-model surprises on large files", "needs tight instructions"]
+  copilot:
+    modes: ["pr-first"]
+    strengths: ["low/medium complexity issues", "docs/tests", "PR-based workflow"]
+    weak_spots: ["quality depends on repo tests", "can generate low-signal PRs if constraints are weak"]
+  gemini:
+    modes: ["review", "research"]
+    strengths: ["second opinion", "risk analysis", "design critique", "test planning"]
+    weak_spots: ["implementation throughput varies by surface", "best used as reviewer"]
+  antigravity:
+    modes: ["analysis-only"]
+    strengths: ["architecture", "deep audits", "risk finding", "systems thinking"]
+    weak_spots: ["should not be primary implementer"]
+
