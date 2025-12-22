@@ -20,7 +20,7 @@ from src.agentic.core.plugins.task_board_manager import TaskBoardManager
 from src.agentic.core.plugins.rag_memory import RAGMemory
 
 async def run_next_step():
-    print(f"🚀 YBIS LANGGRAPH RUNNER STARTING...")
+    print(f"YBIS LANGGRAPH RUNNER STARTING...")
     
     # Initialize components
     task_board = TaskBoardManager()
@@ -73,7 +73,7 @@ async def run_next_step():
         phase = getattr(final_state, "phase", "unknown") if not isinstance(final_state, dict) else final_state.get("phase", "unknown")
         
         status = "DONE" if phase == "done" else "FAILED"
-        print(f"🏁 Task Finished with status: {status}")
+        print(f"Task Finished with status: {status}")
         
         await task_board.update_task_status(
             task_id=task_id, 
@@ -82,7 +82,7 @@ async def run_next_step():
         )
         
     except Exception as e:
-        print(f"🔥 Critical Graph Failure: {e}")
+        print(f"Critical Graph Failure: {e}")
         import traceback
         traceback.print_exc()
         await task_board.update_task_status(task_id, "FAILED", {"error": str(e)})

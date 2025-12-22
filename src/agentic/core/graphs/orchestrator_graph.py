@@ -175,7 +175,7 @@ class OrchestratorGraph:
 
     async def run_task(self, state: Dict[str, Any]) -> TaskState:
         task_id = state.get('task_id', 'UNKNOWN')
-        print(f"🚀 Graph Orchestrator Starting for {task_id}")
+        print(f"Graph Orchestrator Starting for {task_id}")
         
         # LangGraph will now automatically validate against TaskState
         final_output = await self.workflow.ainvoke(state)
