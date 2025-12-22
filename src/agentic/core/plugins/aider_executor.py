@@ -5,11 +5,16 @@ from pathlib import Path
 from typing import List, Dict, Any
 from src.agentic.core.protocols import ExecutorProtocol, Plan, CodeResult
 
+from src.agentic.core.plugins.model_router import default_router
+
 class AiderExecutor(ExecutorProtocol):
     """
     Executor that delegates coding tasks to 'aider', a powerful AI pair programmer.
     This acts as a bridge between our Orchestrator and the Aider CLI.
     """
+
+    def __init__(self, router=None):
+        self.router = router or default_router
 
     def name(self) -> str:
         return "Aider-CLI-Executor"
@@ -18,10 +23,23 @@ class AiderExecutor(ExecutorProtocol):
         """
         Execute the plan by constructing a prompt for Aider and running it.
         """
+        # Get model config from router
+        model_config = self.router.get_model("CODING")
+        print(f"[AiderExecutor] Using model: {model_config.model_name} via {model_config.provider}")
         print(f"[AiderExecutor] Preparing to execute plan with {len(plan.steps)} steps.")
 
         # 1. Construct the prompt for Aider
-        prompt = f"OBJECTIVE: {plan.objective}\n\nPLAN STEPS:\n"
+        prompt = ""
+        
+        # INJECT ERROR HISTORY (The Feedback Loop)
+        if error_history and len(error_history) > 0:
+            prompt += "CRITICAL: PREVIOUS ATTEMPT FAILED\n"
+            prompt += "You must fix the following errors from the previous run:\n"
+            for err in error_history:
+                prompt += f"- {err}\n"
+            prompt += "DO NOT REPEAT THESE MISTAKES.\n\n"
+            
+        prompt += f"OBJECTIVE: {plan.objective}\n\nPLAN STEPS:\n"
         for i, step in enumerate(plan.steps):
             prompt += f"{i+1}. {step}\n"
         
@@ -32,18 +50,15 @@ class AiderExecutor(ExecutorProtocol):
 
 
         # 2. Identify target files and normalize paths relative to Git Root
-        files = plan.files_to_modify if plan.files_to_modify else []
+        from src.agentic.core.config import PROJECT_ROOT
+        git_root = Path(PROJECT_ROOT).resolve()
         
-        # Calculate Git Root
+        print(f"[AiderExecutor] Using PROJECT_ROOT as Git Root: {git_root}")
+        
         current_path = Path(sandbox_path).resolve()
-        git_root = current_path
-        while not (git_root / ".git").exists() and git_root != git_root.parent:
-            git_root = git_root.parent
-            
-        print(f"[AiderExecutor] Resolved Git Root: {git_root}")
-        
         rel_path_from_root = current_path.relative_to(git_root)
         
+        files = plan.files_to_modify if plan.files_to_modify else []
         normalized_files = []
         for f in files:
             # We want to edit files in the REAL project, not the sandbox.
@@ -77,15 +92,25 @@ class AiderExecutor(ExecutorProtocol):
 
         cmd.extend(["--message", prompt])
 
-        # FORCE LOCAL OLLAMA MODEL (UPGRADED)
-        cmd.extend(["--model", "ollama/qwen2.5-coder:32b"])
-        # Inject Model Settings to silence warnings
-        cmd.extend(["--model-settings-file", ".YBIS_Dev/Veriler/aider_model_settings.yml"])
+        # FORCE MODEL FROM ROUTER
+        model_full_name = model_config.model_name
+        if model_config.provider == "ollama":
+            model_full_name = f"ollama/{model_config.model_name}"
+            
+        cmd.extend(["--model", model_full_name])
+        
+        # Inject Model Settings to silence warnings & Enforce Model
+        cmd.extend(["--model-settings-file", "config/aider_model_settings.yml"])
         cmd.extend(["--no-show-model-warnings"])
+        
+        # NON-INTERACTIVE & BACKGROUND FLAGS
+        cmd.extend(["--no-pretty"])            # Disable rich/colorful output (Fixes Windows encoding crash)
+        cmd.extend(["--no-auto-lint"])          # We handle linting via Sentinel
+        cmd.extend(["--no-suggest-shell-commands"]) # Don't wait for user to confirm shell commands
         
         # FORCE SANDBOX CONTAINMENT
         # Only allow Aider to see what we explicitly permit
-        cmd.extend(["--aiderignore", ".YBIS_Dev/Veriler/.sandbox_aiderignore"])
+        cmd.extend(["--aiderignore", "config/.sandbox_aiderignore"])
 
         cmd.extend(["--yes"])
         cmd.extend(["--no-auto-commits"]) # Let Orchestrator handle commits after verification
@@ -129,11 +154,19 @@ class AiderExecutor(ExecutorProtocol):
                 entries = stdout.decode('utf-8').splitlines()
                 
                 for entry in entries:
-                    # Format: " M path/to/file" or "?? path/to/file"
-                    # We care about M, A, ??
-                    status_code = entry[:2]
-                    file_path = entry[3:].strip()
+                    # Format: " M path/to/file", "?? path/to/file", "R  old -> new"
+                    status_code = entry[:2].strip()
+                    file_path_part = entry[3:].strip()
+                    
+                    # Handle renamed files: "old -> new"
+                    if " -> " in file_path_part:
+                        file_path = file_path_part.split(" -> ")[-1].strip()
+                    else:
+                        file_path = file_path_part
+
                     if file_path:
+                         # Aider might have double quotes if there are spaces
+                         file_path = file_path.replace('"', '')
                          abs_path = (git_root / file_path).resolve()
                          actual_files[str(abs_path)] = f"Detected change: {status_code}"
             except Exception as git_err:

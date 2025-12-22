@@ -14,17 +14,22 @@ import httpx
 
 from src.agentic.core.protocols import Plan
 from src.agentic.core.config import CONSTITUTION_PATH
+from src.agentic.core.plugins.model_router import default_router
 
 
 class SimplePlanner:
     """
-    Simple planner using direct Ollama API calls.
+    Simple planner using direct Ollama API calls via ModelRouter.
 
     This is the fallback planner - works without any framework.
     """
 
-    def __init__(self, model: str = "qwen2.5-coder:14b", base_url: str = None):
-        self.model = model
+    def __init__(self, router=None, base_url: str = None):
+        self.router = router or default_router
+        # Get the planning model config from router
+        self.model_config = self.router.get_model("PLANNING")
+        
+        # Support Docker -> Host connection via environment variable
         self.base_url = base_url or os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
     async def plan(self, task: str, context: Dict[str, Any]) -> Plan:
@@ -41,7 +46,7 @@ class SimplePlanner:
         return plan
 
     def name(self) -> str:
-        return f"SimplePlanner({self.model})"
+        return f"SimplePlanner({self.model_config.model_name})"
 
     # ========================================================================
     # IMPLEMENTATION
@@ -91,12 +96,13 @@ Respond ONLY with the JSON object, no additional text."""
         url = f"{base}/api/generate"
 
         payload = {
-            "model": self.model,
+            "model": self.model_config.model_name,
             "prompt": prompt,
             "stream": False,
             "options": {
-                "temperature": 0.3,  # Low temperature for structured output
-                "num_predict": 1000,
+                "temperature": self.model_config.temperature,  # Use router config
+                "num_predict": 2048, # Increased context for better plans
+                "num_ctx": self.model_config.context_window
             }
         }
 
@@ -128,7 +134,7 @@ Respond ONLY with the JSON object, no additional text."""
                 dependencies=data.get("dependencies", []),
                 risks=data.get("risks", []),
                 success_criteria=data.get("success_criteria", []),
-                metadata={"model": self.model, "planner": "SimplePlanner"}
+                metadata={"model": self.model_config.model_name, "planner": "SimplePlanner"}
             )
 
         except json.JSONDecodeError as e:

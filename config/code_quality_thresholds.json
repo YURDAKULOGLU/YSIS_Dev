@@ -1,0 +1,6 @@
+{
+    "complexity": 10,
+    "cyclomatic_complexity": 5,
+    "maintainability_index": 70,
+    "lines_of_code": 500
+}

@@ -1,60 +1,62 @@
 import asyncio
 import sys
 import os
-from pathlib import Path
+from datetime import datetime
 
 sys.path.insert(0, os.getcwd())
 
-from src.agentic.core.orchestrator_v3 import OrchestratorV3
-from src.agentic.core.plugins.simple_planner import SimplePlanner
+from src.agentic.core.graphs.orchestrator_graph import OrchestratorGraph
+from src.agentic.core.plugins.rag_aware_planner import RAGAwarePlanner
 from src.agentic.core.plugins.aider_executor import AiderExecutor
 from src.agentic.core.plugins.sentinel import SentinelVerifier
-from src.agentic.core.plugins.artifact_generator import ArtifactGenerator
-from src.agentic.core.plugins.task_board_manager import TaskBoardManager
-from src.agentic.core.plugins.rag_memory import RAGMemory
+from src.agentic.core.protocols import TaskState
 
-async def run_polish():
-    print("🚀 STARTING FINAL POLISH: Config Unification & Cleanup")
+async def run_final_polish():
+    print("✨ BOOTSTRAP PHASE 4: Final Polish & Dashboard (T-105)")
     
-    rag = RAGMemory()
-    orchestrator = OrchestratorV3(
-        planner=SimplePlanner(),
+    orchestrator = OrchestratorGraph(
+        planner=RAGAwarePlanner(),
         executor=AiderExecutor(),
-        verifier=SentinelVerifier(),
-        artifact_gen=ArtifactGenerator(),
-        task_board=TaskBoardManager(),
-        rag_memory=rag
+        verifier=SentinelVerifier()
     )
     
     task_description = """
-    SYSTEM POLISH TASK: Eliminate Hardcoded Paths & Clean Root Directory.
+    FINAL POLISH for Beta Release.
     
-    1. UPDATE 'src/agentic/core/config.py':
-       - Add 'CONSTITUTION_PATH = PROJECT_ROOT / "00_GENESIS" / "YBIS_CONSTITUTION.md"'
-       
-    2. REFACTOR 'src/agentic/core/plugins/simple_planner.py':
-       - Import 'CONSTITUTION_PATH' from config.
-       - Use this constant instead of hardcoded strings in '_read_constitution'.
-       
-    3. CLEANUP ROOT DIRECTORY (Shell Command):
-       - Create directory '_Archive/Legacy_Scripts'.
-       - Move the following legacy files to that archive:
-         'run_hybrid_test.py', 'run_meta_optimization.py', 'run_system_update.py',
-         'test_capabilities.py', 'test_crew.py', 'test_mcp.py', 
-         'test_migrate_to_crewai.py', 'test_orchestrator_dogfooding.py',
-         'test_qa_fix.py', 'test_qa_loop.py', 'test_tier2.py', 'test_tier2_quick.py',
-         'debug_ollama_models.py', 'debug_writer.py', 'error_parser.py'
-       - DO NOT move 'run_build_dashboard.py', 'run_final_polish.py', 'orchestrator_main.py'.
-       
-    OBJECTIVE: 
-    Leave the project in a pristine state with centralized configuration and zero clutter.
+    OBJECTIVE: Make the system visually representable and stable.
+    
+    REQUIRED DELIVERABLES:
+    1. 'src/dashboard/app.py': Enhanced Streamlit UI.
+       - Show 'Current Mission' status.
+       - Show 'Sentinel Logs' (Warnings/Errors).
+       - Live graph visualization of Orchestrator state.
+    2. 'SYSTEM_STATE.md': Update with the completed Phase 1, 2, 3 and current Phase 4.
+    3. 'tests/test_tier4_e2e.py': A simple end-to-end test that ensures the Graph can run.
+    
+    CONSTRAINTS:
+    - No placeholders in Dashboard.
+    - Sentinel will verify this. Ensure tests pass.
     """
     
-    task_id = "POLISH-001"
-    
-    print(f"▶️ Delegating Task {task_id} to Orchestrator...")
-    await orchestrator.run_task(task_id, task_description)
-    print("✅ Orchestrator finished execution.")
+    task_id = "T-105-POLISH"
+    artifacts_path = os.path.join(".sandbox", "hybrid", task_id)
+    os.makedirs(artifacts_path, exist_ok=True)
+
+    state: TaskState = {
+        "task_id": task_id,
+        "task_description": task_description,
+        "phase": "init",
+        "plan": None,
+        "code_result": None,
+        "verification": None,
+        "retry_count": 0,
+        "max_retries": 2,
+        "error_history": [],
+        "artifacts_path": artifacts_path
+    }
+
+    print(f"▶️ Executing Final Polish {task_id}...")
+    await orchestrator.ainvoke(state)
 
 if __name__ == "__main__":
-    asyncio.run(run_polish())
+    asyncio.run(run_final_polish())

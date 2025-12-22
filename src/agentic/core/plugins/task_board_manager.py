@@ -8,11 +8,12 @@ And optionally syncs to TASK_BOARD.md for visibility.
 import os
 import json
 import asyncio
+import time
 from typing import Optional, Dict, Any, List
 from pathlib import Path
 
 class TaskBoardManager:
-    """Manages Task Board Persistence via JSON"""
+    """Manages Task Board Persistence via JSON with File-based Locking."""
 
     def __init__(self, board_path: str = None):
         from src.agentic.core.config import DATA_DIR
@@ -30,25 +31,62 @@ class TaskBoardManager:
         from src.agentic.core.config import TASKS_DB_PATH
 
         self.json_path = TASKS_DB_PATH
+        self.lock_path = str(self.json_path) + ".lock"
         self.md_path = DATA_DIR / "TASK_BOARD.md"
         # Backward compatibility for ybis_server.list_all_tasks
         self.board_path = str(self.md_path)
 
-    async def _read_db(self) -> Dict[str, Any]:
-        """Read JSON DB."""
-        if not self.json_path.exists():
-            print(f"[TaskBoard] JSON DB not found: {self.json_path}")
-            return {"backlog": [], "in_progress": [], "done": []}
-            
+    async def _acquire_lock(self, timeout=10):
+        """Acquire atomic file lock."""
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            try:
+                # Atomic creation
+                fd = os.open(self.lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                os.close(fd)
+                return True
+            except FileExistsError:
+                # Check for stale lock (older than 30s)
+                try:
+                    if time.time() - os.path.getmtime(self.lock_path) > 30:
+                        os.remove(self.lock_path)
+                except:
+                    pass
+                await asyncio.sleep(0.1)
+        return False
+
+    def _release_lock(self):
+        """Release file lock."""
         try:
+            if os.path.exists(self.lock_path):
+                os.remove(self.lock_path)
+        except:
+            pass
+
+    async def _read_db(self) -> Dict[str, Any]:
+        """Read JSON DB with locking."""
+        if not await self._acquire_lock():
+            print(f"[TaskBoard] Timeout acquiring lock for READ")
+            return {"backlog": [], "in_progress": [], "done": []}
+
+        try:
+            if not self.json_path.exists():
+                return {"backlog": [], "in_progress": [], "done": []}
+                
             with open(self.json_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
             print(f"[TaskBoard] Error reading JSON: {e}")
             return {"backlog": [], "in_progress": [], "done": []}
+        finally:
+            self._release_lock()
 
     async def _save_db(self, data: Dict[str, Any]):
-        """Save JSON DB and Sync MD."""
+        """Save JSON DB and Sync MD with locking."""
+        if not await self._acquire_lock():
+            print(f"[TaskBoard] Timeout acquiring lock for SAVE")
+            return
+
         try:
             with open(self.json_path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2)
@@ -57,6 +95,8 @@ class TaskBoardManager:
             self._sync_to_markdown(data)
         except Exception as e:
             print(f"[TaskBoard] Error saving JSON: {e}")
+        finally:
+            self._release_lock()
 
     def _sync_to_markdown(self, data: Dict[str, Any]):
         """Generate TASK_BOARD.md from data."""
@@ -176,11 +216,15 @@ class TaskBoardManager:
         status = status.upper()
         
         if status == "DONE" or status == "COMPLETED":
+            target_task["final_status"] = "SUCCESS"
             data.setdefault("done", []).append(target_task)
+        elif status == "FAILED":
+             target_task["final_status"] = "FAILED"
+             data.setdefault("done", []).append(target_task) # Move failed tasks to done to stop loop
         elif status == "IN PROGRESS":
              data.setdefault("in_progress", []).append(target_task)
         else:
-             # Default back to backlog or fail? Let's assume backlog if failed/stopped
+             print(f"[TaskBoard] Unknown status '{status}'. Moving to Backlog.")
              data.setdefault("backlog", []).append(target_task)
              
         await self._save_db(data)

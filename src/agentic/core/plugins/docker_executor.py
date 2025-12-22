@@ -16,10 +16,11 @@ class DockerExecutor:
     Executor that runs code inside a Docker container.
     """
 
-    def __init__(self, image_name="sandbox"):
+    def __init__(self, image_name="sandbox", retry_count: int = 0):
         self.image_name = image_name
+        self.retry_count = retry_count
 
-    async def execute(self, plan: Plan, sandbox_path: str, error_history: Optional[List[str]] = None, retry_count: int = 3) -> CodeResult:
+    async def execute(self, plan: Plan, sandbox_path: str, error_history: Optional[List[str]] = None) -> CodeResult:
         """
         Execute a plan inside a Docker container.
         """
@@ -28,11 +29,17 @@ class DockerExecutor:
             try:
                 subprocess.run(["docker", "image", "inspect", self.image_name], check=True)
             except subprocess.CalledProcessError:
-                subprocess.run(["docker", "build", "-t", self.image_name, "."], check=True)
+                subprocess.run(["docker", "build", "-t", self.image_name, "--no-cache", "."], check=True)
 
             # Run the Docker container with the plan
+            command = [
+                "docker", "run", "--rm",
+                "-v", f"{sandbox_path}:/app/sandbox",
+                self.image_name,
+                "bash", "-c", plan.instructions
+            ]
             result = subprocess.run(
-                ["docker", "run", "--rm", "-v", f"{sandbox_path}:/app/sandbox", self.image_name, "python", "-c", plan.instructions],
+                command,
                 capture_output=True,
                 text=True,
                 check=True
@@ -40,7 +47,4 @@ class DockerExecutor:
 
             return CodeResult(success=True, output=result.stdout)
         except subprocess.CalledProcessError as e:
-            if retry_count > 0:
-                return await self.execute(plan, sandbox_path, error_history + [str(e)], retry_count - 1)
-            else:
-                return CodeResult(success=False, output=str(e))
+            return CodeResult(success=False, output=f"Command failed: {e.stderr}")

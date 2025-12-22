@@ -5,63 +5,63 @@ This module defines the contracts that all plugins must implement.
 Allows easy swapping of implementations without changing core logic.
 """
 
-from typing import Protocol, Any, Dict, List, Optional, TypedDict
-from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Protocol, Union
+from pydantic import BaseModel, Field
 from datetime import datetime
 
-
 # ============================================================================
-# DATA STRUCTURES
+# DATA MODELS (Using Pydantic - The Industry Standard)
 # ============================================================================
 
-@dataclass
-class Plan:
+class Plan(BaseModel):
     """Structured plan output from planners"""
     objective: str
     steps: List[str]
     files_to_modify: List[str]
-    dependencies: List[str]
-    risks: List[str]
-    success_criteria: List[str]
-    metadata: Dict[str, Any]
+    dependencies: List[str] = Field(default_factory=list)
+    risks: List[str] = Field(default_factory=list)
+    success_criteria: List[str] = Field(default_factory=list)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
-
-@dataclass
-class CodeResult:
+class CodeResult(BaseModel):
     """Result from code execution"""
-    files_modified: Dict[str, str]  # path -> content
-    commands_run: List[str]
-    outputs: Dict[str, str]  # command -> output
+    files_modified: Dict[str, str] = Field(default_factory=dict) # path -> content/status
+    commands_run: List[str] = Field(default_factory=list)
+    outputs: Dict[str, str] = Field(default_factory=dict) # command -> output
     success: bool
     error: Optional[str] = None
 
-
-@dataclass
-class VerificationResult:
+class VerificationResult(BaseModel):
     """Result from verification/testing"""
     lint_passed: bool
     tests_passed: bool
-    coverage: float
-    errors: List[str]
-    warnings: List[str]
-    logs: Dict[str, str]  # log_type -> content
+    coverage: float = 0.0
+    errors: List[str] = Field(default_factory=list)
+    warnings: List[str] = Field(default_factory=list)
+    logs: Dict[str, Any] = Field(default_factory=dict)
 
+class TaskState(BaseModel):
+    """The central State object for the entire factory. Fields are optional to support partial updates."""
+    task_id: str = Field(default="UNKNOWN")
+    task_description: str = Field(default="")
+    artifacts_path: str = Field(default=".sandbox_worker/default")
+    phase: str = "init"
+    plan: Optional[Plan] = None
+    code_result: Optional[CodeResult] = None
+    verification: Optional[VerificationResult] = None
+    retry_count: int = 0
+    max_retries: int = 3
+    error: Optional[str] = None
+    started_at: datetime = Field(default_factory=datetime.now)
+    completed_at: Optional[datetime] = None
+    error_history: List[str] = Field(default_factory=list)
+    failed_at: Optional[datetime] = None
+    files_modified: List[str] = Field(default_factory=list)
+    quality_score: float = 0.0
+    final_status: str = "UNKNOWN"
 
-class TaskState(TypedDict):
-    task_id: str
-    task_description: str
-    phase: str  # init, plan, execute, verify, commit, done, failed
-    plan: Optional[Plan]
-    code_result: Optional[CodeResult]
-    verification: Optional[VerificationResult]
-    retry_count: int
-    max_retries: int
-    error: Optional[str]
-    started_at: datetime
-    completed_at: Optional[datetime]
-    artifacts_path: str
-    error_history: List[str]  # Added field for error history
-    failed_at: Optional[datetime]  # Added field for failure timestamp
+    class Config:
+        arbitrary_types_allowed = True
 
 
 # ============================================================================
@@ -283,5 +283,18 @@ class GateValidator:
 
     @staticmethod
     def should_retry(state: TaskState) -> bool:
-        """Check if we should retry after failure"""
+        """
+        Check if we should retry after failure.
+        CRITICAL: Do not retry on security violations.
+        """
+        # 1. Check for Security Violations (Fast Fail)
+        last_error = state.error
+        if not last_error and state.error_history:
+            last_error = state.error_history[-1]
+            
+        if last_error and ("VIOLATION" in last_error or "⛔" in last_error):
+            print(f"[GATE] 🛑 SECURITY VIOLATION DETECTED. NO RETRY ALLOWED.")
+            return False
+
+        # 2. Check Retry Count
         return state.retry_count < state.max_retries

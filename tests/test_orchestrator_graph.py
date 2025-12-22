@@ -1,6 +1,7 @@
 import asyncio
 import pytest
 from datetime import datetime
+from typing import Optional, List
 from unittest.mock import AsyncMock, MagicMock
 from src.agentic.core.graphs.orchestrator_graph import OrchestratorGraph
 from src.agentic.core.protocols import PlannerProtocol, ExecutorProtocol, VerifierProtocol, TaskState, Plan, CodeResult, VerificationResult
@@ -21,7 +22,7 @@ class MockPlanner(PlannerProtocol):
         return "MockPlanner"
 
 class MockExecutor(ExecutorProtocol):
-    async def execute(self, plan: Plan, sandbox_path: str) -> CodeResult:
+    async def execute(self, plan: Plan, sandbox_path: str, error_history: Optional[List[str]] = None, retry_count: int = 0) -> CodeResult:
         return CodeResult(
             files_modified={"file1.py": "content"},
             commands_run=[],

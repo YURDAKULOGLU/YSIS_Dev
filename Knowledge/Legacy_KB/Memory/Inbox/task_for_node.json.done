@@ -1,0 +1,5 @@
+{
+  "id": "task_node_001",
+  "instruction": "Read .YBIS_Dev/00_GENESIS/YBIS_CONSTITUTION.md and summarize the 'Prime Directives' in one sentence.",
+  "type": "analysis"
+}

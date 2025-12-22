@@ -7,6 +7,7 @@ from pathlib import Path
 # Add project root
 sys.path.insert(0, os.getcwd())
 from src.agentic.core.config import PROJECT_ROOT
+from src.agentic.core.plugins.builtin.open_swe import OpenSWE
 
 def dispatch_task(script_name: str, args: list = None):
     """
@@ -58,4 +59,13 @@ if __name__ == "__main__":
     parser.add_argument("extra_args", nargs=argparse.REMAINDER, help="Arguments for the script")
     
     args = parser.parse_args()
-    dispatch_task(args.script, args.extra_args)
+
+    if args.script == "open_swe":
+        from src.agentic.core.plugins.builtin.open_swe import OpenSWE
+        open_swe_plugin = OpenSWE()
+        operation = args.extra_args[0]
+        extra_args = args.extra_args[1:]
+        result = open_swe_plugin.execute(operation, *extra_args)
+        print(result)
+    else:
+        dispatch_task(args.script, args.extra_args)

@@ -1,0 +1,6 @@
+{
+  "id": "task_spec_for_T019",
+  "type": "execution_request",
+  "instruction": "You are a Technical Writer. Based on the task 'T019: Deploy backend to Vercel \u23f3 (Pending)', create a detailed technical specification file named 'SPEC_T019.md' in the '.YBIS_Dev/40_KNOWLEDGE_BASE/Specs_Draft/' directory. Use the 'write_file' tool. The spec should include: Objective, Implementation Steps, and Testing criteria.",
+  "target_agent": "Node_Agent_v1"
+}

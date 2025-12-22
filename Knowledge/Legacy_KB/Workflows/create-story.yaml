@@ -1,0 +1,56 @@
+name: "Automated Story Creation"
+description: "Creates a new user story document (.md) based on a template, ensuring all mandatory sections and acceptance criteria are met."
+trigger_events:
+  - "User request: /ybis:create-story"
+
+steps:
+  - step_id: "gather_requirements"
+    action: "Prompt user for high-level story requirements (e.g., title, epic, user persona, core functionality)."
+    output: "User requirements: [requirements_summary]"
+
+  - step_id: "select_template"
+    action: "Select the appropriate story template from templates/story-tmpl.yaml."
+    input: "templates/story-tmpl.yaml"
+    output: "Template selected: story-tmpl.yaml"
+
+  - step_id: "populate_template"
+    action: "Populate the story template with gathered requirements and project context (e.g., current tech stack, constitutional rules)."
+    input: "Story template, user requirements, YBIS_PROJE_ANAYASASI.md, tech-stack.md"
+    output: "Draft story content: [story_content]"
+
+  - step_id: "review_and_refine"
+    action: "Present the draft story to the user for review and refinement. Ensure clarity, precision, and adherence to prompt engineering principles."
+    input: "Draft story content"
+    output: "Final story content: [final_story_content]"
+    agents_involved:
+      - "Prompt Engineering Assistant" # For reviewing clarity and structure
+
+  - step_id: "save_story"
+    action: "Save the final story content to docs/stories/[story_id].md."
+    input: "Final story content, story_id"
+    output: "Story saved to: [file_path]"
+
+  - step_id: "update_tasks_or_roadmap"
+    action: "Suggest adding the new story to tasks.md or PRODUCT_ROADMAP.md, or link it to an existing epic."
+    input: "Story details, tasks.md, PRODUCT_ROADMAP.md"
+    output: "Tasks/Roadmap updated or suggestion provided."
+
+  - step_id: "log_action"
+    action: "Log the workflow execution and its outcome in DEVELOPMENT_LOG.md."
+    input: "Workflow details, outcome"
+    output: "Logged in DEVELOPMENT_LOG.md"
+
+commands_involved:
+  - "/ybis:create-story" # New command to be defined
+  - "/ybis:log-decision"
+
+agents_involved:
+  - "Orchestrator"
+  - "SM Agent"
+  - "PO Agent"
+  - "Prompt Engineering Assistant"
+version: 1.0.0
+last_updated: 2025-10-28
+purpose: Guides the user through creating a new user story based on project standards and templates.
+owner: SM Agent, PO Agent, Orchestrator
+id: create-story
