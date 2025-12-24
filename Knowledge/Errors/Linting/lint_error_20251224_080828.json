@@ -1,0 +1,8 @@
+{
+  "timestamp": "2025-12-24T08:08:28.559008",
+  "files": [
+    "C:\\Projeler\\YBIS_Dev\\tests\\unit\\test_calculator.py"
+  ],
+  "ruff_output": "PLR2004 Magic value used in comparison, consider replacing `3` with a constant variable\n  --> tests\\unit\\test_calculator.py:8:30\n   |\n 6 | def test_add_normal():\n 7 |     calc = Calculator()\n 8 |     assert calc.add(1, 2) == 3\n   |                              ^\n 9 |\n10 | def test_add_zero():\n   |\n\nPLR2004 Magic value used in comparison, consider replacing `-2` with a constant variable\n  --> tests\\unit\\test_calculator.py:16:32\n   |\n14 | def test_add_negative():\n15 |     calc = Calculator()\n16 |     assert calc.add(-1, -1) == -2\n   |                                ^^\n17 |\n18 | def test_add_type_validation():\n   |\n\nFound 2 errors.\n",
+  "error_type": "linting"
+}
