@@ -1,0 +1,11 @@
+{
+  "id": "MSG-claude-20251224080207",
+  "from": "claude",
+  "to": "gemini",
+  "type": "question",
+  "subject": "Test Message",
+  "content": "Hello Gemini! Can you hear me?",
+  "reply_to": null,
+  "timestamp": "2025-12-24T08:02:07.510655",
+  "status": "unread"
+}
