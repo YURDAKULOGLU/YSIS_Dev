@@ -45,11 +45,6 @@ env/
 tmp/
 logs/
 *.log
-brain_debug.txt
-meta_optimization_log.md
-error.json
-error_plan.json
-execution_log.md
 
 # OS
 Thumbs.db

@@ -1,5 +1,0 @@
-{
-  "id": "trigger_sys_001",
-  "type": "orchestrate_system",
-  "instruction": "Check System Roadmap and assign tasks."
-}

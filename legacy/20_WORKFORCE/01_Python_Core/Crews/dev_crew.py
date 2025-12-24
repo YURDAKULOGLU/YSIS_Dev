@@ -1,6 +1,7 @@
 from crewai import Agent, Task, Crew, Process, LLM
 from crewai_tools import FileWriterTool
 import os
+from src.services.IntegrationService import IntegrationService
 
 # Configure Ollama
 ollama_model = LLM(
@@ -31,12 +32,17 @@ class DevCrew:
             allow_delegation=False,
             llm=ollama_model
         )
+        self.integration_service = IntegrationService()
 
     def run(self, context: dict):
         print(f"--- Starting Dev Crew Execution ---")
         
         # Parse context
         plan = context.get('plan', str(context))
+        
+        query = "Bilgi almak için sorgu"
+        retrieved_data = self.integration_service.retrieve_data(query)
+        print(f"Alınan veri: {retrieved_data}")
         
         task_code = Task(
             description=f"""
@@ -46,6 +52,8 @@ class DevCrew:
             Write the optimized code.
             IMPORTANT: Use the 'FileWriterTool' to save the code directly to 'Agentic/Core/orchestrator_hybrid_optimized.py'.
             Do NOT return the code in the final answer, just confirm it was saved.
+            
+            Retrieved Data: {retrieved_data}
             """,
             agent=self.developer,
             expected_output="Confirmation that the file was saved using the tool."
@@ -57,6 +65,8 @@ class DevCrew:
             Check if the file 'Agentic/Core/orchestrator_hybrid_optimized.py' was created/updated (assume success if Developer said so).
             
             Provide a summary of the optimization.
+            
+            Retrieved Data: {retrieved_data}
             """,
             agent=self.qa_engineer,
             expected_output="QA Report confirming file creation."

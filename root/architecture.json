@@ -1,0 +1,9 @@
+{
+    "version": "4.5",
+    "components": {
+        "database": "SQLite",
+        "data_modeling": "Pydantic",
+        "version_control": "GitManager"
+    },
+    "description": "YBIS Software Factory Tier 4.5 mimarisi, SQLite veritabanı, Pydantic veri modellemesi ve GitManager sürüm kontrolü ile oluşturulmuştur."
+}

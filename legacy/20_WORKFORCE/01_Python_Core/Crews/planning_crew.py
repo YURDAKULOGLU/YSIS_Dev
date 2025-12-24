@@ -28,6 +28,7 @@ if platform.system() == "Windows":
             setattr(signal, sig_name, sig_value)
 
 from crewai import Agent, Task, Crew, Process, LLM
+from src.modules.memory.RAGMemory import RAGMemory
 import os
 
 # Set dummy API key for local Ollama (doesn't use authentication)
@@ -45,6 +46,9 @@ ollama_model = LLM(
 
 class PlanningCrew:
     def __init__(self):
+        self.model = ollama_model
+        self.rag_memory = RAGMemory()
+        
         self.product_owner = Agent(
             role='Technical Product Owner',
             goal='Analyze requirements and define clear acceptance criteria.',
@@ -65,6 +69,10 @@ class PlanningCrew:
 
     def run(self, requirement: str):
         print(f"--- Starting Planning Crew for: {requirement[:50]}... ---")
+        
+        # RAGMemory'den bilgi al
+        additional_info = self.rag_memory.retrieve_information(requirement)
+        enriched_requirement = f"{requirement} {additional_info}"
         
         task_analysis = Task(
             description=f"""

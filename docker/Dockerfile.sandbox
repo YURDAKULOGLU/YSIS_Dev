@@ -18,5 +18,5 @@ EXPOSE 80
 # Define environment variable
 ENV NAME World
 
-# Run app.py when the container launches
-CMD ["python", "docker_executor.py"]
+# Run docker_executor.py when the container launches
+CMD ["python", "src/agentic/core/plugins/docker_executor.py"]

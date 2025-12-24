@@ -1,5 +1,0 @@
-{
-  "id": "task_create_spec_002_retry",
-  "type": "spec_creation",
-  "instruction": "First, use `read_file` to read '.YBIS_Dev/10_META/Governance/3_PROTOCOLS.md'. Then, use `write_file` to create '.YBIS_Dev/40_KNOWLEDGE_BASE/Specs_Draft/SPEC_002_Log_Analyzer.md'. The content should be a technical spec for a Python script that analyzes logs."
-}

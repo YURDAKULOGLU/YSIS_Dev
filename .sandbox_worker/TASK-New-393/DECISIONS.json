@@ -1,0 +1,16 @@
+{
+  "task_id": "TASK-New-393",
+  "timestamp": "2025-12-20T17:06:24.361489",
+  "decisions": [
+    {
+      "question": "Should retry after failure?",
+      "chosen": "Yes (3/3)",
+      "rationale": "Gate validation failed"
+    }
+  ],
+  "config": {
+    "max_retries": 3,
+    "retry_count": 3,
+    "sandbox_path": ".sandbox_worker/TASK-New-393"
+  }
+}

@@ -1,0 +1,20 @@
+[tool.ruff]
+# Ruff: The fast linter
+line-length = 120
+select = ["E", "F", "I", "W", "UP", "PL"]
+ignore = []
+
+[tool.mypy]
+# MyPy: Static type checker (like TSC)
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+    "src/agentic/core/plugin_system/tests",
+]

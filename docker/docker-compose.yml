@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile.sandbox
     volumes:
-      - .:/app
-    command: ["python", "src/agentic/core/plugins/docker_executor.py"]
+      - .:/app/sandbox
+    command: ["bash", "-c", "python src/agentic/core/plugins/docker_executor.py"]
     environment:
       - PYTHONUNBUFFERED=1
     ports:

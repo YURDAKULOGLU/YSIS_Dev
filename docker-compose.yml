@@ -1,0 +1,37 @@
+services:
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.worker
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONUTF8=1
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - OLLAMA_API_BASE=http://host.docker.internal:11434
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10mb"
+        max-file: "3"
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.worker
+    command: streamlit run src/dashboard/app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    environment:
+      - OLLAMA_API_BASE=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - worker

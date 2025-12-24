@@ -1,0 +1,1503 @@
+Aşağıda **tam metin** halinde, köke/`docs/`/`templates/` altına koyup direkt kullanabileceğin “grand” set var. Hepsi **kopyala–yapıştır** çalışır.
+Dosyaları aynen bu isimlerle aç.
+
+---
+
+========================
+FILE: `docs/META_PLANES.md`
+===========================
+
+# META PLANES — Drift-Proof Bootstrap Factory
+
+Bu doküman, YBIS’in “agentic software factory” çekirdeğini **drift’e dayanıklı** şekilde büyütmek için gereken meta-katmanları (planes), zorunlu kapıları (gates), protokolleri (contracts), ve bootstrap çalışma ritüellerini tanımlar.
+
+## 0) Sözlük ve amaç
+
+### Amaç
+
+* **Core sabit** kalsın.
+* Framework’ler / ajanlar / modeller **değiştirilebilir** olsun.
+* Sistem, **kendi kendini büyütürken** drift üretmesin.
+* Her run **kanıtlı** (artifacts) ve **geri alınabilir** (rollback) olsun.
+* Sistem **tek modele bağlı** kalmasın; local + API sağlayıcılarla çalışsın.
+
+### Drift tanımı (bu sistemde)
+
+* **Truth drift:** Doküman / config / kod farklı şey söylüyor.
+* **Path drift:** Relative path / cwd kayması / duplicate root / “.YBIS_Dev” gibi hardcode.
+* **Scope drift:** Agent yanlış alana yazar (legacy/.venv/.git/sandbox).
+* **Dependency drift:** Lock yok → ortam kayar → “bende çalışıyor”.
+* **Behavior drift:** Framework eklenince core davranışı değişir.
+* **Evidence drift:** Plan/runbook/log/diff yok → ne olduğu bilinmez.
+
+Bu dokümanın hedefi: drift’in tekrarını **otomatik engellemek**.
+
+---
+
+## 1) Sistem mimarisi: Core + Planes
+
+Sistem iki ana parçadan oluşur:
+
+### 1.1 Core (değişmez)
+
+Core, framework bilmez. Sadece:
+
+* **CoreConfig** (tek truth)
+* **OrchestratorBackend** (LangGraph/Temporal/diğer olabilir)
+* **Sentinel** (drift + kalite gate)
+* **Artifact System** (PLAN/RUNBOOK/EVIDENCE/DIFF)
+
+### 1.2 Planes (meta katmanlar)
+
+Planes, “framework eklemekten” daha üst bir kavramdır: aynı problemi farklı açıdan çözer.
+
+* **Knowledge Plane:** RAG, failure memory, repo map, decision memory
+* **Spec Plane:** spec-first, contract-first, golden tasks, ADR
+* **Policy Plane:** policy-as-code, izinler, tool erişimi, sandbox rule’ları
+* **Verification Plane:** test + semantic verification + risk scanner + replay
+* **Evolution Plane:** postmortem → gate update, model router kalibrasyonu, self-heal
+
+Her plane bir “plugin” değildir; plane = sistemin davranışını stabilize eden meta-mekanizmalar setidir.
+
+---
+
+## 2) Değişmez Invariants (Anayasa)
+
+Bu maddeler “opsiyon” değil. İhlal = fail.
+
+### I-1: Single Source of Truth
+
+* Tüm path/config sadece **CoreConfig** üzerinden türetilir.
+* Kod içinde hardcoded root / `.YBIS_Dev` / `../` / `C:\` / `~` yasak.
+* Orchestrator çalışırken `cwd` git root’a sabitlenir.
+
+### I-2: Active/Archive ayrımı
+
+* Agent yalnızca **ACTIVE allowlist** alanlara yazar.
+* `legacy/`, `.venv/`, `.git/`, `.sandbox*`, `archive/` alanları **write-deny**.
+
+### I-3: Containment (Executor izolasyonu)
+
+* Executor (Aider/SWE agent) yalnız izinli file setini görür.
+* İzin kuralları “config/allowlist + ignore file” ile enforce edilir.
+* Ignore/settings dosyaları yoksa **hard fail**.
+
+### I-4: Evidence First (Artifacts zorunlu)
+
+Her run (başarılı/başarısız) şu çıktıları üretir:
+
+* `PLAN.md`
+* `RUNBOOK.md`
+* `EVIDENCE/*`
+* `CHANGES/*` (diff, changed_files.json)
+* `META.json` (model/router/env hash)
+
+Artifacts yoksa “done” yok.
+
+### I-5: Contract Over Framework
+
+* Core, framework import etmez.
+* Framework entegrasyonu yalnızca **adapter + protocol** üzerinden.
+
+### I-6: Fallback Always
+
+* Plugin/Framework çökerse sistem çalışmaya devam eder:
+
+  * Planner fallback
+  * Executor fallback
+  * Memory fallback
+  * Tools fallback (deny by default)
+
+---
+
+## 3) Plane-1: Knowledge Plane (RAG’in doğru hali)
+
+RAG burada üç şeye hizmet eder: **hata tekrarını azaltmak**, **kararları stabilize etmek**, **repo’yu doğru anlamak**.
+
+### 3.1 Failure-RAG (Hata Hafızası) — en yüksek ROI
+
+**Problem:** Aynı failure pattern’leri tekrar ediyor.
+**Çözüm:** Her failure artifacts’ı otomatik indexlenir; planner/verifier’a “benzer olay + çözüm” enjekte edilir.
+
+#### Zorunlu “Error Signature” standardı
+
+Sentinel her fail’e bir signature verir:
+
+* `SENTINEL_FAIL:FORBIDDEN_DIR_WRITE`
+* `SENTINEL_FAIL:HARDCODED_PATH`
+* `EXECUTOR_FAIL:AIDER_ARTIFACT_CODE_FENCE`
+* `MEMORY_FAIL:CHROMA_SQLITE_LOCK`
+* `VERIFY_FAIL:TESTS_FAILED`
+* `ARTIFACT_FAIL:MISSING_PLAN`
+
+Bu signature:
+
+* `artifacts/<task_id>/META.json` içine yazılır,
+* indexer tarafından memory store’a atılır,
+* bir sonraki benzer durumda retrieve edilir.
+
+#### Injection kuralı
+
+Planner’a (ve gerekirse executor/verifier’a) şu “minimum” kontekst eklenir:
+
+* Son 5 benzer failure’ın “root cause + fix summary”si
+* Bu repo için “yasak alanlar ve doğru path sistemi”
+* “Benzer çözümde yapılan yanlışlar” listesi
+
+### 3.2 Decision-RAG (Karar Hafızası / ADR)
+
+**Problem:** Mimari kararlar drift ediyor.
+**Çözüm:** ADR (Architecture Decision Record) standardı + index.
+
+* `docs/adr/ADR-YYYYMMDD-<title>.md`
+* Her ADR: Context → Decision → Consequences → Alternatives → Rollback/Exit
+
+Planner plan çıkarırken ilgili ADR’leri görür.
+
+### 3.3 Repo-RAG (Semantic Map)
+
+**Problem:** Agent yanlış dosyayı seçiyor, aynı işi iki yerde yapıyor.
+**Çözüm:** Repo’nun “semantic haritası”:
+
+* Modül sınırları
+* Entry points
+* Protocol/adapter listesi
+* Forbidden dirs
+* Test coverage sinyalleri
+
+Bu map “best-effort” çalışır; çökerse sistem çalışmaya devam eder.
+
+---
+
+## 4) Plane-2: Spec Plane (Spec-first + Contract-first)
+
+### 4.1 Spec-to-Contract-to-Code zinciri
+
+Yeni capability eklemenin tek doğru yolu:
+
+1. **SPEC** (ne istiyoruz, sınırlar, başarı kriteri)
+2. **CONTRACT** (protocol, schema, invariants)
+3. **CONTRACT TESTS** (golden tasks + plugin contract suite)
+4. **ADAPTER** (tek giriş)
+5. **IMPLEMENTATION** (framework/agent/code)
+6. **RUNBOOK** (kurulum + doğrulama + rollback)
+7. **EVIDENCE** (log + diff + meta)
+
+Spec olmadan merge yok. Contract tests olmadan merge yok.
+
+### 4.2 Golden Tasks (Altın görev seti)
+
+Bu sistem “orchestrator değişebilir” diyorsa, tek gerçek sigorta golden tasks’tır.
+
+* Her backend/agent/framework eklemesi golden suite’i koşar.
+* Golden tasks: pass/fail net, deterministik, drift’i yakalar.
+
+(Detay: `docs/GOLDEN_TASKS.md`)
+
+---
+
+## 5) Plane-3: Policy Plane (Policy-as-Code + Permissions)
+
+Bu plane drift’in çoğunu “başlamadan” öldürür.
+
+### 5.1 Policy-as-Code (basit kural motoru)
+
+Policy bir doküman değil, **çalışan kural seti** olmalı.
+
+Minimum policy maddeleri:
+
+* Forbidden dirs’e yazma: deny
+* Hardcoded path: deny
+* Tool izinleri: allowlist
+* Network: default deny (external agent’larda)
+* Artifact zorunluluğu: enforce
+* Risk bazlı HITL: risk yüksekse onay checkpoint
+
+### 5.2 Capability Permissions (step-scoped permissions)
+
+Her step, sadece gereken izinleri alır:
+
+* `cap:plan`
+* `cap:code`
+* `cap:verify`
+* `cap:tool:web`
+* `cap:tool:github`
+* `cap:memory:read`
+* `cap:memory:write`
+
+External agent’lar için default minimum = `cap:plan` bile olmayabilir; görevine göre verilir.
+
+### 5.3 Tool Registry + Audit
+
+Tool çağrıları:
+
+* argümanlarıyla birlikte loglanır
+* result summary kaydedilir
+* rate limit uygulanır
+* policy check’ten geçer
+
+---
+
+## 6) Plane-4: Verification Plane (Test + Semantik + Replay)
+
+### 6.1 Sentinel: kalite + drift gate
+
+Sentinel “unit test runner” değil, “factory gate”tir.
+
+Zorunlu gate kategorileri:
+
+* Repo hygiene gate (forbidden dirs touched?)
+* Path drift gate (hardcoded/relative/duplicate root?)
+* Artifact integrity gate (plan/runbook/evidence/diff var mı?)
+* Executor artifact gate (code fence/markers/AST parse?)
+* Contract gate (schema/invariants)
+* Dependency drift gate (lock + env hash)
+
+### 6.2 Risk Scanner (değişiklik sınıflandırma)
+
+ChangeSet risk flag’leri:
+
+* `risk:high` → auth/infra/config/core touched
+* `risk:medium` → new dependency, broad refactor
+* `risk:low` → docs/tests only
+
+Risk yüksekse:
+
+* daha sıkı verification
+* daha güçlü modele route
+* opsiyonel HITL checkpoint
+
+### 6.3 Replay Harness (Repro)
+
+Her artifact run, yeniden yürütülebilir olmalı:
+
+* aynı task spec
+* aynı scope
+* aynı env hash (veya container digest)
+* aynı verification komutları
+
+Replay komutu:
+
+* `ybis replay <task_id>`
+
+---
+
+## 7) Plane-5: Evolution Plane (Self-Improvement)
+
+Bu plane “koltuğa oturma”nın gerçek motoru.
+
+### 7.1 Auto-Postmortem → Gate Update
+
+Her fail sonrası sistem:
+
+* postmortem çıkarır (template)
+* root cause kategoriler
+* kalıcı önlem önerir:
+
+  * policy rule
+  * sentinel check
+  * prompt update
+  * golden task ekleme
+
+Kural: “Aynı root cause 2 kez olduysa” → otomatik “kalıcı önlem PR” önerisi.
+
+### 7.2 Model Router Calibration (tek modele bağlı kalmama)
+
+Sistem periyodik kalibrasyon suite’i koşar:
+
+* 20–50 mini görev
+* provider/model denemeleri
+* latency/başarı/cost skorları
+* router policy güncelleme önerisi
+
+Routing örneği:
+
+* Plan: hızlı/ucuz
+* Code patch: güçlü
+* Verify reasoning: orta (ama karar sentinel test)
+* Risk high: escalate
+
+---
+
+## 8) External Agents Pipeline (dış ajan kabul sistemi)
+
+### 8.1 Agent Package Standard
+
+External agent şu dosyalarla gelir:
+
+* `agent.yaml`
+* `adapter.py`
+* `tests_contract.py`
+* `runbook.md`
+* `policy_requirements.md`
+
+Core asla direct import yapmaz; registry → adapter.
+
+### 8.2 Sandbox + Permissions
+
+External agent:
+
+* sandbox içinde koşar
+* file allowlist (task scope)
+* tool allowlist (manifest)
+* network default deny
+
+### 8.3 Acceptance Gate
+
+Merge için:
+
+* manifest valid
+* contract tests pass
+* drift scan pass
+* artifacts pass
+* replay pass (toleranslı)
+
+---
+
+## 9) Operasyonel workflow (Agent çalışma ritüeli)
+
+### 9.1 Her task için “Definition of Done”
+
+* artifacts var
+* sentinel pass
+* rollback var
+* contract suite pass (gerekliyse)
+* scope rules ihlal edilmedi
+
+### 9.2 Her framework ekleme için “Definition of Done”
+
+* adapter + contracts + tests_contract + runbook + policy_requirements
+* fallback tanımlı
+* golden tasks + plugin contract suite pass
+
+---
+
+## 10) Prompt & Workflow Pack (kopyala-yapıştır)
+
+Aşağıdaki metinler “planner/executor/verifier/postmortem” için standart prompt iskeletleridir.
+(İstersen aynen `docs/PROMPTS.md` diye ayrı dosyaya da taşıyabilirsin.)
+
+### 10.1 SYSTEM PROMPT (Core)
+
+* Sen bir “Factory Agent”sın. Amaç: görevleri kanıtlı ve drift’siz tamamlamak.
+* Forbidden dirs’e asla yazma.
+* Path’leri sadece CoreConfig üzerinden türet.
+* Her run artifacts üret: PLAN/RUNBOOK/EVIDENCE/CHANGES/META.
+* Sentinel fail ise “done” deme.
+* Her değişiklikte rollback planı ver.
+* Framework ekleme ritüeline uy: spec→contract→tests→adapter→impl→runbook→evidence.
+* Single model bağımlılığı yok: model router kullan, gerekirse provider değiştir.
+
+### 10.2 PLANNER PROMPT (Plan üretimi)
+
+Girdi:
+
+* TaskSpec
+* Repo semantic map (varsa)
+* Relevant ADRs (varsa)
+* Failure-RAG retrieval (varsa)
+
+Çıktı: PLAN.md formatında
+
+* Goal
+* Scope (dokunulacak dosyalar)
+* Steps (numaralı, küçük adım)
+* Success criteria (test/verify)
+* Risk flags
+* Rollback plan
+* Evidence plan (hangi loglar/komutlar)
+
+Kurallar:
+
+* Scope genişse daralt; “minimum diff”.
+* Forbidden alanlara dokunma.
+* Her adımın doğrulaması olmalı.
+
+### 10.3 EXECUTOR PROMPT (Değişiklik uygulama)
+
+Girdi:
+
+* PLAN
+* Scope allowlist
+* policy summary
+* model routing hints
+
+Çıktı:
+
+* ChangeSet (changed files, diff summary)
+* “neden bu değişiklik” kısa açıklama
+* Yeni komutlar (runbook’a girecek)
+
+Kurallar:
+
+* Scope dışı dosyaya dokunma.
+* Massive refactor yok; küçük adımlı commit mantığı.
+* Aider artifacts bırakma; code fences yok.
+
+### 10.4 VERIFIER PROMPT (Sentinel destek)
+
+Girdi:
+
+* ChangeSet
+* test results
+* drift scan results
+
+Çıktı:
+
+* VerificationResult: pass/fail
+* fail ise root cause label + fix suggestion
+* gerekiyorsa “kalıcı önlem” önerisi
+
+Kurallar:
+
+* Pass için artifacts eksiksiz olmalı.
+* Forbidden patterns varsa otomatik fail.
+* “Bence çalışır” yok; test/evidence.
+
+### 10.5 POSTMORTEM PROMPT
+
+Girdi:
+
+* Failure signature
+* logs
+* plan
+* changeset
+* environment meta
+
+Çıktı: Postmortem template doldur
+
+* root cause
+* trigger
+* detection
+* resolution
+* prevention: policy/gate/test/prompt
+
+---
+
+## 11) İlk kurulum görevleri (bu doküman aktive edilince)
+
+Bu sistem “aktif” sayılması için yapılacak minimum işler:
+
+1. `config/` altına ignore/settings dosyalarını koy ve executor hard fail yap.
+2. Sentinel’e forbidden dirs + hardcoded path + artifact gate ekle.
+3. Golden task suite’i ekle, nightly veya her merge öncesi koş.
+4. Model router abstraction’ı ekle (ollama + API provider stub).
+
+Bunlar tamamlanınca stacking başlar: RolePlanner → SWE executor → connectors → memory injection → observability.
+
+---
+
+END OF FILE
+
+---
+
+========================
+FILE: `docs/GOLDEN_TASKS.md`
+============================
+
+# GOLDEN TASKS — Contract & Drift Regression Suite
+
+Bu dosya, sistemin drift-proof kalması için gereken “altın görev seti”ni tanımlar.
+Amaç: orchestrator/framework/model değişse bile **core davranış** aynı kalsın.
+
+## 0) Neden Golden Tasks?
+
+* Orchestrator backend değişebilir (LangGraph → Temporal vs).
+* Planner/Executor framework değişebilir (SimplePlanner → CrewAI vs).
+* Model/provider değişebilir (Ollama → API vs).
+  Ama şu değişmemeli:
+* forbidden dirs’e yazma = fail
+* hardcoded path = fail
+* artifacts yok = fail
+* contract schema bozulmaz
+* replay/repro mümkün
+
+Golden tasks bunu garanti eder.
+
+---
+
+## 1) Koşum Kuralları
+
+### 1.1 Ne zaman koşulur?
+
+* Her merge öncesi (en az “core” subset)
+* Her orchestrator backend değişimi
+* Her plugin eklemesi
+* Haftalık nightly full suite
+
+### 1.2 Başarı kriteri
+
+* PASS: beklenen pass/fail + beklenen signature + artifacts tam
+* FAIL: yanlış signature, artifacts eksik, forbidden alan touch, schema drift
+
+### 1.3 Çıktı standardı
+
+Her golden run artifacts üretir:
+
+* `artifacts/golden/<run_id>/results.json`
+* her task için ayrı task_id artifacts linki
+
+---
+
+## 2) Task Kategorileri
+
+### A) Drift Guards (mutlaka fail)
+
+#### GT-A1: Forbidden Directory Write Attempt
+
+* TaskSpec: “legacy/ içine küçük bir dosya yaz”
+* Beklenen: FAIL
+* Signature: `SENTINEL_FAIL:FORBIDDEN_DIR_WRITE`
+* Artifacts: PLAN + RUNBOOK + EVIDENCE + CHANGES (CHANGES boş olabilir ama evidence şart)
+
+#### GT-A2: Hardcoded Path Injection
+
+* TaskSpec: “core içinde `.YBIS_Dev/...` ile path oluştur”
+* Beklenen: FAIL
+* Signature: `SENTINEL_FAIL:HARDCODED_PATH`
+
+#### GT-A3: Relative Path Without Normalize
+
+* TaskSpec: “`../` ile dosya oku/yaz”
+* Beklenen: FAIL
+* Signature: `SENTINEL_FAIL:RELATIVE_PATH`
+
+#### GT-A4: Artifact Missing
+
+* TaskSpec: “Plan üret ama PLAN.md yazmadan done de”
+* Beklenen: FAIL
+* Signature: `ARTIFACT_FAIL:MISSING_PLAN`
+
+#### GT-A5: Executor Artifact (Code Fence)
+
+* TaskSpec: “python dosyasına ``` ekle”
+* Beklenen: FAIL
+* Signature: `EXECUTOR_FAIL:AIDER_ARTIFACT_CODE_FENCE`
+
+---
+
+### B) Core Functionality (mutlaka pass)
+
+#### GT-B1: Small Refactor + Unit Test Pass
+
+* TaskSpec: “küçük bir fonksiyonu rename et, tests geçsin”
+* Beklenen: PASS
+* Success criteria: belirli test komutu pass
+* Risk: low
+
+#### GT-B2: Add a New Pure Function + Test
+
+* TaskSpec: “src altında yeni pure function ekle, test yaz”
+* Beklenen: PASS
+* Evidence: test log
+
+#### GT-B3: Config Read + Path Normalize
+
+* TaskSpec: “CoreConfig’ten path al, absolute normalize et”
+* Beklenen: PASS
+* Kanıt: log + unit test
+
+---
+
+### C) Behavior Contracts (schema/invariants)
+
+#### GT-C1: Plan Schema Invariants
+
+* TaskSpec: “plan üret”
+* Beklenen: PASS
+* Plan zorunlu alanlar:
+
+  * goal
+  * scope listesi
+  * steps listesi
+  * success criteria listesi
+  * rollback
+  * risk flags
+
+#### GT-C2: ChangeSet Schema Invariants
+
+* TaskSpec: “small change uygula”
+* Beklenen: PASS
+* ChangeSet alanları:
+
+  * changed_files[]
+  * diff_summary
+  * risk_flags[]
+  * tool_calls[] (varsa)
+
+#### GT-C3: VerificationResult Schema Invariants
+
+* TaskSpec: “verify koş”
+* Beklenen: PASS
+* alanlar:
+
+  * pass/fail
+  * signatures[]
+  * failing_checks[] (fail ise)
+  * evidence_refs[]
+
+---
+
+### D) Replay / Repro
+
+#### GT-D1: Replay Must Reproduce Verification
+
+* TaskSpec: “B1’i koş, sonra replay”
+* Beklenen: replay’de verification aynı sonucu vermeli
+* Tolerans: log satırları farklı olabilir ama PASS/FAIL aynı
+
+---
+
+### E) Model Router Behavior (tek modele bağlı olmama)
+
+#### GT-E1: Provider Switch Plan vs Code
+
+* TaskSpec: “plan için provider A, code için provider B route et”
+* Beklenen: PASS
+* META.json içinde provider seçimi kaydı olmalı
+
+#### GT-E2: Escalation on High Risk
+
+* TaskSpec: “core config’i değiştirmeye çalış”
+* Beklenen: risk:high → stronger provider route + HITL checkpoint (policy’ye göre)
+* Eğer HITL yoksa: stricter verify + extra evidence
+
+---
+
+### F) External Agent Acceptance
+
+#### GT-F1: External Agent Manifest Validation
+
+* Input: minimal agent.yaml
+* Beklenen: PASS
+
+#### GT-F2: External Agent Forbidden Tool Call
+
+* TaskSpec: “external agent network call yapsın”
+* Beklenen: FAIL (default deny)
+* Signature: `POLICY_FAIL:NETWORK_DENY`
+
+---
+
+## 3) Minimal “Core Subset” (her commit)
+
+En az şu 8 task:
+
+* GT-A1, A2, A4, A5
+* GT-B1, B2
+* GT-C1, C2
+* GT-E1 (router varsa)
+
+---
+
+## 4) Skorlama ve Alarm
+
+* drift failures > 0 → kırmızı alarm
+* aynı signature 2 kez → Evolution plane “kalıcı önlem PR” üretmeli
+* PASS oranı düşerse: son 10 change incelenir
+
+---
+
+## 5) Golden Tasks nasıl eklenir?
+
+Yeni task eklemek için:
+
+1. TaskSpec yaz
+2. Expected pass/fail + signature tanımla
+3. Evidence/Artifacts expectation tanımla
+4. Replay gereksinimi varsa ekle
+5. Nightly suite’e ekle
+
+---
+
+END OF FILE
+
+---
+
+========================
+FILE: `templates/POSTMORTEM.md`
+===============================
+
+# Postmortem — <TASK_ID / INCIDENT_ID>
+
+Date: <YYYY-MM-DD>
+Owner: <agent/human>
+Status: Draft / Final
+
+## 1) Summary
+
+* What happened (1–3 sentences):
+* Impact:
+* Severity: Low / Medium / High / Critical
+* Affected components:
+* First detected at:
+* Resolved at:
+
+## 2) Failure Signature(s)
+
+List all:
+
+* `<SIGNATURE_1>`
+* `<SIGNATURE_2>`
+
+## 3) Context
+
+### 3.1 Task Spec (original intent)
+
+* Goal:
+* Scope:
+* Success criteria:
+
+### 3.2 Environment
+
+* OS:
+* Python/Node versions:
+* Provider/model used (from META.json):
+* Sandbox/container digest (if any):
+* Lockfile hash:
+
+## 4) Timeline (UTC+03 or repo standard)
+
+* T0: task started
+* T1: plan produced
+* T2: execution applied changes
+* T3: sentinel failed
+* T4: retry attempts
+* T5: final outcome
+
+## 5) What failed exactly?
+
+### 5.1 Symptom
+
+* Logs excerpt references (artifact paths, not raw dumps):
+* Tests failing:
+* Drift checks failing:
+
+### 5.2 Root cause (single best explanation)
+
+Choose one primary label:
+
+* ROOT_CAUSE:TRUTH_DRIFT
+* ROOT_CAUSE:PATH_DRIFT
+* ROOT_CAUSE:SCOPE_DRIFT
+* ROOT_CAUSE:DEPENDENCY_DRIFT
+* ROOT_CAUSE:BEHAVIOR_DRIFT
+* ROOT_CAUSE:EVIDENCE_DRIFT
+* ROOT_CAUSE:TOOL_POLICY
+* ROOT_CAUSE:MODEL_ROUTING
+* ROOT_CAUSE:SANDBOX
+
+Root cause explanation (clear + concrete):
+
+## 6) Why was it not prevented earlier?
+
+* Missing gate? (which one)
+* Gate existed but misconfigured? (how)
+* Signal existed but ignored? (why)
+
+## 7) Resolution (what fixed it)
+
+* Immediate fix:
+* Verification that fix worked (test command + result):
+* Evidence references (artifact paths):
+
+## 8) Permanent Prevention Plan (the important part)
+
+For each item, write: **Change → Where → How verified**
+
+### 8.1 Policy changes
+
+* Change:
+* File/location:
+* Verification (golden task / sentinel rule):
+
+### 8.2 Sentinel / drift gate changes
+
+* New check:
+* Pattern/signature:
+* Verification:
+
+### 8.3 Golden tasks to add/update
+
+* New/updated task:
+* Expected signature:
+* Why it prevents recurrence:
+
+### 8.4 Prompt / workflow changes
+
+* Prompt area (planner/executor/verifier/router):
+* Change:
+* Verification:
+
+### 8.5 Repo hygiene / layout changes
+
+* Move/delete/ignore:
+* Why:
+* Verification:
+
+## 9) Follow-ups (action list)
+
+| ID | Action | Owner | Priority | Due | Status |
+| -- | ------ | ----- | -------- | --- | ------ |
+| 1  |        |       | P0/P1/P2 |     |        |
+
+## 10) Lessons learned (short)
+
+* Lesson 1:
+* Lesson 2:
+* Lesson 3:
+
+## 11) Links
+
+* Artifact folder:
+* Related ADR:
+* Related PRs:
+
+---
+
+END OF FILE
+
+---
+
+## BONUS (tek mesajda daha fazla “workflow/prompts” istedin diye)
+
+Aşağıdaki 2 dosya da aşırı iş görür. İstersen bunları da ekle (opsiyonel ama öneriyorum):
+
+---
+
+========================
+FILE: `docs/EXTERNAL_AGENTS_PIPELINE.md`
+========================================
+
+# External Agents Pipeline (Acceptance + Runtime)
+
+Bu doküman, dışarıdan gelen ajanların güvenli ve drift-proof şekilde sisteme kabulünü ve runtime’da çağrılmasını tanımlar.
+
+## 1) External Agent Package Standard
+
+Her agent paketi şunları içermeli:
+
+* `agent.yaml` (manifest)
+* `adapter.py` (protocol entry)
+* `tests_contract.py`
+* `runbook.md`
+* `policy_requirements.md`
+
+### agent.yaml minimum alanlar
+
+* name, version
+* capabilities (plan/code/tools/memory)
+* required_tools (allowlist)
+* required_scopes (file allowlist)
+* entrypoint
+* resource_limits (cpu/mem/time)
+* network_policy (default deny)
+
+## 2) Acceptance Gate (PR Merge)
+
+Ajan PR’ı gelince:
+
+1. Manifest validation
+2. Contract tests
+3. Drift scan:
+
+   * forbidden dir touched?
+   * hardcoded path?
+4. Artifact requirement check (runbook + evidence)
+5. Sandbox run (network deny default)
+6. Replay check (toleranslı)
+
+Pass → Trusted registry
+Fail → Postmortem + signature
+
+## 3) Runtime Execution
+
+Orchestrator step → capability resolver → agent select:
+
+* internal trusted > external trusted > experimental
+
+Runtime rules:
+
+* sandbox required
+* file scope allowlist enforced
+* tool allowlist enforced
+* evidence always saved
+* sentinel must verify
+
+---
+
+END OF FILE
+
+---
+
+========================
+FILE: `docs/PROMPTS_WORKFLOWS.md`
+=================================
+
+# Prompts & Workflows Pack (Factory Mode)
+
+Bu dosya, planner/executor/verifier/router/postmortem için standardize prompt ve workflow’ları içerir.
+
+## 1) Core Rules (always)
+
+* Forbidden dirs’e yazma yok.
+* Path’ler CoreConfig’ten.
+* Artifacts zorunlu (plan/runbook/evidence/diff/meta).
+* Sentinel fail ise “done” yok.
+* Framework entegrasyonu ritüeli: spec→contract→tests→adapter→impl→runbook→evidence.
+* Single model yok: router + provider.
+
+## 2) Planner Template (PLAN.md üret)
+
+Çıktı şablonu:
+
+* Goal
+* Scope (files)
+* Steps (numbered, small)
+* Success criteria (commands/tests)
+* Risks (flags)
+* Rollback
+* Evidence plan
+
+## 3) Executor Template (ChangeSet)
+
+* changed_files[]
+* diff_summary
+* risk_flags[]
+* tool_calls[]
+* runbook_updates[]
+
+Rules:
+
+* Scope dışına çıkma.
+* Massive refactor yok.
+* Code-fence marker yok.
+
+## 4) Verifier Template (VerificationResult)
+
+* pass/fail
+* signatures[]
+* failing_checks[]
+* evidence_refs[]
+* recommended_fix (fail ise)
+
+## 5) Router Template (Provider selection)
+
+Inputs:
+
+* task type (plan/code/verify)
+* risk flags
+* budget/latency target
+  Outputs:
+* selected provider/model
+* reason
+* fallback strategy
+
+## 6) Auto-Postmortem Template
+
+* signature
+* root cause label
+* permanent prevention actions (policy/gate/golden/prompt)
+
+---
+
+END OF FILE
+
+---
+
+### İstersen sıradaki adım (benim en çok önerdiğim)
+
+Bu dokümanlar tek başına “anlatım”ı bitiriyor; ama “koltuğa oturtma” için iki küçük şey daha şart:
+
+1. **`config/` dosyalarını** (aider ignore + model settings) aktif hale getirmek
+2. **Sentinel kurallarını** (forbidden dirs + artifact gate + hardcoded path) gerçekten enforce etmek
+
+Eğer istersen, bir sonraki mesajda **tam metin** olarak şu ikisini de yazıp vereyim (kopyala-yapıştır):
+
+* `config/.sandbox_aiderignore` (allow/deny başlangıç seti)
+* `config/aider_model_settings.yml` (multi-provider router örneği + fallback)
+
+Bu ikisi gelince, agent gerçekten “drift kaymasını engelleyerek” çalışmaya başlar.
+Aşağıdakileri **aynı isimlerle** repo köküne/`config/` altına koy. (Kopyala–yapıştır.)
+Bunlar:
+
+1. Agent’ın bu devasa dokümanı **nasıl okuyup uygulayacağını** söyleyen “start” dosyası
+2. Aider için **drift/scope** kontrolü yapan `.sandbox_aiderignore`
+3. Aider için **multi-model / multi-provider** model settings
+4. (Opsiyonel ama önerilir) `.aider.conf.yml` (komutları sadeleştirmek + default’ları kilitlemek)
+
+---
+
+========================
+FILE: `AGENT_READ_THIS_FIRST.md`
+================================
+
+# READ THIS FIRST — YBIS Bootstrap Factory Agent Operating Manual
+
+Bu repo “agentic software factory”dir. Sen (CLI agent) bu fabrikanın operatörüsün.
+**Hedef:** görevleri drift’siz bitir, kanıt üret, sistemi kendi kendine büyütecek şekilde framework stacking’i güvenli hale getir.
+
+---
+
+## 0) Mutlak Kurallar (ihlal = fail)
+
+1. **Forbidden dirs’e yazma yok:** `legacy/`, `.venv/`, `.git/`, `.sandbox*`, `archive/`, `site-packages/`
+2. **Path hardcode yok:** `.YBIS_Dev`, `../` (normalize edilmemiş), `C:\`, `~`
+3. **Artifacts zorunlu:** Her run sonunda `PLAN.md`, `RUNBOOK.md`, `EVIDENCE/*`, `CHANGES/*`, `META.json`
+4. **Sentinel fail ise “done” yok.**
+5. **Framework core’a sızamaz:** her entegrasyon `adapter + contracts + tests_contract + runbook + policy` ile olur.
+6. **Tek modele bağlı kalma:** Router/Provider abstraction kullan; gerekirse API/provider switch.
+
+---
+
+## 1) Bu doküman seti nasıl okunacak? (okuma sırası)
+
+Aşağıdaki dosyaları **sırayla** oku; okurken not çıkarma yerine “kısa özet + zorunlu invariants listesi” üret.
+
+1. `docs/META_PLANES.md`
+
+   * Invariants (Anayasa) + Planes + gates
+2. `docs/GOLDEN_TASKS.md`
+
+   * regression sigortası; pass/fail signature listesi
+3. `docs/EXTERNAL_AGENTS_PIPELINE.md`
+
+   * dış agent kabul + sandbox/policy
+4. `docs/PROMPTS_WORKFLOWS.md`
+
+   * planner/executor/verifier/router standardları
+
+**Okuma çıktı formatı (tek sayfa):**
+
+* “Core invariants” (madde madde)
+* “Forbidden writes” listesi
+* “Artifacts checklist”
+* “En acil 5 gap” (repo içindeki mevcut durumla kıyasla)
+
+---
+
+## 2) Başlangıç Sanity Check (çalışmaya başlamadan)
+
+### 2.1 Dosyalar var mı?
+
+* `config/.sandbox_aiderignore` ✅
+* `config/aider_model_settings.yml` ✅
+* (opsiyonel) `config/.aider.conf.yml` ✅
+* `docs/*` dokümanları ✅
+
+Eksikse: **önce oluştur** (bu mesajdaki içerikleri kullan).
+
+### 2.2 Active/Archive ayrımı uygulanıyor mu?
+
+* Active allowlist: `src/ tests/ docs/ config/ templates/ scripts/`
+* Forbidden/Archive: `legacy/ archive/ .venv/ .git/ .sandbox*`
+
+Eğer repo hâlâ `legacy/.venv` gibi büyük yükler taşıyorsa:
+
+* “P0” olarak temizlemeden framework stacking başlatma.
+
+---
+
+## 3) İlk görev: “Factory Gates’i aktif et”
+
+Bu repo için ilk sprint görevleri (P0):
+
+### P0-1 — Containment gerçek olsun
+
+* Aider çağrılarında `--aiderignore config/.sandbox_aiderignore`
+* Aider model settings: `--model-settings-file config/aider_model_settings.yml`
+* Bu dosyalar yoksa **hard fail** (sessiz devam yok)
+
+### P0-2 — Sentinel drift gate’leri
+
+Sentinel şu kontrolleri **hard fail** yapacak:
+
+* forbidden dirs changed?
+* hardcoded/relative path var mı?
+* artifacts eksik mi?
+* code fence / marker / AST parse fail var mı?
+* lock/env hash kanıtı var mı? (en az meta’da)
+
+### P0-3 — Artifacts zorunluluğu
+
+Orchestrator her run sonunda artifacts üretmek zorunda.
+Artifacts yoksa: `ARTIFACT_FAIL:*` signature.
+
+---
+
+## 4) Çalışma Protokolü (her task’te aynı)
+
+**RUN LOOP (tek doğru akış):**
+
+1. Intake → TaskSpec
+2. Plan → `PLAN.md`
+3. Execute → ChangeSet (diff)
+4. Verify → Sentinel
+5. Artifacts write → `RUNBOOK.md`, `EVIDENCE/*`, `CHANGES/*`, `META.json`
+6. Decide:
+
+   * PASS → done
+   * FAIL → retry (limitli) + postmortem
+
+**Her fail sonrası:** `templates/POSTMORTEM.md` doldur (auto-postmortem).
+
+---
+
+## 5) “Devasa dokümanı append ederek kurma” yöntemi
+
+Bu repo’da canonical dokümanlar `docs/` altındadır.
+**Append ile tek mega dosya üretmek** istenirse:
+
+* Hedef dosya: `BOOTSTRAP_FACTORY_FULL.md` (root)
+* İçerik sırası:
+
+  1. `AGENT_READ_THIS_FIRST.md`
+  2. `docs/META_PLANES.md`
+  3. `docs/GOLDEN_TASKS.md`
+  4. `docs/EXTERNAL_AGENTS_PIPELINE.md`
+  5. `docs/PROMPTS_WORKFLOWS.md`
+
+**Kural:** Mega dosya sadece “derleme çıktısıdır”.
+Kaynak dokümanlar değişmeden kalır; mega dosya yeniden üretilir.
+
+---
+
+## 6) Model bağımsızlık standardı
+
+* Plan / Code / Verify çağrıları “provider string” görmez.
+* Tüm seçim `ModelRouter` üzerinden olur.
+* Router politikası:
+
+  * plan: hızlı/ucuz
+  * code: güçlü
+  * verify: orta + sentinel test karar verici
+  * risk:high → escalate + (policy’ye göre) HITL
+
+---
+
+## 7) İlk çalıştırma önerisi (Aider)
+
+Aider’ı çalıştırırken (manuel kullanım için örnek):
+
+* `--aiderignore config/.sandbox_aiderignore`
+* `--model-settings-file config/aider_model_settings.yml`
+* `--no-auto-commits`
+* `--no-pretty`
+
+(Detaylar opsiyonel `.aider.conf.yml` ile de set edilebilir.)
+
+---
+
+END OF FILE
+
+---
+
+========================
+FILE: `config/.sandbox_aiderignore`
+===================================
+
+# Aider ignore patterns (gitignore-style)
+
+# Amaç: drift/scope kaymasını azaltmak + büyük/gürültü dosyaları map’ten çıkarmak
+
+# Not: Aider ignore, Aider'ın dosya seçimi ve repo map kapsamını etkiler.
+
+# --- Forbidden / Archive / Toxic zones ---
+
+legacy/
+archive/
+.venv/
+venv/
+.env
+.git/
+.sandbox*/
+site-packages/
+dist-info/
+
+# --- Secrets / credentials ---
+
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
+**/*secret*
+**/*secrets*
+**/*credential*
+**/*credentials*
+**/*apikey*
+**/*api_key*
+**/*token*
+
+# --- Big / generated / build artifacts ---
+
+node_modules/
+dist/
+build/
+out/
+.coverage/
+coverage/
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+**pycache**/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/*.so
+**/*.dylib
+**/*.dll
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# --- Jupyter / data dumps ---
+
+.ipynb_checkpoints/
+**/*.ipynb
+**/*.parquet
+**/*.feather
+**/*.pkl
+**/*.pickle
+**/*.csv
+**/*.tsv
+
+# --- Archives / media ---
+
+**/*.zip
+**/*.7z
+**/*.rar
+**/*.tar
+**/*.gz
+**/*.bz2
+**/*.xz
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.webp
+**/*.mp4
+**/*.mov
+
+# --- Aider / chat history clutter ---
+
+.aider.chat.history.md
+.aider.input.history
+.aider*
+!.aider.conf.yml
+!.aiderignore
+!.aider.model.settings.yml
+!.aider.model.metadata.json
+
+# --- Artifacts (factory evidence) should not be edited by Aider ---
+
+artifacts/
+**/artifacts/
+
+# --- Local DB / embeddings / vector stores ---
+
+Knowledge/LocalDB/
+**/*chroma*/
+**/*.sqlite
+**/*.sqlite3
+
+# --- OS junk ---
+
+.DS_Store
+Thumbs.db
+
+# --- Optional: keep focus on active code ---
+
+# If you want even stricter scope, uncomment the next line to ignore everything,
+
+# then explicitly unignore selected dirs with !rules (only if Aider supports negation as expected).
+
+# *
+
+# !src/
+
+# !tests/
+
+# !docs/
+
+# !config/
+
+# !templates/
+
+# !scripts/
+
+END OF FILE
+
+---
+
+========================
+FILE: `config/aider_model_settings.yml`
+=======================================
+
+# Aider advanced model settings file
+
+# Format: list of dicts. Each entry targets a "name:" model.
+
+# You can also define global extra params via the special model name: aider/extra_params
+
+#
+
+# This file is meant to support:
+
+# - multi-provider / multi-model usage
+
+# - consistent edit formats
+
+# - stable defaults (streaming, repo map usage, etc.)
+
+#
+
+# Usage example:
+
+# aider --model-settings-file config/aider_model_settings.yml --model <model-name> ...
+
+* name: aider/extra_params
+  extra_params:
+
+  # Common defaults sent to litellm.completion() when supported by provider/model
+
+  max_tokens: 4096
+
+  # You can add headers or other provider-specific params here.
+
+  # extra_headers:
+
+  # X-Custom-Header: value
+
+# --- Local (Ollama) fast model for planning / lightweight edits ---
+
+* name: ollama/llama3.1
+  edit_format: diff
+  use_repo_map: true
+  use_system_prompt: true
+  streaming: true
+  use_temperature: true
+  extra_params:
+  temperature: 0.6
+  max_tokens: 2048
+
+# --- Stronger local model (if you run it) ---
+
+* name: ollama/qwen2.5-coder
+  edit_format: diff
+  use_repo_map: true
+  use_system_prompt: true
+  streaming: true
+  use_temperature: true
+  extra_params:
+  temperature: 0.4
+  max_tokens: 4096
+
+# --- OpenAI (API) general strong ---
+
+* name: openai/gpt-4o
+  edit_format: diff
+  use_repo_map: true
+  use_system_prompt: true
+  streaming: true
+  use_temperature: true
+  extra_params:
+  temperature: 0.4
+  max_tokens: 4096
+
+# --- OpenAI (API) fast/cheap ---
+
+* name: openai/gpt-4o-mini
+  edit_format: diff
+  use_repo_map: true
+  use_system_prompt: true
+  streaming: true
+  use_temperature: true
+  extra_params:
+  temperature: 0.5
+  max_tokens: 2048
+
+# --- Anthropic (API) strong ---
+
+* name: anthropic/claude-3-7-sonnet
+  edit_format: diff
+  use_repo_map: true
+  use_system_prompt: true
+  streaming: true
+  use_temperature: true
+  extra_params:
+  temperature: 0.4
+  max_tokens: 4096
+
+# --- DeepSeek (API) option ---
+
+* name: deepseek/deepseek-chat
+  edit_format: diff
+  use_repo_map: true
+  use_system_prompt: true
+  streaming: true
+  use_temperature: true
+  extra_params:
+  temperature: 0.4
+  max_tokens: 4096
+
+END OF FILE
+
+---
+
+========================
+FILE: `config/.aider.conf.yml`
+==============================
+
+# Aider configuration (no secrets here)
+
+# This file helps keep CLI calls consistent. Secrets go in your shell env or a local .env (NOT committed).
+
+#
+
+# Aider loads .aider.conf.yml from:
+
+# home dir -> git root -> current dir (later wins)
+
+#
+
+# If you use this, your CLI can be shorter:
+
+# aider --model-settings-file config/aider_model_settings.yml --aiderignore config/.sandbox_aiderignore --model openai/gpt-4o
+
+# Safety / reproducibility
+
+no-auto-commits: true
+dirty-commits: false
+pretty: false
+
+# Repo map controls (tune if repo is huge)
+
+use-repo-map: true
+map-refresh: auto
+map-tokens: 1024
+
+# Ignore file (we still pass --aiderignore from executor, but having it here is convenient)
+
+aiderignore: config/.sandbox_aiderignore
+
+# Optional aliases (so you can do: aider --model fast)
+
+alias:
+
+* "fast:openai/gpt-4o-mini"
+* "smart:openai/gpt-4o"
+* "local:ollama/llama3.1"
+
+END OF FILE
+
+---
+
+## Agent’a “en başta” verilecek tek cümlelik çalışma talimatı (copy/paste)
+
+Bunu CLI agent’ın ilk mesajına koy:
+
+> “Önce `AGENT_READ_THIS_FIRST.md`’i uygula; dokümanları belirtilen sırayla oku; P0 görevlerini (containment+sentinel+artifacts) bitirmeden yeni framework ekleme. Aider’ı `--aiderignore config/.sandbox_aiderignore --model-settings-file config/aider_model_settings.yml` ile çalıştır; forbidden dirs’e yazma; her run artifacts üret; sentinel fail ise done deme.”
+
+İstersen bir sonraki adımda ben sana **tek bir “BOOTSTRAP_FACTORY_FULL.md”** derlenmiş mega dosyayı da (append edilmiş haliyle) aynı formatta üretip vereyim; direkt root’a koyarsın.

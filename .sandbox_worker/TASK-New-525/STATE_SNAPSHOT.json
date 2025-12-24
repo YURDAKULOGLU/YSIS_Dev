@@ -1,0 +1,10 @@
+{
+  "task_id": "TASK-New-525",
+  "phase": "failed",
+  "started_at": "2025-12-20T17:00:23.206983",
+  "completed_at": "2025-12-20T17:01:50.050434",
+  "retry_count": 3,
+  "max_retries": 3,
+  "error": "Code validation failed after 3 retries: Output streamed to console.",
+  "success": false
+}

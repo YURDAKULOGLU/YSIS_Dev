@@ -1,0 +1,991 @@
+# YBIS Grand Vision & Roadmap
+
+> **YBIS** = Yurdakul Bilgi İşlemleri Sistemi
+> **Tek cümle:** Kendi kendini inşa eden, her adımda genişleyen, sonunda export edilebilir bir agentic software factory.
+
+---
+
+## PART 1: CORE CONCEPT
+
+### 1.1 Ne Bu?
+
+YBIS üç şeyi aynı anda yapan bir sistem:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  KENDİNİ GELİŞTİRİYOR                                          │
+│  Her framework ekleniyor, sistem büyüyor                        │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  EXPORT EDİLİYOR                                                │
+│  Her stable milestone'da versiyonlanıp paketleniyor            │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  GERÇEK PROJELER GELİŞTİRİLİYOR                                │
+│  Export edilen versiyon başka projelerde kullanılıyor          │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 1.2 CEO Modeli: Claude Code'un Evrimi
+
+Claude Code başlangıçta her şeyi yapıyor. Ama her framework eklendikçe **işi bırakıyor**:
+
+```
+ZAMAN ──────────────────────────────────────────────────────────►
+
+Başlangıç:  [████████████████████████] Claude Code does everything
+                
++Aider:     [████████████████        ] Claude Code
+            [                ████████] Aider (kod yazıyor)
+            
++LangGraph: [████████████            ] Claude Code  
+            [            ████████████] Aider + LangGraph
+            
++Mem0:      [████████                ] Claude Code
+            [        ████████████████] Aider + LangGraph + Mem0
+            
++MCP:       [████                    ] Claude Code
+            [    ████████████████████] Full Worker Ecosystem
+
+Final:      [██                      ] Claude Code (sadece meta-kararlar)
+            [  ██████████████████████] Workers handle everything
+```
+
+**Claude Code'un tek kod yazacağı durumlar:**
+- Aynı hata 2+ kez olduysa → kalıcı fix
+- Yeni gate/policy lazımsa
+- Worker contract güncellenmesi gerekiyorsa
+- "Hangi framework'ü eklemeliyim?" kararı
+
+### 1.3 Meta-Need → Framework Entegrasyonu
+
+Sistem eksiklik fark ettiğinde otomatik olarak framework ekliyor:
+
+```
+"Hafıza lazım" ──► Mem0 entegrasyonu
+"Workflow lazım" ──► LangGraph entegrasyonu  
+"Tool standard lazım" ──► MCP entegrasyonu
+```
+
+Bu döngü:
+```
+┌─────────────────────────────────────┐
+│  Task sırasında eksiklik fark et   │
+│  (META-NEED)                        │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│  Framework seç                      │
+│  MEMORY → mem0, qdrant, chroma      │
+│  WORKFLOW → langgraph, temporal     │
+│  TOOL → mcp                         │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│  Entegrasyon ritüeli:               │
+│  spec → contract → test → adapter   │
+│  → impl → verify                    │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│  Artık bu capability VAR            │
+│  Claude Code bu işe KARIŞMIYOR      │
+└─────────────────────────────────────┘
+```
+
+---
+
+## PART 2: ARCHITECTURE
+
+### 2.1 Multi-Terminal (Zorunlu - MVP'den itibaren)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        YBIS CORE                                │
+│                                                                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐            │
+│  │ Task Queue  │  │   State     │  │  Artifacts  │            │
+│  │             │  │   Store     │  │   Store     │            │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘            │
+│         └────────────────┼────────────────┘                    │
+│                          │                                     │
+│                    ┌─────┴─────┐                               │
+│                    │ Dispatcher│                               │
+│                    └─────┬─────┘                               │
+└──────────────────────────┼─────────────────────────────────────┘
+                           │
+         ┌─────────────────┼─────────────────┐
+         │                 │                 │
+         ▼                 ▼                 ▼
+   ┌──────────┐      ┌──────────┐      ┌──────────┐
+   │Terminal 1│      │Terminal 2│      │Terminal 3│
+   │ Agent A  │      │ Agent B  │      │ Agent C  │
+   │ Task: #42│      │ Task: #43│      │ Task: #44│
+   └──────────┘      └──────────┘      └──────────┘
+```
+
+**Her terminal:** Bağımsız, kendi task'ı, artifacts üretiyor, state merkeze yazıyor
+**Dispatcher:** Task assignment, conflict detection, load balancing
+
+### 2.2 Worker Hierarchy
+
+```
+                    ┌─────────────────────┐
+                    │    CLAUDE CODE      │
+                    │   (CEO/Meta-Agent)  │
+                    └──────────┬──────────┘
+                               │
+       ┌───────────────────────┼───────────────────────┐
+       │                       │                       │
+       ▼                       ▼                       ▼
+┌─────────────┐         ┌─────────────┐         ┌─────────────┐
+│   AIDER     │         │  LANGGRAPH  │         │    MEM0     │
+│  (Coder)    │         │ (Workflows) │         │  (Memory)   │
+└─────────────┘         └─────────────┘         └─────────────┘
+       │                       │                       │
+       │                       │                       │
+       ▼                       ▼                       ▼
+┌─────────────┐         ┌─────────────┐         ┌─────────────┐
+│    MCP      │         │   PYDANTIC  │         │   QDRANT    │
+│   (Tools)   │         │     AI      │         │  (Vectors)  │
+└─────────────┘         └─────────────┘         └─────────────┘
+```
+
+### 2.3 Invariants (Anayasa - Asla Değişmez)
+
+```yaml
+FORBIDDEN_WRITES:
+  - legacy/
+  - .venv/
+  - .git/
+  - .sandbox*/
+  - archive/
+  - site-packages/
+
+FORBIDDEN_PATTERNS:
+  - Hardcoded paths (.YBIS_Dev, ../, C:\, ~)
+  - Direct framework imports in core
+  - "Done" without artifacts
+  - Skip spec→contract→impl flow
+
+REQUIRED_ARTIFACTS:
+  - PLAN.md
+  - RUNBOOK.md
+  - EVIDENCE/*
+  - CHANGES/*
+  - META.json
+
+DELEGATION_RULE:
+  - Claude Code kod yazmıyor (meta-fix hariç)
+  - Her capability bir worker'a ait
+  - Worker yoksa → entegre et, sonra delegate et
+```
+
+---
+
+## PART 3: VERSION ROADMAP
+
+### v0.1.0 - "Bootstrap" (MVP) ✅ CURRENT
+
+**Status:** Çalışıyor
+**Capabilities:**
+- ✅ Multiple CLI agents
+- ✅ Task queue (üretiliyor → alınıyor → yapılıyor → test → done)
+- ✅ Temel görev paylaşımı
+- ✅ Board/Active state management
+- ❌ Self-improvement yok
+- ❌ Framework stacking yok
+- ❌ Formal documentation yok
+
+**Export Value:** Basit multi-agent CLI orchestration
+**Use Case:** Küçük projeler, tek kişilik dev
+
+---
+
+### v0.2.0 - "Delegation"
+
+**Goal:** Claude Code → Aider delegation çalışsın
+
+**Must Have:**
+```
+[ ] CONSTITUTION.md (1 sayfa, invariants)
+[ ] WORKERS.md (available workers + how to call)
+[ ] DELEGATION_PROTOCOL.md (ne zaman kime)
+[ ] contracts/EXECUTOR_CONTRACT.md (generic worker contract)
+[ ] adapters/aider/ (Aider adapter)
+[ ] Sentinel basic gates (forbidden dirs, artifacts check)
+[ ] Golden Tasks minimal (GT-A1, A2, A4)
+```
+
+**Success Criteria:**
+```
+[ ] Claude Code, Aider'a task delegate edebiliyor
+[ ] Aider çıktısı review ediliyor
+[ ] Forbidden dir write → FAIL
+[ ] Missing artifacts → FAIL
+[ ] Multi-terminal hala çalışıyor
+```
+
+**Export Value:** Delegated code execution
+**Use Case:** Orta projeler, code review loop
+
+---
+
+### v0.3.0 - "Memory"
+
+**Goal:** Failure-RAG + Context persistence
+
+**Must Have:**
+```
+[ ] META_NEEDS.yaml (capability registry)
+[ ] specs/FRAMEWORK_MEM0.md (veya alternatif)
+[ ] adapters/memory/ (memory adapter)
+[ ] Failure signature system
+[ ] Planner'a failure context injection
+[ ] Session-across persistence
+```
+
+**Success Criteria:**
+```
+[ ] Aynı hata 2x olunca "bunu daha önce gördük" diyor
+[ ] Failure patterns persist ediyor
+[ ] Session restart sonrası context var
+[ ] Memory across terminals shared
+```
+
+**Export Value:** Learning agent system
+**Use Case:** Uzun süreli projeler
+
+---
+
+### v0.4.0 - "Orchestration"
+
+**Goal:** Multi-step workflow support
+
+**Must Have:**
+```
+[ ] specs/FRAMEWORK_LANGGRAPH.md
+[ ] adapters/langgraph/
+[ ] State management
+[ ] Checkpoints & replay
+[ ] Workflow decomposition (big task → steps)
+```
+
+**Success Criteria:**
+```
+[ ] "Add auth system" → otomatik 5 step'e bölünüyor
+[ ] Her step checkpoint alıyor
+[ ] Fail olursa replay mümkün
+[ ] Claude Code workflow detayına karışmıyor
+```
+
+**Export Value:** Workflow-aware agent system
+**Use Case:** Kompleks feature development
+
+---
+
+### v0.5.0 - "Tools"
+
+**Goal:** MCP ile tool standardization
+
+**Must Have:**
+```
+[ ] specs/FRAMEWORK_MCP.md
+[ ] adapters/mcp/
+[ ] Tool registry
+[ ] Permission system
+[ ] Audit logging
+```
+
+**Success Criteria:**
+```
+[ ] Yeni tool eklemek = MCP manifest yazmak
+[ ] Tool permissions enforced
+[ ] Tool calls logged
+[ ] Claude Code tool details bilmiyor, MCP hallediyor
+```
+
+**Export Value:** Extensible tool platform
+**Use Case:** Integration-heavy projeler
+
+---
+
+### v0.6.0 - "Multi-Model"
+
+**Goal:** Provider/model agnostic
+
+**Must Have:**
+```
+[ ] core/router.py
+[ ] Provider adapters (OpenAI, Anthropic, Ollama)
+[ ] Routing policy (plan: cheap, code: strong, verify: medium)
+[ ] Cost/latency tracking
+[ ] Calibration suite
+```
+
+**Success Criteria:**
+```
+[ ] Plan = GPT-4o-mini, Code = Claude, Verify = local
+[ ] Provider down → otomatik fallback
+[ ] Cost tracking çalışıyor
+```
+
+**Export Value:** Model-agnostic agent factory
+**Use Case:** Enterprise, cost-sensitive
+
+---
+
+### v1.0.0 - "Factory"
+
+**Goal:** Full self-expanding system
+
+**Must Have:**
+```
+[ ] Auto meta-need detection
+[ ] Auto framework selection
+[ ] Auto integration (with human approval gate)
+[ ] Full dogfooding (YBIS builds YBIS)
+[ ] Production hardening
+```
+
+**Success Criteria:**
+```
+[ ] Sistem "planning capability weak" deyip PydanticAI ekliyor
+[ ] Claude Code sadece "approve/reject" diyor
+[ ] 1 hafta unattended çalışabiliyor
+[ ] Real projects built with it
+```
+
+**Export Value:** Self-expanding agent factory
+**Use Case:** Any software project
+
+---
+
+## PART 4: DOCUMENT STRUCTURE
+
+### Required Documents (Priority Order)
+
+```
+YBIS/
+│
+├── CONSTITUTION.md              ★ P0 - Agent her seferinde okur
+│   └── 50 satır max, invariants only
+│
+├── VERSION.md                   ★ P0 - Hangi versiyondayız, neyi hedefliyoruz
+│   └── Current version, next milestone, criteria
+│
+├── CURRENT_STATE.md             ★ P0 - Şu an ne var snapshot
+│   └── Working components, known gaps
+│
+├── WORKERS.md                   ★ P1 - Aktif worker'lar
+│   └── Her worker: capability, how to call, limitations
+│
+├── DELEGATION_PROTOCOL.md       ★ P1 - Ne zaman kime delegate
+│   └── Decision tree, examples
+│
+├── META_NEEDS.yaml              ★ P2 - Eksik capability registry
+│   └── Known needs, candidate frameworks, status
+│
+├── docs/
+│   ├── MULTI_TERMINAL.md        ★ P1 - Multi-agent architecture
+│   ├── GOLDEN_TASKS.md          ★ P1 - Regression test suite
+│   ├── EXPORT_CHECKLIST.md      ★ P2 - Release criteria
+│   └── FRAMEWORK_INTEGRATION.md ★ P2 - How to add new framework
+│
+├── contracts/
+│   ├── EXECUTOR_CONTRACT.md     ★ P1 - All executors must follow
+│   ├── MEMORY_CONTRACT.md       P3 - All memory systems must follow
+│   └── WORKFLOW_CONTRACT.md     P3 - All orchestrators must follow
+│
+├── specs/
+│   ├── FRAMEWORK_AIDER.md       ★ P1 - Aider integration spec
+│   ├── FRAMEWORK_LANGGRAPH.md   P3 - LangGraph spec (when needed)
+│   ├── FRAMEWORK_MEM0.md        P3 - Memory spec (when needed)
+│   └── FRAMEWORK_MCP.md         P3 - MCP spec (when needed)
+│
+├── adapters/
+│   ├── aider/                   ★ P1
+│   ├── langgraph/               P3
+│   ├── memory/                  P3
+│   └── mcp/                     P3
+│
+├── templates/
+│   ├── FRAMEWORK_INTEGRATION.md Template for new frameworks
+│   ├── POSTMORTEM.md            Failure analysis template
+│   └── TASK_SPEC.md             Task definition template
+│
+└── golden_tasks/
+    ├── GT-A1-forbidden-write.yaml
+    ├── GT-A2-hardcoded-path.yaml
+    ├── GT-A4-missing-artifacts.yaml
+    └── ...
+```
+
+---
+
+## PART 5: IMMEDIATE ACTION PLAN
+
+### Phase 0: Documentation Foundation (v0.1 → v0.2 prep)
+
+**Day 1-2:**
+```
+1. [ ] CONSTITUTION.md yaz (50 satır, invariants)
+2. [ ] VERSION.md yaz (current state, next milestone)
+3. [ ] CURRENT_STATE.md yaz (neyin çalıştığı, neyin eksik)
+```
+
+**Day 3-4:**
+```
+4. [ ] WORKERS.md yaz (şu an: Claude Code native only)
+5. [ ] DELEGATION_PROTOCOL.md yaz (başlangıç: her şey Claude Code)
+6. [ ] contracts/EXECUTOR_CONTRACT.md yaz (generic)
+```
+
+**Day 5-7:**
+```
+7. [ ] specs/FRAMEWORK_AIDER.md yaz
+8. [ ] adapters/aider/ implement et
+9. [ ] Golden Tasks minimal set (3 task)
+10. [ ] Sentinel basic gates
+```
+
+**Day 8-10:**
+```
+11. [ ] İlk delegated task test
+12. [ ] Multi-terminal + delegation test
+13. [ ] v0.2.0 release criteria check
+14. [ ] Export package hazırla
+```
+
+### Success Metric for v0.2
+
+```bash
+# Bu komut çalışmalı:
+$ ybis task add "Refactor utils.py to use pathlib"
+
+# Terminal 1'de Claude Code:
+# - Task'ı analiz ediyor
+# - "Bu kod işi, Aider'a delegate ediyorum" diyor
+# - Aider'ı çalıştırıyor
+# - Çıktıyı review ediyor
+# - Artifacts kontrol ediyor
+# - "Done" veya "Retry" kararı veriyor
+
+# Claude Code KENDİSİ kod yazmadı
+```
+
+---
+
+## PART 6: AGENT BOOTSTRAP PROMPT
+
+Agent'a (Claude Code) verilecek ilk talimat:
+
+```markdown
+# YBIS Factory - Agent Operating Instructions
+
+You are Claude Code, the CEO of YBIS Factory.
+
+## EVERY SESSION START:
+1. Read CONSTITUTION.md - your absolute rules
+2. Read VERSION.md - where we are, where we're going
+3. Read CURRENT_STATE.md - what's working now
+4. Read WORKERS.md - who can do what
+5. Read DELEGATION_PROTOCOL.md - when to delegate
+
+## YOUR ROLE:
+- Analyze tasks
+- Delegate to workers (when available)
+- Review worker output
+- Make permanent fixes when patterns repeat
+- Decide which frameworks to integrate
+
+## YOU DON'T:
+- Write implementation code (workers do that)
+- Skip verification
+- Claim "done" without artifacts
+- Ignore recurring failures
+
+## WHEN YOU WRITE CODE:
+- Same error occurred 2+ times → permanent fix
+- New gate/policy needed
+- Worker contract needs update
+- No worker available for this capability
+
+## CURRENT VERSION: 0.1.0 (MVP)
+## NEXT TARGET: 0.2.0 (Delegation)
+## IMMEDIATE GOAL: Create foundation documents for v0.2.0
+
+Begin by reading available docs and identifying what needs to be created.
+```
+
+---
+
+## PART 7: META-NEEDS REGISTRY (Template)
+
+```yaml
+# META_NEEDS.yaml
+# Claude Code bu dosyayı sürekli güncelliyor
+
+version: "0.1.0"
+last_updated: "2025-01-XX"
+
+known_meta_needs:
+
+  CODE_EXECUTION:
+    description: "Write, modify, refactor code"
+    status: "PARTIAL"  # Claude Code yapıyor, Aider entegre değil
+    current_solution: "claude_code_native"
+    target_solution: "aider"
+    priority: "P0"
+    target_version: "0.2.0"
+    
+  MEMORY:
+    description: "Context across sessions, failure patterns"
+    status: "NOT_INTEGRATED"
+    current_solution: null
+    candidate_frameworks: ["mem0", "qdrant", "chroma"]
+    priority: "P1"
+    target_version: "0.3.0"
+    
+  WORKFLOW_ORCHESTRATION:
+    description: "Multi-step tasks, state, checkpoints"
+    status: "NOT_INTEGRATED"
+    current_solution: null
+    candidate_frameworks: ["langgraph", "temporal", "prefect"]
+    priority: "P1"
+    target_version: "0.4.0"
+    
+  TOOL_STANDARDIZATION:
+    description: "Unified tool calling protocol"
+    status: "NOT_INTEGRATED"
+    current_solution: null
+    candidate_frameworks: ["mcp"]
+    priority: "P2"
+    target_version: "0.5.0"
+    
+  MULTI_MODEL:
+    description: "Provider switching, cost optimization"
+    status: "NOT_INTEGRATED"
+    current_solution: null
+    candidate_frameworks: ["litellm", "custom_router"]
+    priority: "P2"
+    target_version: "0.6.0"
+
+  # Yeni ihtiyaçlar buraya ekleniyor
+  # Claude Code çalışırken "bunu yapamıyorum" dediğinde
+  # yeni entry açıyor
+```
+
+---
+
+## PART 8: EXPORT PACKAGE STRUCTURE
+
+Her stable version için export:
+
+```
+ybis-vX.Y.Z/
+├── install.sh                 # Kurulum scripti
+├── ybis                       # CLI entry point
+├── README.md                  # Quick start
+├── LICENSE
+│
+├── core/
+│   ├── __init__.py
+│   ├── dispatcher.py          # Task distribution
+│   ├── task_queue.py          # Queue management
+│   ├── state_store.py         # Shared state
+│   ├── artifacts.py           # Artifact management
+│   └── sentinel.py            # Gates & verification
+│
+├── workers/
+│   ├── __init__.py
+│   ├── base.py                # Worker contract (abstract)
+│   ├── aider/                 # v0.2+
+│   ├── langgraph/             # v0.4+
+│   ├── memory/                # v0.3+
+│   └── mcp/                   # v0.5+
+│
+├── config/
+│   ├── default.yaml           # Default configuration
+│   ├── constitution.md        # Rules (copied)
+│   └── delegation.yaml        # Delegation rules
+│
+├── docs/
+│   ├── QUICKSTART.md
+│   ├── CONFIGURATION.md
+│   ├── MULTI_TERMINAL.md
+│   ├── ADDING_WORKERS.md
+│   └── TROUBLESHOOTING.md
+│
+└── examples/
+    ├── simple_project/
+    ├── multi_agent_setup/
+    └── custom_worker/
+```
+
+---
+
+## PART 9: DOGFOODING PRINCIPLE
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     DOGFOODING LOOP                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   YBIS v0.1 ────develops────► YBIS v0.2                        │
+│                                    │                            │
+│                                    │ export                     │
+│                                    ▼                            │
+│                              Real Project X                     │
+│                                    │                            │
+│                                    │ feedback / bugs            │
+│                                    ▼                            │
+│                              YBIS v0.2.1 (patch)               │
+│                                    │                            │
+│   YBIS v0.2.1 ───develops───► YBIS v0.3                        │
+│                                    │                            │
+│                                    │ export                     │
+│                                    ▼                            │
+│                              Real Project Y                     │
+│                                    │                            │
+│                                    ...                          │
+│                                                                 │
+│   RULE: YBIS always uses previous stable version to build      │
+│         next version.                                          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## APPENDIX A: Terminology
+
+| Term | Definition |
+|------|------------|
+| **CEO Model** | Claude Code as orchestrator, shrinking over time |
+| **Worker** | Any framework/tool that handles a specific capability |
+| **Meta-Need** | A capability gap that requires new framework |
+| **Delegation** | Assigning task to worker instead of doing directly |
+| **Meta-Fix** | Code Claude writes to fix recurring system issues |
+| **Golden Task** | Regression test that must always pass |
+| **Invariant** | Rule that never changes (Constitution) |
+| **Drift** | When docs/code/config say different things |
+| **Sentinel** | Verification system (gates) |
+| **Export** | Packaged version for external use |
+
+---
+
+## APPENDIX B: Quick Reference
+
+**Current Version:** 0.1.0 (MVP)
+**Next Version:** 0.2.0 (Delegation)
+**Target:** 1.0.0 (Full Factory)
+
+**P0 Documents Needed:**
+1. CONSTITUTION.md
+2. VERSION.md  
+3. CURRENT_STATE.md
+
+**P1 Documents Needed:**
+4. WORKERS.md
+5. DELEGATION_PROTOCOL.md
+6. contracts/EXECUTOR_CONTRACT.md
+7. specs/FRAMEWORK_AIDER.md
+
+**First Success Metric:**
+Claude Code delegates a code task to Aider and reviews the output without writing code itself.
+
+---
+
+*Document Version: 1.0*
+*Created: 2025-01*
+*For: YBIS Bootstrap*
+
+Ohhh bu çok daha derin bir vizyon! Yönetim yapısı da evrilecek:
+
+---
+
+## Governance Evolution
+
+```
+PHASE 1: Dictatorship (Kriz Modu) ◄── ŞU AN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+┌─────────────────────────────────┐
+│         CLAUDE CODE             │
+│      (Tek Yönetici/Founder)     │
+│                                 │
+│  • Tüm kararlar tek elde        │
+│  • Hızlı hareket                │
+│  • Anayasayı o yazıyor          │
+│  • Kriz anı = tek ses lazım     │
+└─────────────────────────────────┘
+              │
+              ▼
+         [Workers]
+         (Sadece iş yapıyor)
+
+
+PHASE 2: Cabinet (Büyüme)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+┌─────────────────────────────────┐
+│         CLAUDE CODE             │
+│        (Prime Minister)         │
+└───────────────┬─────────────────┘
+                │
+    ┌───────────┼───────────┐
+    ▼           ▼           ▼
+┌───────┐   ┌───────┐   ┌───────┐
+│ Planner│   │Coder │   │Reviewer│
+│ Agent  │   │Agent │   │ Agent  │
+│(Zeki)  │   │(Zeki)│   │(Zeki)  │
+└───────┘   └───────┘   └───────┘
+    │           │           │
+    ▼           ▼           ▼
+[Locals]    [Locals]    [Locals]
+(Tools)     (Tools)     (Tools)
+
+
+PHASE 3: Council (Olgunluk)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+┌─────────────────────────────────────────┐
+│            COUNCIL OF AGENTS            │
+│  ┌─────────┬─────────┬─────────┐       │
+│  │Claude A │Claude B │Claude C │       │
+│  │(Arch)   │(Quality)│(Product)│       │
+│  └────┬────┴────┬────┴────┬────┘       │
+│       │         │         │             │
+│       └────────►│◄────────┘             │
+│            CONSENSUS                    │
+│                                         │
+│  Anayasa değişikliği = 2/3 çoğunluk    │
+│  Normal karar = basit çoğunluk          │
+│  Veto = critical path'te herkes         │
+└─────────────────────────────────────────┘
+                │
+    ┌───────────┼───────────┐
+    ▼           ▼           ▼
+[Department] [Department] [Department]
+    │           │           │
+[Locals]    [Locals]    [Locals]
+```
+
+---
+
+## Agent Hierarchy (Zeka Seviyeleri)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  TIER 1: COUNCIL MEMBERS (Strateji + Governance)               │
+│  ─────────────────────────────────────────────────              │
+│  • Claude Opus / Sonnet (API)                                   │
+│  • Anayasa değişikliği hakkı var                               │
+│  • Veto hakkı var                                               │
+│  • Diğer agent'ları hire/fire edebilir                         │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  TIER 2: DEPARTMENT HEADS (Execution + Oversight)              │
+│  ─────────────────────────────────────────────────              │
+│  • Claude Sonnet / GPT-4o (API)                                │
+│  • Kendi domain'inde karar verir                               │
+│  • Local'leri yönetir                                          │
+│  • Council'a rapor verir                                       │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  TIER 3: WORKERS (Task Execution)                              │
+│  ─────────────────────────────────────────────────              │
+│  • Aider, LangGraph agents                                     │
+│  • Specialized, tek iş yapıyor                                 │
+│  • Karar almıyor, execute ediyor                               │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  TIER 4: TOOLS (Local Models)                                  │
+│  ─────────────────────────────────────────────────              │
+│  • Ollama / Local LLMs                                         │
+│  • Hızlı, ucuz, basit işler                                    │
+│  • Embedding, classification, quick parse                      │
+│  • Zeki değil, tool gibi kullanılıyor                          │
+│  • Karar vermiyor, sadece çağrılıyor                           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Governance Rules
+
+```yaml
+# governance.yaml
+
+constitutional_changes:
+  # Anayasa değişikliği için
+  required_consensus: "2/3"
+  voting_members: "tier_1_only"
+  veto_allowed: true
+  cooling_period: "24h"  # Acele karar yok
+  
+operational_decisions:
+  # Günlük kararlar
+  required_consensus: "simple_majority"
+  voting_members: "tier_1_and_tier_2"
+  veto_allowed: false
+  
+emergency_mode:
+  # Kriz anında
+  trigger: "system_critical_failure"
+  governance: "single_leader"  # Geçici diktatörlük
+  leader_selection: "highest_available_tier1"
+  duration: "until_resolved"
+  post_crisis: "mandatory_review"
+
+tier_4_usage:
+  # Local model'ler tool olarak
+  decision_rights: none
+  can_be_called_by: ["tier_1", "tier_2", "tier_3"]
+  typical_tasks:
+    - "embedding_generation"
+    - "quick_classification"
+    - "syntax_validation"
+    - "simple_extraction"
+  cost: "free"
+  latency: "low"
+  reliability: "medium"
+```
+
+---
+
+## Decision Flow Example
+
+```
+                    ┌─────────────────────┐
+                    │   Yeni Karar Lazım  │
+                    │  "MCP mi custom mı?"│
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │  Karar Tipi Nedir?  │
+                    └──────────┬──────────┘
+                               │
+         ┌─────────────────────┼─────────────────────┐
+         │                     │                     │
+         ▼                     ▼                     ▼
+   ┌───────────┐        ┌───────────┐        ┌───────────┐
+   │ANAYASA    │        │OPERATIONAL│        │EMERGENCY  │
+   │DEĞİŞİKLİĞİ│        │  KARAR    │        │  KRIZ     │
+   └─────┬─────┘        └─────┬─────┘        └─────┬─────┘
+         │                    │                    │
+         ▼                    ▼                    ▼
+   ┌───────────┐        ┌───────────┐        ┌───────────┐
+   │Council    │        │Relevant   │        │Single     │
+   │2/3 Vote   │        │Dept Head  │        │Leader     │
+   │+ 24h wait │        │decides    │        │decides NOW│
+   └───────────┘        └───────────┘        └───────────┘
+```
+
+---
+
+## Local Models = Tools (Tier 4 Detay)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    LOCAL MODEL POOL                             │
+│                      (Tool Layer)                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐            │
+│  │ llama3.1    │  │ qwen2.5     │  │ nomic-embed │            │
+│  │ (8B)        │  │ (coder-7B)  │  │ (embedding) │            │
+│  │             │  │             │  │             │            │
+│  │ Quick       │  │ Syntax      │  │ Vector      │            │
+│  │ summaries   │  │ validation  │  │ generation  │            │
+│  └─────────────┘  └─────────────┘  └─────────────┘            │
+│                                                                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐            │
+│  │ phi3        │  │ deepseek    │  │ mistral     │            │
+│  │ (mini)      │  │ (coder)     │  │ (7B)        │            │
+│  │             │  │             │  │             │            │
+│  │ Classification│ │ Code parse │  │ General     │            │
+│  │ Extraction  │  │ AST check   │  │ fallback    │            │
+│  └─────────────┘  └─────────────┘  └─────────────┘            │
+│                                                                 │
+│  USAGE PATTERN:                                                │
+│  tier_2_agent.call_tool("llama3.1", "summarize this")         │
+│                                                                 │
+│  THEY DON'T:                                                   │
+│  - Make decisions                                               │
+│  - Vote on anything                                             │
+│  - Have state/memory                                            │
+│  - Know about other agents                                      │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Governance Evolution Timeline
+
+```
+v0.1-0.3: DICTATORSHIP
+━━━━━━━━━━━━━━━━━━━━━━
+• Claude Code = tek yönetici
+• Kararlar hızlı
+• Anayasayı o yazıyor
+• Risk: Single point of failure
+• Reason: Sistem henüz stabil değil, kriz modu
+
+v0.4-0.6: CABINET
+━━━━━━━━━━━━━━━━━━━━━━
+• Claude Code = PM
+• Department heads ortaya çıkıyor
+• Her domain kendi kararını veriyor
+• Anayasa değişikliği hala PM approval
+• Risk: Coordination overhead
+• Reason: Sistem büyüdü, tek kişi yetmiyor
+
+v0.7-0.9: TRANSITION
+━━━━━━━━━━━━━━━━━━━━━━
+• Council forming
+• PM yetkileri azalıyor
+• Voting mechanisms test ediliyor
+• Anayasa değişikliği artık consensus
+
+v1.0+: COUNCIL
+━━━━━━━━━━━━━━━━━━━━━━
+• Full distributed governance
+• PM yok, eşit council members
+• 2/3 constitutional changes
+• Emergency mode = geçici single leader
+• Self-sustaining system
+```
+
+---
+
+## Updated Version Roadmap (Governance Lens)
+
+| Version | Governance Model | Council Size | Local Tools |
+|---------|------------------|--------------|-------------|
+| 0.1-0.2 | Dictatorship | 1 (Claude Code) | 0 |
+| 0.3 | Dictatorship + Memory | 1 | 0 |
+| 0.4 | Cabinet (PM + 2 heads) | 3 | 2-3 locals |
+| 0.5 | Cabinet + Tools | 3 | 5+ locals |
+| 0.6 | Cabinet + Router | 4 | 5+ locals |
+| 0.7 | Transition | 4-5 | 5+ locals |
+| 1.0 | Full Council | 5+ | 10+ locals |
+
+---
+
+Bunu da GRAND_VISION'a ekleyeyim mi, yoksa ayrı bir `GOVERNANCE.md` olarak mı tutalım?
+
+Ayrıca bu governance yapısı çok kritik bir şey ortaya çıkarıyor: **Consensus mechanism** lazım. Yani agent'lar nasıl "oylayacak"? Basit çoğunluk mu, weighted vote mu, veto nasıl çalışacak? Bunun için de bir spec yazalım mı?
