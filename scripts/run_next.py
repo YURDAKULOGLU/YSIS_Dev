@@ -41,16 +41,16 @@ async def run_next_step():
     # Priority 1: Resume In Progress
     if data.get("in_progress"):
         target_task = data["in_progress"][0]
-        print(f"🔄 Resuming Task: {target_task['id']}")
-        
+        print(f"[RESUME] Task: {target_task['id']}")
+
     # Priority 2: Pick from Backlog
     elif data.get("backlog"):
         target_task = data["backlog"][0]
-        print(f"📋 Promoting from Backlog: {target_task['id']}")
+        print(f"[BACKLOG] Promoting: {target_task['id']}")
         await task_board.update_task_status(target_task["id"], "IN PROGRESS", {})
-    
+
     if not target_task:
-        print("💤 No tasks to run.")
+        print("[IDLE] No tasks to run.")
         return
 
     # Build Initial State

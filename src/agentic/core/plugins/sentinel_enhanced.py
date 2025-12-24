@@ -55,16 +55,38 @@ class SentinelVerifierEnhanced(VerifierProtocol):
             except Exception as e:
                 self.logger.warning(f"AST check failed for {file_path}: {e}")
 
-        # 3. Static Analysis (Ruff) - ONLY on modified files to be fast
+        # 3. Static Analysis (Ruff) - DETERMINISTRIC with auto-fix
         if py_files:
             target = " ".join([f'"{f}"' for f in py_files])
             env = os.environ.copy()
             env["PYTHONPATH"] = "."
             try:
+                # Step 1: Check for linting errors
                 result = subprocess.run(f"ruff check {target}", shell=True, capture_output=True, text=True, env=env)
+
                 if result.returncode != 0 and result.stdout.strip():
-                    errors.append(f"Ruff linting failed on modified files.")
-                    logs["ruff_stdout"] = result.stdout
+                    self.logger.info("[Sentinel] Linting errors detected. Attempting auto-fix...")
+                    logs["ruff_initial_errors"] = result.stdout
+
+                    # Step 2: Try auto-fix
+                    fix_result = subprocess.run(f"ruff check --fix {target}", shell=True, capture_output=True, text=True, env=env)
+                    logs["ruff_fix_output"] = fix_result.stdout
+
+                    # Step 3: Re-check after auto-fix
+                    recheck = subprocess.run(f"ruff check {target}", shell=True, capture_output=True, text=True, env=env)
+
+                    if recheck.returncode != 0 and recheck.stdout.strip():
+                        # Auto-fix didn't resolve all issues - provide feedback to Aider
+                        warnings.append("Linting issues remain after auto-fix. Feedback provided for retry.")
+                        logs["ruff_feedback"] = recheck.stdout  # This will be sent to Aider
+                        logs["ruff_needs_feedback"] = True
+
+                        # Save errors for future learning (RAG)
+                        self._save_linting_errors(recheck.stdout, py_files)
+                    else:
+                        self.logger.info("[Sentinel] Auto-fix successful!")
+                        logs["ruff_status"] = "fixed"
+
             except Exception as e:
                 errors.append(f"Ruff system error: {e}")
 
@@ -88,7 +110,8 @@ class SentinelVerifierEnhanced(VerifierProtocol):
         except Exception as e:
             errors.append(f"Pytest system error: {e}")
 
-        lint_passed = not any(e for e in errors if "Ruff" in e or "SYNTAX" in e)
+        # Lint passes if no syntax errors AND (no ruff errors OR ruff errors were auto-fixed)
+        lint_passed = not any(e for e in errors if "Ruff" in e or "SYNTAX" in e) and not logs.get("ruff_needs_feedback", False)
         tests_passed = not any(e for e in errors if "Tests failed" in e or "SECURITY" in e or "RESTRICTED" in e)
 
         return VerificationResult(
@@ -99,3 +122,33 @@ class SentinelVerifierEnhanced(VerifierProtocol):
             warnings=warnings,
             logs=logs
         )
+
+    def _save_linting_errors(self, ruff_output: str, files: List[str]) -> None:
+        """Save linting errors for future learning (RAG/Mem-0)."""
+        try:
+            from datetime import datetime
+            import json
+            from pathlib import Path
+
+            # Create errors directory
+            errors_dir = Path("Knowledge/Errors/Linting")
+            errors_dir.mkdir(parents=True, exist_ok=True)
+
+            # Create error log entry
+            timestamp = datetime.now().isoformat()
+            error_log = {
+                "timestamp": timestamp,
+                "files": files,
+                "ruff_output": ruff_output,
+                "error_type": "linting"
+            }
+
+            # Save to file
+            log_file = errors_dir / f"lint_error_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            with open(log_file, 'w', encoding='utf-8') as f:
+                json.dump(error_log, f, indent=2)
+
+            self.logger.info(f"[Sentinel] Linting errors saved to {log_file}")
+
+        except Exception as e:
+            self.logger.warning(f"[Sentinel] Failed to save linting errors: {e}")

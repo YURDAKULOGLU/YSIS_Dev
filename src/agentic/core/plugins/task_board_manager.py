@@ -40,14 +40,20 @@ class TaskBoardManager:
         try:
             with open(self.json_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            
+
             for list_name, status in [("backlog", "BACKLOG"), ("in_progress", "IN_PROGRESS"), ("done", "DONE")]:
                 for task in data.get(list_name, []):
                     task['status'] = status
                     await self.db.add_task(task)
-            
+
             # Archive the old JSON to avoid repeated migration
-            os.rename(self.json_path, str(self.json_path) + ".migrated")
+            # Make idempotent: if .migrated exists, delete original instead
+            migrated_path = str(self.json_path) + ".migrated"
+            if os.path.exists(migrated_path):
+                print("[TaskBoard] .migrated already exists, removing original JSON...")
+                os.remove(self.json_path)
+            else:
+                os.rename(self.json_path, migrated_path)
             print("[TaskBoard] Migration successful. JSON archived.")
         except Exception as e:
             print(f"[TaskBoard] Migration failed: {e}")
