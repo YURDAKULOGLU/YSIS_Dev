@@ -1,49 +1,53 @@
-import logging
 import sys
-import os
-from datetime import datetime
+from pathlib import Path
+from loguru import logger
 
-# Ensure logs directory exists
-LOG_DIR = os.path.join(os.path.dirname(__file__), "../../Meta/Active/logs")
-os.makedirs(LOG_DIR, exist_ok=True)
+# Config
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
+LOG_DIR = PROJECT_ROOT / "logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
 
-class YBISLogger:
-    def __init__(self, name: str):
-        self.logger = logging.getLogger(name)
-        self.logger.setLevel(logging.INFO)
-        
-        # Formatter
-        formatter = logging.Formatter(
-            '%(asctime)s - [%(name)s] - %(levelname)s - %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S'
-        )
-        
-        # File Handler
-        log_file = os.path.join(LOG_DIR, "system.log")
-        file_handler = logging.FileHandler(log_file, encoding='utf-8')
-        file_handler.setFormatter(formatter)
-        
-        # Console Handler
-        console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setFormatter(formatter)
-        
-        # Avoid duplicate handlers
-        if not self.logger.handlers:
-            self.logger.addHandler(file_handler)
-            self.logger.addHandler(console_handler)
+# 1. Clear default handler (which is verbose)
+logger.remove()
 
-    def info(self, msg: str):
-        self.logger.info(msg)
+# 2. Console Sink (The "Token Saver")
+# Only shows INFO and above.
+# Format is clean, no timestamp clutter for the LLM context.
+logger.add(
+    sys.stderr,
+    level="INFO",
+    format="<green>➤</green> <level>{message}</level>",
+    colorize=True,
+    backtrace=False,
+    diagnose=False
+)
 
-    def error(self, msg: str):
-        self.logger.error(msg)
+# 3. File Sink (The "Black Box")
+# Rotates every 10 MB, keeps logs for 1 week.
+# Stores FULL detail including variable values (diagnose=True).
+logger.add(
+    LOG_DIR / "system.log",
+    rotation="10 MB",
+    retention="1 week",
+    compression="zip",
+    level="DEBUG",
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
+    backtrace=True,
+    diagnose=True
+)
 
-    def warning(self, msg: str):
-        self.logger.warning(msg)
+# 4. JSON Sink (For Machine Analysis / RAG)
+# Perfect for when agents need to "investigate" logs programmatically.
+logger.add(
+    LOG_DIR / "system.json.log",
+    rotation="10 MB",
+    serialize=True,
+    level="DEBUG"
+)
 
-    def debug(self, msg: str):
-        self.logger.debug(msg)
+# Export usable logger
+log = logger
 
-# Factory function
-def get_logger(name: str) -> YBISLogger:
-    return YBISLogger(name)
+def bind_context(task_id: str):
+    """Create a context-aware logger for specific tasks."""
+    return log.bind(task_id=task_id)

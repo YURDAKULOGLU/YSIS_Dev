@@ -58,4 +58,14 @@ If you are a newly joined agent, follow this sequence to become context-aware:
 -   **Git Status:** Aider sometimes reports too many files. We now filter for `src/` and `tests/`.
 
 ---
+
+## 6. CRITICAL GAPS (From External Audit 2025-12-24)
+
+While the core is stable, these external interfaces are disconnected:
+
+1.  **The Ear (Redis Listener):** `ORGAN-REDIS` is installed but no script is actively listening to channels. We need `scripts/listen.py`.
+2.  **The Face (Dashboard):** `src/dashboard/app.py` likely points to old JSON files. Needs migration to `aiosqlite`.
+3.  **The Multi-Agent Muscle:** `ORGAN-CREWAI` exists but has executed no real missions yet.
+
+---
 *End of System State*

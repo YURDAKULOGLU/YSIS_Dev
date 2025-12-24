@@ -94,7 +94,41 @@ sqlite3 Knowledge/LocalDB/tasks.db "INSERT INTO tasks (id, goal, priority, statu
 
 ---
 
-## 🚀 How to Begin?
+## 🛡️ The "Smart Log" Protocol (Token Economy)
+
+We follow the **Iceberg Principle**:
+- **Visible (Console):** Only Status, Success, and Error summaries.
+- **Hidden (File):** Full debug traces and outputs.
+
+**How to Execute Commands:**
+Do NOT use `os.system` or verbose logging. Use the smart wrapper:
+
+```bash
+# ✅ CORRECT (Saves Tokens)
+python scripts/smart_exec.py "npm install"
+
+# ❌ WRONG (Burns Tokens)
+npm install
+```
+
+**How to Log in Code:**
+Use our standardized `loguru` wrapper:
+
+```python
+from src.agentic.core.logger import log
+
+log.info("Starting task...")   # Visible to Agent
+log.debug("Variable x=5")      # Invisible (File only)
+log.success("Done!")           # Visible (Green)
+```
+
+---
+
+## 📋 Quick Start Checklist
+
+Before you do anything, follow these steps:
+
+### 0. 🗺️ READ THE MAP (MANDATORY)
 
 1.  **Internalize the State:** Read `SYSTEM_STATE.md` to know where we are in the evolution (Tier 4.5).
 2.  **Check the Pulse:** Run `python scripts/system_health_check.py`.
