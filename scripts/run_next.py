@@ -34,24 +34,17 @@ async def run_next_step():
         artifact_gen=ArtifactGenerator()
     )
     
-    # Get Next Task
-    data = await task_board._read_db()
-    target_task = None
-    
-    # Priority 1: Resume In Progress
-    if data.get("in_progress"):
-        target_task = data["in_progress"][0]
-        print(f"[RESUME] Task: {target_task['id']}")
+    # ATOMIC CLAIM: Race-condition safe for multi-agent systems
+    import socket
+    worker_id = f"claude-{socket.gethostname()}"
 
-    # Priority 2: Pick from Backlog
-    elif data.get("backlog"):
-        target_task = data["backlog"][0]
-        print(f"[BACKLOG] Promoting: {target_task['id']}")
-        await task_board.update_task_status(target_task["id"], "IN PROGRESS", {})
+    target_task = await task_board.claim_next_task(worker_id)
 
     if not target_task:
         print("[IDLE] No tasks to run.")
         return
+
+    print(f"[CLAIMED] Task: {target_task['id']} by {worker_id}")
 
     # Build Initial State
     sandbox_root = ".sandbox_worker"

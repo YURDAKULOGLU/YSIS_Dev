@@ -62,17 +62,62 @@ class TaskBoardManager:
         """Get next available task (Priority to IN_PROGRESS, then BACKLOG)."""
         await self._ensure_db()
         tasks = await self.db.get_all_tasks()
-        
+
         # Sort by status priority
         in_prog = [t for t in tasks if t['status'] == "IN_PROGRESS"]
         if in_prog:
             return in_prog[0]
-            
+
         backlog = [t for t in tasks if t['status'] == "BACKLOG"]
         if backlog:
             return backlog[0]
-            
+
         return None
+
+    async def claim_next_task(self, worker_id: str = "default-worker") -> Optional[Dict[str, Any]]:
+        """
+        ATOMIC: Claim next available BACKLOG task.
+        Race-condition safe for multi-agent systems (Claude + Gemini).
+        """
+        await self._ensure_db()
+        import aiosqlite
+
+        async with aiosqlite.connect(self.db_path) as conn:
+            conn.row_factory = aiosqlite.Row
+
+            # First check for existing IN_PROGRESS for this worker
+            async with conn.execute(
+                "SELECT * FROM tasks WHERE status='IN_PROGRESS' AND assignee=? LIMIT 1",
+                (worker_id,)
+            ) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    return dict(row)
+
+            # Atomic claim: Single SQL transaction
+            async with conn.execute(
+                """
+                UPDATE tasks
+                SET status='IN_PROGRESS', assignee=?
+                WHERE id = (
+                    SELECT id FROM tasks
+                    WHERE status='BACKLOG'
+                    ORDER BY
+                        CASE priority
+                            WHEN 'HIGH' THEN 1
+                            WHEN 'MEDIUM' THEN 2
+                            ELSE 3
+                        END,
+                        id
+                    LIMIT 1
+                )
+                RETURNING *
+                """,
+                (worker_id,)
+            ) as cursor:
+                await conn.commit()
+                row = await cursor.fetchone()
+                return dict(row) if row else None
 
     async def create_task(self, title: str, description: str, priority: str = "MEDIUM") -> str:
         """Create new task in database."""
