@@ -35,7 +35,9 @@ def main():
 
     # Core Components
     components = [
-        ("src.agentic.core.orchestrator_v3", "OrchestratorV3"),
+[INFO] Checking Core Components...
+[OK] Import Successful: src.agentic.core.graphs.orchestrator_graph.OrchestratorGraph
+[OK] Import Successful: src.agentic.core.plugins.simple_planner.SimplePlanner
         ("src.agentic.core.plugins.simple_planner", "SimplePlanner"),
         ("src.agentic.core.plugins.aider_executor", "AiderExecutor"),
         ("src.agentic.core.plugins.sentinel", "SentinelVerifier"),

@@ -1,0 +1,8 @@
+{
+  "timestamp": "2025-12-24T07:57:03.705041",
+  "files": [
+    "C:\\Projeler\\YBIS_Dev\\src\\utils\\test_messy.py"
+  ],
+  "ruff_output": "E501 Line too long (135 > 120)\n --> src\\utils\\test_messy.py:2:121\n  |\n2 | def long_function_name_that_is_way_too_long_and_should_be_refactored_into_smaller_functions_or_renamed_to_something_more_descriptive():\n  |                                                                                                                         ^^^^^^^^^^^^^^^\n3 |     x = 10\n4 |     y = 20\n  |\n\nFound 1 error.\n",
+  "error_type": "linting"
+}

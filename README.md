@@ -22,7 +22,7 @@
 
 Protocol-based plugin architecture powered by LangGraph:
 
-1.  **The Brain (OrchestratorGraph):** LangGraph state machine using Pydantic for validation.
+1.  **The Brain (Workflow):** `src/agentic/graph/workflow.py` - Manages state transitions.
 2.  **The Executor (AiderEnhanced):** Advanced code generation with constitutional enforcement.
 3.  **The Verifier (SentinelEnhanced):** High-security gates with AST analysis and isolated testing.
 4.  **The Janitor (GitManager):** Automatic atomic commits for every successful task.
@@ -46,28 +46,20 @@ Protocol-based plugin architecture powered by LangGraph:
 
 ```
 YBIS_Dev/
-├── AI_START_HERE.md              # Agent onboarding
-├── SYSTEM_STATE.md               # Complete system state
-├── README.md                     # This file
+├── scripts/
+│   └── run_production.py         # ⭐ MAIN ENTRY POINT
 │
-├── src/agentic/core/
-│   ├── graphs/                   # LangGraph workflows
-│   ├── plugins/                  # Planner, Executor, Verifier, GitManager
-│   ├── config.py                 # Path constants
-│   ├── protocols.py              # Pydantic models & Interfaces
-│   └── sdd_schema.py             # Spec-Driven Development schemas
-│
-├── src/agentic/infrastructure/
-│   └── db.py                     # Async SQLite bridge
+├── src/agentic/
+│   ├── core/config.py            # Path Configuration
+│   ├── graph/workflow.py         # The Brain (LangGraph)
+│   └── core/protocols.py         # Data Contracts (Pydantic)
 │
 ├── Knowledge/
-│   ├── LocalDB/
-│   │   ├── tasks.db              # SQLite Task Database (Source of Truth)
-│   │   └── chroma_db/            # RAG vector database
-│   └── API_References/           # Downloaded library documentation
+│   └── LocalDB/tasks.json        # Task Database
 │
-├── .sandbox_worker/              # Production sandbox
-└── tests/                        # Test suite
+├── AI_START_HERE.md              # Agent onboarding
+├── SYSTEM_STATE.md               # Complete system state
+└── README.md                     # This file
 ```
 
 ---
