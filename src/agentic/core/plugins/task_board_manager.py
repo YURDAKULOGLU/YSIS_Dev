@@ -115,9 +115,11 @@ class TaskBoardManager:
                 """,
                 (worker_id,)
             ) as cursor:
-                await conn.commit()
                 row = await cursor.fetchone()
-                return dict(row) if row else None
+
+            # Commit after cursor is closed
+            await conn.commit()
+            return dict(row) if row else None
 
     async def create_task(self, title: str, description: str, priority: str = "MEDIUM") -> str:
         """Create new task in database."""
