@@ -110,7 +110,7 @@ class AgentMessaging:
 
 
 if __name__ == "__main__":
-    # Test messaging
+    # Test messaging (NO EMOJIS - Windows cp1254 compatibility)
     claude = AgentMessaging("claude")
 
     # Send test message
@@ -121,8 +121,8 @@ if __name__ == "__main__":
         msg_type="question"
     )
 
-    print(f"Message sent: {msg_id}")
+    print(f"[OK] Message sent: {msg_id}")
 
     # Check unread
     unread = claude.get_unread_messages()
-    print(f"Unread messages: {len(unread)}")
+    print(f"[INFO] Unread messages: {len(unread)}")
