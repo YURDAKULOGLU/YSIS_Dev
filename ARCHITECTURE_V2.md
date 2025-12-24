@@ -1,76 +1,54 @@
-# YBIS_Dev Architecture V2 (The Single Source of Truth)
+# YBIS ARCHITECTURE V4.5 (LangGraph + Pydantic + SQLite)
 
-> **Status:** Active & Enforced
-> **Version:** 2.0.0
-> **Date:** 2025-12-20
-
-## 1. Core Philosophy: The Factory
-YBIS_Dev is not just a project; it is an **Autonomous Software Factory**. It uses a recursive bootstrap protocol to build itself.
-- **Framework 1 (The Kernel):** The Python core enabling agent operations (`src/agentic`).
-- **Framework 2 (The Builder):** The agents (Planner, Executor, Verifier) that write code.
-- **Framework 3 (The Product):** The features built by the agents (Dashboard, Missions, etc.).
-
-## 2. Directory Structure (Standardized)
-
-All agents MUST adhere to this structure. No exceptions.
-
-```
-YBIS_Dev/
-├── src/                    # THE KERNEL (Python Source Code)
-│   ├── agentic/            # Core Agent Framework
-│   │   ├── core/           # Orchestrator, Graphs, Plugins
-│   │   ├── config.py       # PATH CONSTANTS (Import from here!)
-│   │   └── protocols.py    # Interfaces (Planner, Executor, Verifier)
-│   ├── dashboard/          # Web UI
-│   └── utils/              # Shared Utilities
-│
-├── scripts/                # ENTRY POINTS (CLI & Maintenance)
-│   ├── bootstrap/          # System setup scripts
-│   ├── missions/           # Mission runners (e.g., run_weather.py)
-│   └── utils/              # Helper scripts
-│
-├── docs/                   # KNOWLEDGE BASE (Static)
-│   ├── governance/         # Rules, Principles, Roles
-│   └── architecture/       # System Design
-│
-├── knowledge/              # MEMORY (Dynamic/Operational)
-│   ├── local_db/           # ChromaDB, Tasks.json
-│   └── tasks/              # File-based task queues
-│
-├── tests/                  # VERIFICATION
-│   ├── unit/
-│   └── integration/
-│
-├── legacy/                 # ARCHIVE (Do not touch unless migrating)
-│   └── workforce/          # Old agent teams (CrewAI, AutoGen)
-│
-└── .sandbox/               # EXECUTION ZONES
-    ├── hybrid/             # Active task execution
-    └── docker/             # Containerized execution (Future)
-```
-
-## 3. The Prime Directives (For Agents)
-
-1.  **Path Hygiene:** NEVER hardcode paths. ALWAYS import `PROJECT_ROOT` from `src.agentic.core.config`.
-2.  **Entry Points:** Do NOT clutter the root. Create scripts in `scripts/`.
-3.  **Verification:** No code is "Done" until `Sentinel` says it is verified.
-4.  **Legacy Isolation:** Ignore `legacy/` unless explicitly instructed to perform archaeology.
-
-## 4. Key Components (The Engine)
-
-| Component | Path | Responsibility |
-|-----------|------|----------------|
-| **Orchestrator** | `src/agentic/core/graphs/orchestrator_graph.py` | State Machine Logic (LangGraph) |
-| **Executor** | `src/agentic/core/plugins/aider_executor.py` | Coding (via Aider CLI) |
-| **Verifier** | `src/agentic/core/plugins/sentinel.py` | Quality Control (Pytest/Lint) |
-| **Memory** | `src/agentic/core/plugins/rag_memory.py` | Context Retrieval (ChromaDB) |
-
-## 5. Bootstrap Protocol Status
-
-- **Phase 0:** Kernel Stabilization (Current Step)
-- **Phase 1:** Memory Integration (RAG)
-- **Phase 2:** Docker Sandbox
-- **Phase 3:** Open SWE Integration
+> **Philosophy:** Reliability through strict validation and protocol-based orchestration.
 
 ---
-**End of Specification.**
+
+## 1. THE CORE STACK
+
+- **Orchestration:** LangGraph (State machine management).
+- **Data Integrity:** Pydantic (Strong type validation for all states).
+- **Storage:** SQLite (Async task persistence via aiosqlite).
+- **Execution:** Aider (Specialized local coding agent).
+- **Cleanup:** GitManager (Automated repo maintenance).
+
+---
+
+## 2. THE WORKFLOW
+
+The factory follows a strict state-machine flow:
+
+1.  **PLAN:** A task is promoted from the SQLite backlog. A planner (32B model) generates a structured `Plan` object.
+2.  **EXECUTE:** The executor (Aider) modifies code in the `src/` and `tests/` directories based on the `Plan`.
+3.  **VERIFY:** The sentinel analyzes the modified files using AST, Ruff, and isolated Pytest runs.
+4.  **COMMIT:** On success, GitManager performs an atomic commit with the task ID.
+5.  **CHAIN:** Any `proposed_tasks` created during the session are automatically added to the SQLite database.
+
+---
+
+## 3. STATE MANAGEMENT (TaskState)
+
+We use a single Pydantic model (`TaskState`) defined in `src/agentic/core/protocols.py`. 
+- Every node receives a `TaskState` object.
+- Every node returns a `dict` update.
+- LangGraph ensures all updates are merged and validated.
+
+---
+
+## 4. PERSISTENCE LAYER (SQLite)
+
+The system has moved away from `tasks.json`. 
+- **DB Path:** `Knowledge/LocalDB/tasks.db`
+- **Bridge:** `src/agentic/infrastructure/db.py`
+- **Capability:** Supports concurrent access from multiple workers and the Dashboard.
+
+---
+
+## 5. SELF-IMPROVEMENT (Tier 5 Readiness)
+
+The system is now capable of "Spec-Driven Development" (SDD).
+- Ajanlar `docs/specs/` altında yeni ozalitler (Blueprints) oluşturabilir.
+- Sistem bu ozalitleri `proposed_tasks` üzerinden yeni görevlere dönüştürebilir.
+
+---
+*Architectural Blueprint - Established 2025-12-22*

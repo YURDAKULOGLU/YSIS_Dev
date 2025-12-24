@@ -5,9 +5,16 @@ This module defines the contracts that all plugins must implement.
 Allows easy swapping of implementations without changing core logic.
 """
 
-from typing import Any, Dict, List, Optional, Protocol, Union
-from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Any, Protocol
+
+from pydantic import BaseModel, Field
+
+# ============================================================================
+# CONSTANTS & STANDARDS
+# ============================================================================
+MAX_FILES_PER_TASK = 50
+MIN_TEST_COVERAGE = 0.7
 
 # ============================================================================
 # DATA MODELS (Using Pydantic - The Industry Standard)
@@ -16,29 +23,29 @@ from datetime import datetime
 class Plan(BaseModel):
     """Structured plan output from planners"""
     objective: str
-    steps: List[str]
-    files_to_modify: List[str]
-    dependencies: List[str] = Field(default_factory=list)
-    risks: List[str] = Field(default_factory=list)
-    success_criteria: List[str] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    steps: list[str]
+    files_to_modify: list[str]
+    dependencies: list[str] = Field(default_factory=list)
+    risks: list[str] = Field(default_factory=list)
+    success_criteria: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 class CodeResult(BaseModel):
     """Result from code execution"""
-    files_modified: Dict[str, str] = Field(default_factory=dict) # path -> content/status
-    commands_run: List[str] = Field(default_factory=list)
-    outputs: Dict[str, str] = Field(default_factory=dict) # command -> output
+    files_modified: dict[str, str] = Field(default_factory=dict) # path -> content/status
+    commands_run: list[str] = Field(default_factory=list)
+    outputs: dict[str, str] = Field(default_factory=dict) # command -> output
     success: bool
-    error: Optional[str] = None
+    error: str | None = None
 
 class VerificationResult(BaseModel):
     """Result from verification/testing"""
     lint_passed: bool
     tests_passed: bool
     coverage: float = 0.0
-    errors: List[str] = Field(default_factory=list)
-    warnings: List[str] = Field(default_factory=list)
-    logs: Dict[str, Any] = Field(default_factory=dict)
+    errors: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    logs: dict[str, Any] = Field(default_factory=dict)
 
 class ProposedTask(BaseModel):
     """A task proposed by an agent to be added to the backlog."""
@@ -52,20 +59,20 @@ class TaskState(BaseModel):
     task_description: str = Field(default="")
     artifacts_path: str = Field(default=".sandbox_worker/default")
     phase: str = "init"
-    plan: Optional[Plan] = None
-    code_result: Optional[CodeResult] = None
-    verification: Optional[VerificationResult] = None
+    plan: Plan | None = None
+    code_result: CodeResult | None = None
+    verification: VerificationResult | None = None
     retry_count: int = 0
     max_retries: int = 3
-    error: Optional[str] = None
+    error: str | None = None
     started_at: datetime = Field(default_factory=datetime.now)
-    completed_at: Optional[datetime] = None
-    error_history: List[str] = Field(default_factory=list)
-    failed_at: Optional[datetime] = None
-    files_modified: List[str] = Field(default_factory=list)
+    completed_at: datetime | None = None
+    error_history: list[str] = Field(default_factory=list)
+    failed_at: datetime | None = None
+    files_modified: list[str] = Field(default_factory=list)
     quality_score: float = 0.0
     final_status: str = "UNKNOWN"
-    proposed_tasks: List[ProposedTask] = Field(default_factory=list)
+    proposed_tasks: list[ProposedTask] = Field(default_factory=list)
 
     class Config:
         arbitrary_types_allowed = True
@@ -87,7 +94,7 @@ class PlannerProtocol(Protocol):
     - etc.
     """
 
-    async def plan(self, task: str, context: Dict[str, Any]) -> Plan:
+    async def plan(self, task: str, context: dict[str, Any]) -> Plan:
         """
         Generate execution plan for the task.
 
@@ -117,18 +124,15 @@ class ExecutorProtocol(Protocol):
     - etc.
     """
 
-    async def execute(self, plan: Plan, sandbox_path: str, error_history: Optional[List[str]] = None, retry_count: int = 0) -> CodeResult:
+    async def execute(
+        self,
+        plan: Plan,
+        sandbox_path: str,
+        error_history: list[str] | None = None,
+        retry_count: int = 0
+    ) -> CodeResult:
         """
         Execute the plan and generate code.
-
-        Args:
-            plan: Structured plan from planner
-            sandbox_path: Where to write files (isolated)
-            error_history: Previous errors from failed attempts (for retry feedback)
-            retry_count: Current retry attempt number
-
-        Returns:
-            CodeResult with files modified
         """
         ...
 
@@ -140,25 +144,11 @@ class ExecutorProtocol(Protocol):
 class VerifierProtocol(Protocol):
     """
     Interface that all verifiers must implement.
-
-    A verifier checks if the code is valid (lint, test, etc).
-    Can be implemented by:
-    - Local QA agent
-    - Static analysis tools
-    - Test runners
-    - etc.
     """
 
     async def verify(self, code_result: CodeResult, sandbox_path: str) -> VerificationResult:
         """
         Verify code quality and correctness.
-
-        Args:
-            code_result: Code generated by executor
-            sandbox_path: Where code lives
-
-        Returns:
-            VerificationResult with pass/fail + logs
         """
         ...
 
@@ -170,23 +160,11 @@ class VerifierProtocol(Protocol):
 class ArtifactGeneratorProtocol(Protocol):
     """
     Interface for artifact generation.
-
-    Generates all required documentation artifacts:
-    - PLAN.md
-    - RUNBOOK.md
-    - DECISIONS.json
-    - EVIDENCE/logs
     """
 
-    async def generate(self, state: TaskState) -> Dict[str, str]:
+    async def generate(self, state: TaskState) -> dict[str, str]:
         """
         Generate all artifacts for current state.
-
-        Args:
-            state: Current task state
-
-        Returns:
-            Dict of {file_path: content}
         """
         ...
 
@@ -194,15 +172,13 @@ class ArtifactGeneratorProtocol(Protocol):
 class TaskBoardProtocol(Protocol):
     """
     Interface for TASK_BOARD integration.
-
-    Handles reading/writing tasks from/to TASK_BOARD.md
     """
 
-    async def get_next_task(self) -> Optional[Dict[str, Any]]:
+    async def get_next_task(self) -> dict[str, Any] | None:
         """Get next IN PROGRESS task assigned to current agent"""
         ...
 
-    async def update_task_status(self, task_id: str, status: str, metadata: Dict[str, Any]) -> None:
+    async def update_task_status(self, task_id: str, status: str, metadata: dict[str, Any]) -> None:
         """Update task status in TASK_BOARD"""
         ...
 
@@ -218,18 +194,12 @@ class TaskBoardProtocol(Protocol):
 class GateValidator:
     """
     Built-in validation logic for gates.
-
-    These are NOT plugins - they're core orchestrator logic.
-    Gates ensure quality at each phase transition.
     """
 
     @staticmethod
-    def validate_plan(plan: Plan) -> tuple[bool, Optional[str]]:
+    def validate_plan(plan: Plan) -> tuple[bool, str | None]:
         """
         Validate that plan is actionable.
-
-        Returns:
-            (is_valid, error_message)
         """
         if not plan.objective:
             return False, "Plan has no objective"
@@ -242,18 +212,15 @@ class GateValidator:
 
         # Check file count limits (from Constitution)
         file_count = len(plan.files_to_modify)
-        if file_count > 50:
-            return False, f"Plan modifies too many files ({file_count} > 50). Break into smaller tasks."
+        if file_count > MAX_FILES_PER_TASK:
+            return False, f"Plan modifies too many files ({file_count} > {MAX_FILES_PER_TASK})."
 
         return True, None
 
     @staticmethod
-    def validate_code(code_result: CodeResult) -> tuple[bool, Optional[str]]:
+    def validate_code(code_result: CodeResult) -> tuple[bool, str | None]:
         """
         Validate that code execution succeeded.
-
-        Returns:
-            (is_valid, error_message)
         """
         if not code_result.success:
             return False, code_result.error or "Code execution failed"
@@ -261,7 +228,7 @@ class GateValidator:
         if len(code_result.files_modified) == 0:
             return False, "No files were modified"
 
-        # Basic syntax check (can be extended)
+        # Basic syntax check
         for path, content in code_result.files_modified.items():
             if not content or len(content.strip()) == 0:
                 return False, f"File {path} is empty"
@@ -269,12 +236,9 @@ class GateValidator:
         return True, None
 
     @staticmethod
-    def validate_verification(verification: VerificationResult) -> tuple[bool, Optional[str]]:
+    def validate_verification(verification: VerificationResult) -> tuple[bool, str | None]:
         """
         Validate that verification passed.
-
-        Returns:
-            (is_valid, error_message)
         """
         if not verification.lint_passed:
             return False, f"Lint failed: {', '.join(verification.errors)}"
@@ -282,9 +246,9 @@ class GateValidator:
         if not verification.tests_passed:
             return False, f"Tests failed: {', '.join(verification.errors)}"
 
-        # Coverage check (optional, can be configured)
-        if verification.coverage < 0.7:
-            return False, f"Coverage too low: {verification.coverage:.1%} < 70%"
+        # Coverage check
+        if verification.coverage < MIN_TEST_COVERAGE:
+            return False, f"Coverage too low: {verification.coverage:.1%} < {MIN_TEST_COVERAGE:.0%}"
 
         return True, None
 
@@ -298,9 +262,9 @@ class GateValidator:
         last_error = state.error
         if not last_error and state.error_history:
             last_error = state.error_history[-1]
-            
+
         if last_error and ("VIOLATION" in last_error or "⛔" in last_error):
-            print(f"[GATE] 🛑 SECURITY VIOLATION DETECTED. NO RETRY ALLOWED.")
+            print("[GATE] 🛑 SECURITY VIOLATION DETECTED. NO RETRY ALLOWED.")
             return False
 
         # 2. Check Retry Count

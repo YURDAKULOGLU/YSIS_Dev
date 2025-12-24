@@ -1,78 +1,80 @@
 # YBIS SELF-AUDIT REPORT
 
-### Strategic "MISSING TECHNOLOGIES" Report with Installation Commands
+## MISSING TECHNOLOGIES REPORT
 
-#### 1. Multi-modality (Vision, Voice)
-**Framework/Tool:** **Hugging Face Transformers**
-- **Why:** Hugging Face Transformers supports multi-modal models that can handle vision and text together, such as M2M100 or CLIP. For voice, we can integrate with Whisper for speech-to-text.
-- **Installation:**
-  ```bash
-  pip install transformers
-  ```
+### 1. Multi-modality (Vision, Voice)
+**Tools/Frameworks Needed:**
+- **Hugging Face Transformers for Vision:** For handling image and video data.
+- **Whisper by OpenAI:** A robust automatic speech recognition system that can transcribe audio to text.
 
-**Framework/Tool:** **OpenAI Whisper**
-- **Why:** Whisper is a robust open-source model for automatic speech recognition (ASR) and can be integrated into our system to handle voice input seamlessly.
-- **Installation:**
-  ```bash
-  pip install git+https://github.com/openai/whisper.git 
-  ```
+**Why We Need Them:**
+- **Enhanced Data Processing:** The ability to process images, videos, and voice inputs will enable the Agentic Factory to handle a wider range of data types, making it more versatile.
+- **Improved Interaction:** Voice commands can enhance user interaction with the system, while visual processing can help in analyzing documents or visual cues.
 
-#### 2. Web Interface
-**Framework/Tool:** **Streamlit**
-- **Why:** Streamlit is a powerful framework for building custom web interfaces with minimal effort, ideal for creating dashboards and interactive applications.
-- **Installation:**
-  ```bash
-  pip install streamlit
-  ```
-  
-**Framework/Tool:** **FastAPI**
-- **Why:** FastAPI is a modern, fast (high-performance) web framework for building APIs with Python. It can be used to create robust backends for our Streamlit frontend.
-- **Installation:**
-  ```bash
-  pip install fastapi uvicorn
-  ```
-
-#### 3. Advanced Reasoning
-**Framework/Tool:** **SymPy**
-- **Why:** SymPy is a Python library for symbolic mathematics, which can be used to add advanced math and logic-solving capabilities to our system.
-- **Installation:**
-  ```bash
-  pip install sympy
-  ```
-
-**Framework/Tool:** **Z3 Solver**
-- **Why:** Z3 is a high-performance theorem prover from Microsoft Research. It can handle complex logical and mathematical reasoning, making it valuable for advanced reasoning tasks.
-- **Installation:**
-  ```bash
-  pip install z3-solver
-  ```
-
-#### 4. Robustness (Testing Frameworks)
-**Framework/Tool:** **Pytest**
-- **Why:** Pytest is one of the most popular testing frameworks in Python, providing a rich ecosystem for writing and running tests efficiently.
-- **Installation:**
-  ```bash
-  pip install pytest
-  ```
-
-**Framework/Tool:** **Selenium**
-- **Why:** Selenium automates web browsers via APIs, making it ideal for testing web interfaces created with Streamlit or FastAPI. It supports multiple programming languages including Python.
-- **Installation:**
-  ```bash
-  pip install selenium
-  ```
-
-### Summary of Installation Commands
-
+**Installation Commands:**
 ```bash
 pip install transformers
-pip install git+https://github.com/openai/whisper.git 
-pip install streamlit
-pip install fastapi uvicorn
-pip install sympy
-pip install z3-solver
-pip install pytest
+pip install openai-whisper
+```
+
+### 2. Web Interface
+**Tools/Frameworks Needed:**
+- **Dash by Plotly:** For creating interactive web applications.
+- **Gradio:** A library that can quickly create customizable UI components for machine learning models.
+
+**Why We Need Them:**
+- **Richer User Experience:** Dash and Gradio offer more advanced and interactive user interfaces compared to Streamlit and FastAPI, which will improve the usability of the system.
+- **Model Integration:** Gradio is particularly useful for integrating machine learning models directly into web applications with minimal effort.
+
+**Installation Commands:**
+```bash
+pip install dash
+pip install gradio
+```
+
+### 3. Advanced Reasoning
+**Tools/Frameworks Needed:**
+- **PyTorch Geometric (PyG):** For handling graph-based reasoning tasks.
+- **TensorFlow Decision Forests:** A library for decision forest models, which can enhance the system's ability to handle complex decision-making processes.
+
+**Why We Need Them:**
+- **Graph-Based Reasoning:** PyG is essential for tasks that involve graph data structures, such as knowledge graphs or social network analysis.
+- **Decision Forest Models:** TensorFlow Decision Forests provides advanced reasoning capabilities for decision-making tasks, which can be crucial in certain scenarios.
+
+**Installation Commands:**
+```bash
+pip install torch-geometric
+pip install tensorflow-decision-forests
+```
+
+### 4. Robustness
+**Tools/Frameworks Needed:**
+- **Pytest with Hypothesis:** For property-based testing to ensure code correctness across a wide range of scenarios.
+- **Selenium Grid:** For distributed browser automation testing, enhancing the system's ability to handle different web environments.
+
+**Why We Need Them:**
+- **Comprehensive Testing:** Pytest with Hypothesis ensures that the system is robust and handles various edge cases effectively.
+- **Distributed Testing:** Selenium Grid allows for more comprehensive testing across multiple browsers and platforms, ensuring better reliability.
+
+**Installation Commands:**
+```bash
+pip install pytest hypothesis
 pip install selenium
 ```
 
-By integrating these frameworks and tools, the Agentic Factory system will gain significant capabilities in multi-modality, web interface development, advanced reasoning, and robustness through testing. These additions are critical for advancing towards AGI-level functionalities while ensuring the system remains scalable and maintainable.
+### Summary of Installation Commands:
+```bash
+# Multi-modality
+pip install transformers openai-whisper
+
+# Web Interface
+pip install dash gradio
+
+# Advanced Reasoning
+pip install torch-geometric tensorflow-decision-forests
+
+# Robustness
+pip install pytest hypothesis selenium
+```
+
+By integrating these frameworks and tools, the Agentic Factory will be better equipped to handle multi-modality, provide richer web interfaces, enhance advanced reasoning capabilities, and ensure robustness through comprehensive testing.

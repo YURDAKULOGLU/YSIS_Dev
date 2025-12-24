@@ -86,7 +86,7 @@ class OrchestratorGraph:
             if verification_obj.logs.get("ruff_needs_feedback"):
                 feedback = f"LINTING FEEDBACK:\n{verification_obj.logs.get('ruff_feedback', '')}"
                 new_history.append(feedback)
-                print(f"[Graph:VERIFY] [!] Linting issues detected. Sending feedback to Aider for auto-correction.")
+                print("[Graph:VERIFY] [!] Linting issues detected. Sending feedback to Aider for auto-correction.")
             else:
                 new_history.append(f"Verification failed: {verification_obj.errors}")
 
@@ -207,5 +207,12 @@ class OrchestratorGraph:
 
         # Ensure we return a TaskState object even if ainvoke returns a dict
         if isinstance(final_output, dict):
-            return TaskState.model_validate(final_output)
-        return final_output
+            final_state = TaskState.model_validate(final_output)
+        else:
+            final_state = final_output
+
+        if final_state.phase == 'done':
+            commit_msg = final_state.plan.objective if final_state.plan else "Task completed by YBIS"
+            await self.git_manager.commit_task(task_id, commit_msg)
+
+        return final_state
