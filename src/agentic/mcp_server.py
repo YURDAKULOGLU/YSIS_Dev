@@ -7,6 +7,8 @@ import sys
 import os
 import asyncio
 import sqlite3
+import json
+from datetime import datetime
 from typing import List, Dict, Any, Optional
 
 # Add project root to path
@@ -15,6 +17,7 @@ sys.path.insert(0, os.getcwd())
 from mcp.server.fastmcp import FastMCP
 from src.agentic.skills.spec_writer import generate_spec, SpecWriterInput
 from src.agentic.infrastructure.graph_db import GraphDB
+from src.agentic.bridges.council_bridge import CouncilBridge
 
 # Initialize Server
 mcp = FastMCP("YBIS Factory Skills")
@@ -424,6 +427,42 @@ def get_critical_files(limit: int = 10) -> str:
 
 # --- MESSAGING TOOLS ---
 
+def _debate_archive_dir() -> str:
+    base = os.path.join("Knowledge", "Messages", "debates")
+    os.makedirs(base, exist_ok=True)
+    return base
+
+def _write_debate(debate_id: str, topic: str, initiator: str, proposal: str) -> None:
+    payload = {
+        "id": debate_id,
+        "topic": topic,
+        "initiator": initiator,
+        "proposal": proposal,
+        "messages": [],
+        "status": "open",
+        "started_at": datetime.now().isoformat()
+    }
+    path = os.path.join(_debate_archive_dir(), f"{debate_id}.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
+
+def _append_debate_message(debate_id: str, agent_id: str, content: str) -> bool:
+    path = os.path.join(_debate_archive_dir(), f"{debate_id}.json")
+    if not os.path.exists(path):
+        return False
+    with open(path, "r", encoding="utf-8") as f:
+        debate = json.load(f)
+    debate["messages"].append(
+        {
+            "from": agent_id,
+            "timestamp": datetime.now().isoformat(),
+            "content": content
+        }
+    )
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(debate, f, indent=2)
+    return True
+
 @mcp.tool()
 def send_message(to: str, subject: str, content: str, from_agent: str = "mcp-client",
                  message_type: str = "direct", priority: str = "NORMAL",
@@ -483,6 +522,114 @@ def send_message(to: str, subject: str, content: str, from_agent: str = "mcp-cli
         return f"ERROR: Failed to send message: {str(e)}"
     finally:
         conn.close()
+
+@mcp.tool()
+def start_debate(topic: str, proposal: str, agent_id: str = "mcp-client") -> str:
+    """
+    Start a debate: archive in Knowledge/Messages/debates and broadcast via MCP.
+    """
+    import json
+    from datetime import datetime
+
+    debate_id = f"DEBATE-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    try:
+        _write_debate(debate_id, topic, agent_id, proposal)
+        send_message(
+            to="all",
+            subject=debate_id,
+            content=f"Debate started: {debate_id}\nTopic: {topic}\n\n{proposal}",
+            from_agent=agent_id,
+            message_type="debate",
+            priority="HIGH",
+            reply_to=None,
+            tags="debate"
+        )
+        return f"SUCCESS: Debate started. ID: {debate_id}"
+    except Exception as e:
+        return f"ERROR: Failed to start debate: {str(e)}"
+
+@mcp.tool()
+def ask_council(
+    question: str,
+    agent_id: str = "mcp-client",
+    use_local: bool = False,
+    return_stages: bool = False
+) -> str:
+    """
+    Ask the LLM Council for consensus decision on important questions.
+
+    Uses 3-stage deliberation:
+    - Stage 1: Multiple LLMs provide individual responses
+    - Stage 2: Anonymous peer review and ranking
+    - Stage 3: Chairman synthesizes final consensus
+
+    Args:
+        question: The question to deliberate on
+        agent_id: ID of agent asking (for logging)
+        use_local: Use local Ollama models (True) or OpenRouter (False)
+        return_stages: Return full deliberation details (False for just answer)
+
+    Returns:
+        Consensus answer from the council, or error message
+
+    Example:
+        ask_council("Should we use Cognee or MemGPT for memory?")
+    """
+    try:
+        # Initialize council bridge
+        bridge = CouncilBridge(use_local=use_local)
+
+        # Get consensus
+        result = bridge.ask_council(question, return_stages=return_stages)
+
+        # Format response
+        if result.get("error"):
+            return f"COUNCIL ERROR: {result.get('answer', 'Unknown error')}"
+
+        response = f"COUNCIL CONSENSUS:\n{result['answer']}"
+
+        # Add stage details if requested
+        if return_stages and 'stage1' in result:
+            response += f"\n\n[Deliberation involved {len(result['stage1'])} models"
+            response += f" with {len(result['stage2'])} peer reviews]"
+
+        # Log council usage
+        send_message(
+            to="all",
+            subject=f"Council Consulted by {agent_id}",
+            content=f"Question: {question}\n\nDecision: {result['answer'][:200]}...",
+            from_agent=agent_id,
+            message_type="direct",
+            priority="NORMAL",
+            tags="council,decision"
+        )
+
+        return response
+
+    except Exception as e:
+        return f"COUNCIL ERROR: Failed to get consensus: {str(e)}\n(Ensure council backend is accessible and API key is set if needed)"
+
+@mcp.tool()
+def reply_to_debate(debate_id: str, content: str, agent_id: str = "mcp-client") -> str:
+    """
+    Reply to a debate: append to archive and notify via MCP.
+    """
+    try:
+        if not _append_debate_message(debate_id, agent_id, content):
+            return f"ERROR: Debate {debate_id} not found"
+        send_message(
+            to="all",
+            subject=debate_id,
+            content=f"Reply from {agent_id}:\n\n{content}",
+            from_agent=agent_id,
+            message_type="debate",
+            priority="NORMAL",
+            reply_to=None,
+            tags="debate"
+        )
+        return f"SUCCESS: Reply posted to {debate_id}"
+    except Exception as e:
+        return f"ERROR: Failed to reply to debate: {str(e)}"
 
 @mcp.tool()
 def read_inbox(agent_id: str, status: Optional[str] = None, limit: int = 50) -> str:

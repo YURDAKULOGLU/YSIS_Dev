@@ -371,16 +371,39 @@ completed_at: {datetime.now().isoformat()}
         tools = self._load_mcp_tools()
         if not tools:
             return
-        result = tools.send_message(
-            to="all",
-            subject=topic,
-            content=proposal,
-            from_agent=agent_id,
-            message_type="debate",
-            priority="HIGH",
-            reply_to=None,
-            tags="debate"
-        )
+        if hasattr(tools, "start_debate"):
+            result = tools.start_debate(topic=topic, proposal=proposal, agent_id=agent_id)
+        else:
+            result = tools.send_message(
+                to="all",
+                subject=topic,
+                content=proposal,
+                from_agent=agent_id,
+                message_type="debate",
+                priority="HIGH",
+                reply_to=None,
+                tags="debate"
+            )
+        print(result)
+
+    def reply_to_debate(self, debate_id: str, content: str, agent_id: str):
+        """Reply to a debate via MCP tools."""
+        tools = self._load_mcp_tools()
+        if not tools:
+            return
+        if hasattr(tools, "reply_to_debate"):
+            result = tools.reply_to_debate(debate_id=debate_id, content=content, agent_id=agent_id)
+        else:
+            result = tools.send_message(
+                to="all",
+                subject=debate_id,
+                content=content,
+                from_agent=agent_id,
+                message_type="debate",
+                priority="NORMAL",
+                reply_to=None,
+                tags="debate"
+            )
         print(result)
 
 def main():
@@ -447,6 +470,11 @@ def main():
     start_db.add_argument("--proposal", required=True, help="Debate proposal content")
     start_db.add_argument("--agent", default="cli-user", help="Agent starting the debate")
 
+    reply_db = debate_sub.add_parser("reply", help="Reply to a debate")
+    reply_db.add_argument("--id", dest="debate_id", required=True, help="Debate ID")
+    reply_db.add_argument("--content", required=True, help="Reply content")
+    reply_db.add_argument("--agent", default="cli-user", help="Agent replying to the debate")
+
     args = parser.parse_args()
 
     cli = YBISCli()
@@ -487,18 +515,9 @@ def main():
             )
     elif args.command == "debate":
         if args.debate_cmd == "start":
-            # UPDATED: Use MCP tool for debate start
-            cli.send_message(
-                to="broadcast",
-                subject=f"New Debate: {args.topic}",
-                content=f"Debate started.\nProposal:\n{args.proposal}",
-                from_agent=args.agent,
-                message_type="debate",
-                priority="HIGH",
-                reply_to=None,
-                tags="debate"
-            )
-            print(f"[SUCCESS] Debate started via MCP Messaging")
+            cli.start_debate(args.topic, args.proposal, args.agent)
+        elif args.debate_cmd == "reply":
+            cli.reply_to_debate(args.debate_id, args.content, args.agent)
     else:
         parser.print_help()
 

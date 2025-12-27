@@ -271,16 +271,19 @@ elif page == "Messaging":
             debate_proposal = st.text_area("Proposal", height=200)
             debate_agent = st.text_input("Agent", value="dashboard")
             if st.button("Start Debate"):
-                result = tools.send_message(
-                    to="all",
-                    subject=debate_topic,
-                    content=debate_proposal,
-                    from_agent=debate_agent,
-                    message_type="debate",
-                    priority="HIGH",
-                    reply_to=None,
-                    tags="debate"
-                )
+                if hasattr(tools, "start_debate"):
+                    result = tools.start_debate(topic=debate_topic, proposal=debate_proposal, agent_id=debate_agent)
+                else:
+                    result = tools.send_message(
+                        to="all",
+                        subject=debate_topic,
+                        content=debate_proposal,
+                        from_agent=debate_agent,
+                        message_type="debate",
+                        priority="HIGH",
+                        reply_to=None,
+                        tags="debate"
+                    )
                 st.write(result)
 
         with st.container(border=True):
@@ -289,16 +292,19 @@ elif page == "Messaging":
             reply_content = st.text_area("Reply Content", height=160)
             reply_agent = st.text_input("Reply From", value="dashboard")
             if st.button("Send Debate Reply"):
-                result = tools.send_message(
-                    to="all",
-                    subject=reply_debate_id,
-                    content=reply_content,
-                    from_agent=reply_agent,
-                    message_type="debate",
-                    priority="NORMAL",
-                    reply_to=None,
-                    tags="debate"
-                )
+                if hasattr(tools, "reply_to_debate"):
+                    result = tools.reply_to_debate(debate_id=reply_debate_id, content=reply_content, agent_id=reply_agent)
+                else:
+                    result = tools.send_message(
+                        to="all",
+                        subject=reply_debate_id,
+                        content=reply_content,
+                        from_agent=reply_agent,
+                        message_type="debate",
+                        priority="NORMAL",
+                        reply_to=None,
+                        tags="debate"
+                    )
                 st.write(result)
 
         with st.container(border=True):

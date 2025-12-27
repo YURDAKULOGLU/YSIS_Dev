@@ -165,7 +165,7 @@ docker-compose ps
 - JSON files: DEBATE-{timestamp}.json
 - Structure: id, topic, initiator, proposal, messages[], status
 - Start: `python scripts/ybis.py debate start --topic "..." --proposal "..." --agent your-id`
-- Reply: `python scripts/ybis.py message send --type debate --subject DEBATE-XXX --content "..." --from your-id`
+- Reply: `python scripts/ybis.py debate reply --id DEBATE-XXX --content "..." --agent your-id`
 
 ### Tasks (workspaces/active/)
 - Each task gets: workspaces/active/TASK-ID/
