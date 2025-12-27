@@ -127,6 +127,72 @@ def claim_task(task_id: str, agent_id: str) -> str:
         conn.close()
 
 @mcp.tool()
+def claim_next_task(agent_id: str) -> str:
+    """
+    Claim the next available BACKLOG task (atomic).
+
+    Args:
+        agent_id: Agent claiming the task
+
+    Returns:
+        JSON string with claimed task or message when empty.
+    """
+    import json
+
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("BEGIN IMMEDIATE")
+
+        cursor.execute("""
+            SELECT id, goal, details, status, priority, assignee
+            FROM tasks
+            WHERE status = 'BACKLOG'
+            ORDER BY
+                CASE priority
+                    WHEN 'HIGH' THEN 1
+                    WHEN 'MEDIUM' THEN 2
+                    ELSE 3
+                END,
+                id
+            LIMIT 1
+        """)
+        row = cursor.fetchone()
+
+        if not row:
+            conn.rollback()
+            return json.dumps({"task": None, "message": "No BACKLOG tasks available"}, indent=2)
+
+        task_id = row["id"]
+        cursor.execute("""
+            UPDATE tasks
+            SET status = 'IN_PROGRESS', assignee = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ? AND status = 'BACKLOG'
+        """, (agent_id, task_id))
+
+        if cursor.rowcount == 0:
+            conn.rollback()
+            return json.dumps({"task": None, "message": "Task was claimed by another agent"}, indent=2)
+
+        conn.commit()
+
+        task = dict(row)
+        task["status"] = "IN_PROGRESS"
+        task["assignee"] = agent_id
+        return json.dumps({"task": task}, indent=2)
+
+    except Exception as e:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        return json.dumps({"error": str(e)}, indent=2)
+    finally:
+        conn.close()
+
+@mcp.tool()
 def update_task_status(task_id: str, status: str, final_status: Optional[str] = None) -> str:
     """
     Update task status.

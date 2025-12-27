@@ -3,6 +3,7 @@ import os
 import sys
 import logging
 import traceback
+import json
 from pathlib import Path
 from typing import Dict, Any
 
@@ -20,7 +21,7 @@ from src.agentic.core.plugins.artifact_generator import ArtifactGenerator
 from src.agentic.core.plugins.model_router import default_router
 
 # Import Task Manager
-from src.agentic.core.plugins.task_board_manager import TaskBoardManager
+from src.agentic import mcp_server
 
 # Setup Logging
 logging.basicConfig(
@@ -42,19 +43,20 @@ async def worker_loop():
     verifier = SentinelVerifierEnhanced()
     artifact_gen = ArtifactGenerator()
     
-    board = TaskBoardManager()
-    
+    import socket
+    worker_id = f"worker-{socket.gethostname()}"
+
     while True:
         try:
-            tasks_data = await board._read_db()
             active_task = None
-            
-            if tasks_data.get("in_progress"):
-                active_task = tasks_data["in_progress"][0]
-            elif tasks_data.get("backlog"):
-                next_task = tasks_data["backlog"][0]
-                await board.update_task_status(next_task["id"], "IN_PROGRESS", {})
-                active_task = next_task
+            in_progress_raw = mcp_server.get_tasks(status="IN_PROGRESS", assignee=worker_id)
+            in_progress = json.loads(in_progress_raw).get("tasks", [])
+            if in_progress:
+                active_task = in_progress[0]
+            else:
+                claimed_raw = mcp_server.claim_next_task(worker_id)
+                claimed = json.loads(claimed_raw)
+                active_task = claimed.get("task")
             
             if active_task:
                 task_id = active_task["id"]
@@ -92,16 +94,16 @@ async def worker_loop():
                     
                     if phase == "done":
                         logger.info(f"<<< TASK SUCCESS: {task_id}")
-                        await board.update_task_status(task_id, "DONE", {})
+                        mcp_server.update_task_status(task_id, "COMPLETED")
                     else:
                         logger.error(f"<<< TASK FAILED/INCOMPLETE: {task_id}")
-                        await board.update_task_status(task_id, "FAILED", {})
+                        mcp_server.update_task_status(task_id, "FAILED")
                         
                 except Exception as e:
                     logger.error(f"Graph Execution Error: {e}")
                     logger.error(traceback.format_exc())
                     # NO MORE DOUBLE BRACES HERE
-                    await board.update_task_status(task_id, "FAILED", {})
+                    mcp_server.update_task_status(task_id, "FAILED")
 
                 await asyncio.sleep(5)
             else:

@@ -60,6 +60,57 @@ class SimplePlanner:
     # IMPLEMENTATION
     # ========================================================================
 
+    def _check_dependency_impact(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Check dependency impact using Neo4j graph (GAP 2 FIX).
+
+        Analyzes which files will be affected by changes mentioned in the context.
+        This makes the planner AWARE of consequences before creating a plan.
+        """
+        try:
+            # Extract file paths from context if available
+            target_files = context.get('target_files', [])
+            if not target_files:
+                # Try to extract from task description
+                task_desc = context.get('task', '')
+                # Simple heuristic: look for file paths in task
+                import re
+                found_files = re.findall(r'src/[a-zA-Z0-9/_]+\.py', task_desc)
+                target_files = found_files
+
+            if not target_files:
+                return None  # No files to analyze
+
+            # Query Neo4j for impact
+            impact_results = {}
+            with GraphDB() as db:
+                for file_path in target_files[:3]:  # Limit to first 3 files
+                    impact = db.impact_analysis(file_path, max_depth=2)
+                    if impact:
+                        impact_results[file_path] = {
+                            'affected_files': impact.get('affected_files', []),
+                            'risk_level': impact.get('risk_level', 'UNKNOWN'),
+                            'dependents_count': len(impact.get('affected_files', []))
+                        }
+
+            if impact_results:
+                return {
+                    'checked': True,
+                    'analysis': impact_results,
+                    'warning': 'Some files have dependents - changes may have ripple effects'
+                }
+
+            return None
+
+        except Exception as e:
+            # Don't fail planning if impact check fails - just log it
+            print(f"[SimplePlanner] Impact check failed: {e}")
+            return {
+                'checked': False,
+                'error': str(e),
+                'warning': 'Could not check dependencies - proceed with caution'
+            }
+
     def _read_constitution(self) -> str:
         """Read YBIS Constitution from project root."""
         try:
