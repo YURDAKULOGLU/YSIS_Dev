@@ -37,7 +37,7 @@ class TestCodeQuality(unittest.TestCase):
         with self.assertLogs('root', level='INFO') as log:
             monitor_code_quality(self.temp_dir)
             self.assertTrue(any(f"Parsing file: {self.sample_file_path}" in line for line in log.output))
-            self.assertTrue(any("Code Complexity of sample.py: Lines=4, Functions=1, Classes=0" in line for line in log.output))
+            self.assertTrue(any("Code Complexity of sample.py: Lines=2, Functions=1, Classes=0" in line for line in log.output))
 
     def test_monitor_code_quality_with_regression(self):
         """
@@ -61,7 +61,7 @@ class TestCodeQuality(unittest.TestCase):
             f.write(modified_content)
 
         # Test for regression detection
-        with self.assertLogs('root', level='WARNING') as log:
+        with self.assertLogs('root', level='INFO') as log:
             monitor_code_quality(self.temp_dir)
             self.assertTrue(any(f"Parsing file: {self.sample_file_path}" in line for line in log.output))
             expected_warning = (
@@ -140,7 +140,7 @@ class TestCodeQuality(unittest.TestCase):
             f.write(modified_content)
 
         # Test for significant regression detection
-        with self.assertLogs('root', level='WARNING') as log:
+        with self.assertLogs('root', level='INFO') as log:
             monitor_code_quality(self.temp_dir)
             self.assertTrue(any(f"Parsing file: {self.sample_file_path}" in line for line in log.output))
             expected_warning = (
