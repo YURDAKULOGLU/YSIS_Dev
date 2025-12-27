@@ -15,6 +15,7 @@ import httpx
 from src.agentic.core.protocols import Plan
 from src.agentic.core.config import CONSTITUTION_PATH
 from src.agentic.core.plugins.model_router import default_router
+from src.agentic.infrastructure.graph_db import GraphDB
 
 
 class SimplePlanner:
@@ -33,7 +34,14 @@ class SimplePlanner:
         self.base_url = base_url or os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
     async def plan(self, task: str, context: Dict[str, Any]) -> Plan:
-        """Generate execution plan using Ollama"""
+        """Generate execution plan using Ollama with dependency awareness"""
+
+        # NEW: Check dependency impact BEFORE planning (GAP 2 FIX)
+        impact_analysis = self._check_dependency_impact(context)
+
+        # Enhance context with impact analysis
+        if impact_analysis:
+            context['dependency_impact'] = impact_analysis
 
         prompt = self._build_prompt(task, context)
 

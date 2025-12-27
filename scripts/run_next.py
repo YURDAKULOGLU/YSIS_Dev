@@ -12,7 +12,7 @@ from src.agentic.core.graphs.orchestrator_graph import OrchestratorGraph
 from src.agentic.core.protocols import TaskState
 
 # Plugins
-from src.agentic.core.plugins.simple_planner import SimplePlanner
+from src.agentic.core.plugins.smart_planner import SmartPlanner
 from src.agentic.core.plugins.aider_executor_enhanced import AiderExecutorEnhanced
 from src.agentic.core.plugins.sentinel_enhanced import SentinelVerifierEnhanced
 from src.agentic.core.plugins.artifact_generator import ArtifactGenerator
@@ -28,7 +28,7 @@ async def run_next_step():
     
     # Using the NEW Graph implementation
     orchestrator = OrchestratorGraph(
-        planner=SimplePlanner(),
+        planner=SmartPlanner(),
         executor=AiderExecutorEnhanced(),
         verifier=SentinelVerifierEnhanced(),
         artifact_gen=ArtifactGenerator()

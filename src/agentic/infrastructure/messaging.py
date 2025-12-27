@@ -4,6 +4,7 @@ Simple file-based messaging for multi-agent coordination.
 """
 
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, List, Dict, Any
@@ -23,6 +24,8 @@ class AgentMessaging:
         self.outbox = self.base_path / "outbox"
         self.debates = self.base_path / "debates"
 
+        self.allow_legacy_writes = os.getenv("YBIS_ALLOW_LEGACY_MESSAGING", "0") == "1"
+
         # Ensure directories exist
         for path in [self.inbox, self.outbox, self.debates]:
             path.mkdir(parents=True, exist_ok=True)
@@ -37,6 +40,8 @@ class AgentMessaging:
         metadata: Optional[Dict[str, Any]] = None
     ) -> str:
         """Send a message to another agent."""
+        if not self.allow_legacy_writes:
+            raise RuntimeError("Legacy file-based messaging is disabled. Use MCP tools via scripts/ybis.py message.")
         msg_id = f"MSG-{self.agent_id}-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
         message = {
@@ -111,6 +116,8 @@ class AgentMessaging:
 
     def start_debate(self, topic: str, proposal: str) -> str:
         """Start a new debate."""
+        if not self.allow_legacy_writes:
+            raise RuntimeError("Legacy debate writes are disabled. Use MCP tools via scripts/ybis.py debate.")
         debate_id = f"DEBATE-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
         debate = {
@@ -139,6 +146,8 @@ class AgentMessaging:
 
     def reply_to_debate(self, debate_id: str, content: str) -> bool:
         """Reply to an existing debate."""
+        if not self.allow_legacy_writes:
+            raise RuntimeError("Legacy debate writes are disabled. Use MCP tools via scripts/ybis.py debate reply.")
         debate_file = self.debates / f"{debate_id}.json"
         
         if not debate_file.exists():

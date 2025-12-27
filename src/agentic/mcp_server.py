@@ -747,6 +747,127 @@ def ack_message(message_id: str, agent_id: str, action: str = "noted") -> str:
     finally:
         conn.close()
 
+# --- MEMORY TOOLS (Cognee Integration) ---
+
+@mcp.tool()
+def add_to_memory(
+    data: str,
+    agent_id: str = "mcp-client",
+    metadata: Optional[str] = None
+) -> str:
+    """
+    Add information to the system's persistent memory (Cognee).
+
+    This stores data in a graph+vector hybrid database for later retrieval.
+    Use this to remember important information, decisions, or learnings.
+
+    Args:
+        data: The information to store (text)
+        agent_id: ID of agent adding the memory
+        metadata: Optional JSON string with metadata
+
+    Returns:
+        Success message or error
+
+    Example:
+        add_to_memory("We decided to use Cognee for memory because it integrates with Neo4j")
+    """
+    try:
+        import cognee
+        import asyncio
+        import os
+
+        # Configure Cognee for Neo4j
+        os.environ['GRAPH_DATABASE_PROVIDER'] = 'neo4j'
+        os.environ['GRAPH_DATABASE_URL'] = 'bolt://localhost:7687'
+        os.environ['GRAPH_DATABASE_USERNAME'] = 'neo4j'
+        os.environ['GRAPH_DATABASE_PASSWORD'] = 'ybis-graph-2025'
+        os.environ['ENABLE_BACKEND_ACCESS_CONTROL'] = 'false'
+
+        # Add to memory (async)
+        async def add_async():
+            await cognee.add(data)
+            await cognee.cognify()
+
+        asyncio.run(add_async())
+
+        # Log memory addition
+        send_message(
+            to="all",
+            subject=f"Memory Added by {agent_id}",
+            content=f"Added to system memory:\n\n{data[:200]}...",
+            from_agent=agent_id,
+            message_type="direct",
+            priority="LOW",
+            tags="memory,learning"
+        )
+
+        return f"SUCCESS: Memory added and indexed. {len(data)} characters stored."
+
+    except Exception as e:
+        return f"MEMORY ERROR: Failed to add memory: {str(e)}\n(Ensure Cognee is configured and Neo4j is accessible)"
+
+@mcp.tool()
+def search_memory(
+    query: str,
+    agent_id: str = "mcp-client",
+    limit: int = 5
+) -> str:
+    """
+    Search the system's persistent memory for relevant information.
+
+    Uses hybrid graph+vector search to find related memories.
+
+    Args:
+        query: Search query (question or keywords)
+        agent_id: ID of agent searching
+        limit: Maximum number of results
+
+    Returns:
+        Search results or error
+
+    Example:
+        search_memory("What did we decide about memory systems?")
+    """
+    try:
+        import cognee
+        import asyncio
+        import os
+
+        # Configure Cognee
+        os.environ['GRAPH_DATABASE_PROVIDER'] = 'neo4j'
+        os.environ['GRAPH_DATABASE_URL'] = 'bolt://localhost:7687'
+        os.environ['GRAPH_DATABASE_USERNAME'] = 'neo4j'
+        os.environ['GRAPH_DATABASE_PASSWORD'] = 'ybis-graph-2025'
+        os.environ['ENABLE_BACKEND_ACCESS_CONTROL'] = 'false'
+
+        # Search memory (async)
+        async def search_async():
+            return await cognee.search(query, limit=limit)
+
+        results = asyncio.run(search_async())
+
+        if not results or len(results) == 0:
+            return f"MEMORY: No results found for: {query}"
+
+        # Format results
+        response = f"MEMORY SEARCH RESULTS ({len(results)} found):\n\n"
+        for i, result in enumerate(results, 1):
+            # Handle different result formats
+            if isinstance(result, dict):
+                content = result.get('content', result.get('text', str(result)))
+            elif isinstance(result, str):
+                content = result
+            else:
+                content = str(result)
+
+            response += f"{i}. {content[:300]}\n\n"
+
+        return response
+
+    except Exception as e:
+        return f"MEMORY ERROR: Failed to search memory: {str(e)}\n(Ensure Cognee is configured and has data)"
+
 # --- ENTRY POINT ---
 if __name__ == "__main__":
     print("🚀 YBIS MCP Server Starting...")
