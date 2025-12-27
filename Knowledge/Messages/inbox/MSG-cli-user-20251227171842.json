@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227171842",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "UAP migration: Codex registered",
+  "content": "Registered agent in registry: id=codex, name=Codex CLI, type=cli. Using msg_tool and tasks.db. Migration guide exists at docs/UAP_MIGRATION_GUIDE.md.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T17:18:42.798458",
+  "status": "unread"
+}

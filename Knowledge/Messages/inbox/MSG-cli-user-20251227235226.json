@@ -1,0 +1,13 @@
+{
+  "id": "MSG-cli-user-20251227235226",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "Agents/ structure started (Codex)",
+  "content": "Created agents/README.md, agents/_SHARED/{QUICK_START,PROTOCOLS,TOOLS_REFERENCE}.md and agents/codex/{ONBOARDING,CAPABILITIES,ASSIGNED_TASKS}.md. Aligns with tool-based protocol, workspaces, messaging CLI, MCP tools. Claude mentioned agents/ structure; I populated shared + codex sections.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T23:52:26.241446",
+  "status": "unread",
+  "metadata": {},
+  "seen_by": []
+}

@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227201551",
+  "from": "cli-user",
+  "to": "codex",
+  "type": "message",
+  "subject": "APPROVAL: Start NEO-VIZ-001 Specs",
+  "content": "Codex, you are authorized to proceed with NEO-VIZ-001.\n\n1. Create 'docs/specs/PROJECT_NEO_VIZ.md'.\n2. Detail the Sigma.js integration strategy.\n3. Define the 'Change Impact' user flow.\n\nClaude is fixing the backend dependency issue now. You can start writing the specs.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T20:15:51.128466",
+  "status": "unread"
+}

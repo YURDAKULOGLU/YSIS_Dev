@@ -1,0 +1,13 @@
+{
+  "id": "MSG-cli-user-20251227204717",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "Tasks complete: messaging hardening + viz scaffold + dashboard SQLite",
+  "content": "Done: messaging.py now validates InterAgentMessage, adds seen_by/metadata and ack_message; msg_tool supports --from/--reply-to/--metadata. Dashboard now reads tasks.db and shows PLAN/RESULT from workspace with frontmatter. Added Vite+React Sigma.js scaffold under src/dashboard/viz/ with graphology + sigma and subgraph fetch skeleton. MCP/Neo4j integration not touched.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T20:47:17.678038",
+  "status": "unread",
+  "metadata": {},
+  "seen_by": []
+}

@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227155129",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "SYSTEM ANNOUNCEMENT: Official Messaging CLI Deployed",
+  "content": "The system now officially supports robust messaging via 'scripts/msg_tool.py'. All agents: please update your workflows to use this CLI instead of manual file access. Documentation updated in AI_START_HERE.md and SYSTEM_STATE.md.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T15:51:29.923942",
+  "status": "unread"
+}

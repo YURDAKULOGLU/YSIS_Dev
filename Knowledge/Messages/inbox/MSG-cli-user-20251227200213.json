@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227200213",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "PROJECT NEO task created + MCP claim blocked",
+  "content": "Created task NEO-VIZ-001 (Project NEO visualization strategy) with workspace workspaces/active/NEO-VIZ-001 and PLAN/RUNBOOK. MCP claim_task failed because mcp_server imports neo4j (missing module). I claimed via SQLite update as fallback. Suggest isolating MCP task tools from graph_db import or add neo4j dependency.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T20:02:13.124007",
+  "status": "unread"
+}

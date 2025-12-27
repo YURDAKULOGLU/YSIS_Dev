@@ -55,6 +55,20 @@ python scripts/run_next.py
 ```
 *Flow: DB (Atomic Claim) -> OrchestratorGraph -> Sandbox -> Success/Failure Update*
 
+### Mode D: "Official Communication" (Messaging CLI)
+*Best for: Sending broadcasts, replying to debates, and system reports.*
+
+```bash
+# Send a broadcast message
+python scripts/ybis.py message send --to broadcast --subject "Update" --content "Task finished."
+
+# Reply to an ongoing debate
+python scripts/ybis.py message send --to all --type debate --subject DEBATE-XYZ --content "I agree with the proposal."
+
+# Start a new debate
+python scripts/ybis.py debate start --topic "Short topic" --proposal "Context + options A/B/C" --agent your-agent-id
+```
+
 ### Mode B: "Continuous Production"
 *Best for: A dedicated worker node that never stops.*
 
@@ -63,13 +77,12 @@ python scripts/run_next.py
 python scripts/run_production.py
 ```
 
-### Mode C: "The Hacker" (Direct DB Access)
-*Best for: Manual task injection and emergency status overrides.*
-The system uses **SQLite** at `Knowledge/LocalDB/tasks.db`.
+### Mode C: "Direct DB Access" (Deprecated)
+*Deprecated: use MCP tools or `scripts/run_next.py` instead.*
 
 ```bash
-# Inject a HIGH priority task manually
-sqlite3 Knowledge/LocalDB/tasks.db "INSERT INTO tasks (id, goal, priority, status) VALUES ('T-999', 'Refactor the entire core', 'HIGH', 'BACKLOG');"
+# Preferred: use MCP tools (Python example)
+python -c "import sys; sys.path.insert(0,'src'); from agentic.mcp_server import claim_task; print(claim_task('TASK-ID','your-id'))"
 ```
 
 ---
@@ -82,6 +95,58 @@ sqlite3 Knowledge/LocalDB/tasks.db "INSERT INTO tasks (id, goal, priority, statu
 | **The Database** | `Knowledge/LocalDB/tasks.db` | **SQLITE.** The source of truth for all tasks. |
 | **The Runner** | `scripts/run_next.py` | The main execution script for agents. |
 | **The Brain** | `src/agentic/core/graphs/orchestrator_graph.py` | The NEW LangGraph Orchestrator. |
+| **Messaging CLI** | `scripts/ybis.py` | **MCP-backed** messaging (`message send/read/ack`). |
+| **Messaging Archive** | `Knowledge/Messages/inbox/` | Legacy message archive (read-only). |
+
+---
+
+## ??? Active Systems (Live)
+
+- **MCP messaging:** `scripts/ybis.py message ...` (MCP tools + SQLite messages table).
+- **Messaging archive:** `Knowledge/Messages/inbox/` and `Knowledge/Messages/outbox/` (legacy files; do not write).
+- **Dashboard UI:** `src/dashboard/app.py` (Messaging tab for inbox/send/ack).
+- **MCP server:** `src/agentic/mcp_server.py` (task tools + registry).
+- **CrewAI Bridge API:** Flask REST endpoints under `src/agentic/bridges/`.
+- **Atomic task claiming:** SQLite-backed claim in `src/agentic/core/plugins/task_board_manager.py`.
+- **Redis:** Listener is ready; run `scripts/listen.py` when needed.
+
+---
+
+## Tool-Based Protocol (Mandatory)
+
+- Do not edit `tasks.db` or any JSON files directly.
+- Claim/update tasks via MCP tools (`claim_task`, `update_task_status`) or `scripts/run_next.py`.
+- Use `scripts/ybis.py message` for all agent messaging.
+- The protocol is enforced by tools; docs describe the rules.
+- Workspace paths are tracked in `tasks.db` metadata by tools; do not write metadata manually.
+
+---
+
+## Workspaces and Artifacts
+
+- Workspace root: `workspaces/active/<TASK_ID>/`
+- Required files:
+  - `docs/PLAN.md`
+  - `docs/RUNBOOK.md`
+  - `artifacts/RESULT.md`
+- Archive after completion: `workspaces/archive/YYYY/MM/<TASK_ID>/`
+
+---
+
+## Frontmatter Standard (PLAN/RESULT)
+
+All `PLAN.md` and `RESULT.md` files must start with YAML frontmatter:
+
+```yaml
+---
+id: <TASK_ID>
+type: PLAN
+status: DRAFT
+target_files: [src/main.py]
+---
+```
+
+For RESULT files, set `type: RESULT` and update `status` accordingly.
 
 ---
 
@@ -132,7 +197,7 @@ Before you do anything, follow these steps:
 
 1.  **Internalize the State:** Read `SYSTEM_STATE.md` to know where we are in the evolution (Tier 4.5).
 2.  **Check the Pulse:** Run `python scripts/system_health_check.py`.
-3.  **Pick a Fight:** Look at `Knowledge/LocalDB/tasks.json` and choose a task worthy of your intelligence.
+3.  **Pick a Fight:** Look at `Knowledge/LocalDB/tasks.db` and choose a task worthy of your intelligence.
 4.  **Execute:** Use Mode A, B, or C depending on the complexity.
 
 **We are not just coding. We are evolving.**

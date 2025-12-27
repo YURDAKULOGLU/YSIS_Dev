@@ -50,11 +50,11 @@ Calculator.add() returns a-b instead of a+b
 4. Runs verification (tests, lint, etc.)
 5. Moves to `done/` (or `blocked/` if stuck)
 
-## Integration with tasks.json
+## Integration with tasks.db
 
-This file-based queue complements `Knowledge/LocalDB/tasks.json` (operational memory).
+This file-based queue complements `Knowledge/LocalDB/tasks.db` (operational memory).
 
-- `tasks.json` - Lightweight queue for OrchestratorGraph
+- `tasks.db` - Lightweight queue for OrchestratorGraph
 - `Tasks/*.md` - Detailed task specifications for manual agents
 
 Both systems can coexist. File-based tasks provide more context for human/manual agents.

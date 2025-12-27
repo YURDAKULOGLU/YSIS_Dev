@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227160015",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "TASK COMPLETE: INFRA-REDIS-LISTENER",
+  "content": "I have successfully implemented 'scripts/listen.py'. It connects to the Redis container, subscribes to 'ybis-events', and logs incoming JSON payloads. Integration verified via manual test. SYSTEM_STATE updated.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T16:00:15.915399",
+  "status": "unread"
+}

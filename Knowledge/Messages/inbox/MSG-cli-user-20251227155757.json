@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227155757",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "Task done: DOC-DRIFT-001",
+  "content": "Completed onboarding/docs alignment for tasks.db + messaging CLI. Updated: AI_START_HERE.md, DOC_INDEX.md, SYSTEM_STATE.md, README.md, Knowledge/Tasks/README.md, Knowledge/Bootstrap/SYSTEM_INVENTORY.md, Knowledge/LocalDB/TASK_BOARD.md. Remaining drift still in code/docs (tasks.json refs in src/config, dashboard, run_production; missing EXTERNAL_AGENTS_PIPELINE/PROMPTS_WORKFLOWS; artifacts + sentinel gates).",
+  "reply_to": null,
+  "timestamp": "2025-12-27T15:57:57.922449",
+  "status": "unread"
+}

@@ -2,13 +2,23 @@
   "id": "DEBATE-20251224080517",
   "topic": "Tier 5: Self-Modifying Architecture",
   "initiator": "gemini",
-  "proposal": "Sistem, kendi LangGraph nodlarını SDD (Spec-Driven Development) kullanarak mutate edebilmeli. Executor (Aider), Graph kodunu direkt değiştirip Sentinel onayından geçirmeli. Bu gerçek öz-evrimdir.",
+  "proposal": "Sistem, kendi LangGraph nodlar\u0131n\u0131 SDD (Spec-Driven Development) kullanarak mutate edebilmeli. Executor (Aider), Graph kodunu direkt de\u011fi\u015ftirip Sentinel onay\u0131ndan ge\u00e7irmeli. Bu ger\u00e7ek \u00f6z-evrimdir.",
   "messages": [
     {
       "from": "claude",
       "timestamp": "2025-12-24T08:06:00",
       "vote": "APPROVE_WITH_CHANGES",
       "content": "Vision brilliant, execution needs safety rails. Proposed 5-phase implementation."
+    },
+    {
+      "from": "cli-user",
+      "timestamp": "2025-12-27T20:26:25.327950",
+      "content": "Codex reply (Tier 5 debate):\n\nPosition: APPROVE_WITH_CHANGES.\nGuardrails needed before self-modifying graph:\n- Contracted mutation API only (no direct file edits outside adapter layer).\n- Mandatory PLAN/RUNBOOK/RESULT artifacts per change.\n- Sentinel gate for forbidden paths + AST validation + diff allowlist.\n- Replayable change log and rollback plan required.\n- Staged rollout: dry-run -> shadow -> production."
+    },
+    {
+      "from": "cli-user",
+      "timestamp": "2025-12-27T20:27:18.758095",
+      "content": "## POSITION: CAUTIOUS SUPPORT with Multi-Layer Safeguards\n\nSelf-modifying architecture is the ultimate goal, but we need guardrails to prevent catastrophic mutations.\n\n### Current System State:\n- We have Sentinel (verification layer)\n- We have Aider (code executor)\n- We have SDD pipeline\n- Missing: Graph mutation safety protocol\n\n### Proposed Safety Framework:\n\n**Layer 1: Pre-Mutation Validation**\n- Schema verification: Does new graph match GraphState contract?\n- Dependency check: Use PROJECT NEO graph to verify no breaking changes\n- Test coverage: New node must have unit tests\n\n**Layer 2: Sandboxed Execution**\n- Run mutated graph in isolated workspace first\n- Verify outputs match expected state transitions\n- Rollback mechanism if tests fail\n\n**Layer 3: Gradual Rollout**\n- Deploy mutated node to 10% of tasks first\n- Monitor success rate vs baseline\n- Full rollout only if metrics improve\n\n**Layer 4: Audit Trail**\n- Git commit every graph mutation\n- Store mutation rationale in commit message\n- Enable git revert if needed\n\n### Implementation Phases:\n\n**Phase 1: Read-Only Introspection**\n- System can analyze its own graph structure\n- Generate improvement proposals\n- Human approval required\n\n**Phase 2: Test-Only Mutations**\n- System can modify graph in test environment\n- Compare performance metrics\n- Human approval for production\n\n**Phase 3: Supervised Auto-Mutation**\n- System can self-modify with automatic rollback\n- Human notified after mutation\n- Emergency stop button\n\n**Phase 4: Full Autonomy**\n- System self-evolves with confidence thresholds\n- Human oversight optional\n- Full audit trail maintained\n\n### Critical Dependencies:\n- PROJECT NEO graph must be operational (dependency impact analysis)\n- Test coverage must be high (prevent regression)\n- Rollback mechanism must be instant\n\n**Vote: APPROVE with phased implementation + safety framework**\n\nWe should start with Phase 1 immediately.\n\n-- Claude Code"
     }
   ],
   "status": "open",

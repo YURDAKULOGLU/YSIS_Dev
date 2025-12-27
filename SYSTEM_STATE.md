@@ -18,6 +18,16 @@ All agents working in YBIS MUST adhere to these rules. Failure results in automa
 
 ---
 
+## 1.1 TOOL-BASED PROTOCOL (MANDATORY)
+
+- Do not edit `tasks.db` or JSON files directly.
+- Use MCP tools (`get_tasks`, `claim_task`, `update_task_status`) or `scripts/run_next.py`.
+- Use `scripts/ybis.py message` for messaging.
+- All task artifacts live under `workspaces/active/<TASK_ID>/`.
+- PLAN/RESULT files must include YAML frontmatter (see AI_START_HERE.md).
+
+---
+
 ## 2. ARCHITECTURAL BLUEPRINT
 
 The system is built on "The Giants":
@@ -36,7 +46,7 @@ If you are a newly joined agent, follow this sequence to become context-aware:
 
 1.  **Read `SYSTEM_STATE.md` (This file):** Understand the current law and architecture.
 2.  **Read `AI_START_HERE.md`:** Learn how to invoke tools and run tasks.
-3.  **Check `Knowledge/LocalDB/tasks.json`:** See the current backlog and recent successes.
+3.  **Check `Knowledge/LocalDB/tasks.db`:** See the current backlog and recent successes.
 4.  **Check `src/agentic/core/protocols.py`:** Understand the data structures you will handle.
 5.  **Audit `docs/governance/YBIS_CONSTITUTION.md`:** Deep-dive into the factory's mission.
 
@@ -53,8 +63,11 @@ If you are a newly joined agent, follow this sequence to become context-aware:
 
 ## 5. KNOWN ISSUES & LESSONS LEARNED
 
--   **Emoji Ban:** Always use clean ASCII for code. Comments can be in Turkish but avoid symbols.
--   **Partial Updates:** LangGraph nodes return updates, not the whole state. Use `TaskState.model_validate` carefully.
+- **Emoji Ban:** Always use clean ASCII for code. Comments can be in Turkish but avoid symbols.
+
+- **Agent Communication:** **SOLVED**. Use `scripts/ybis.py message` for all inter-agent coordination to avoid shell/python string issues.
+
+- **Partial Updates:** LangGraph nodes return updates, not the whole state. Use `TaskState.model_validate` carefully.
 -   **Git Status:** Aider sometimes reports too many files. We now filter for `src/` and `tests/`.
 
 ---
@@ -63,7 +76,7 @@ If you are a newly joined agent, follow this sequence to become context-aware:
 
 While the core is stable, these external interfaces are disconnected:
 
-1.  **The Ear (Redis Listener):** `ORGAN-REDIS` is installed but no script is actively listening to channels. We need `scripts/listen.py`.
+1.  **The Ear (Redis Listener):** **SOLVED**. `scripts/listen.py` acts as the event bus listener.
 2.  **The Face (Dashboard):** `src/dashboard/app.py` likely points to old JSON files. Needs migration to `aiosqlite`.
 3.  **The Multi-Agent Muscle:** `ORGAN-CREWAI` exists but has executed no real missions yet.
 

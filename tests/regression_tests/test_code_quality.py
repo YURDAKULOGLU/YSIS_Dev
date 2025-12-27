@@ -36,8 +36,8 @@ class TestCodeQuality(unittest.TestCase):
         # Test the function
         with self.assertLogs('root', level='INFO') as log:
             monitor_code_quality(self.temp_dir)
-            self.assertIn(f"Parsing file: {self.sample_file_path}", log.output[2])
-            self.assertIn("Code Complexity of sample.py: Lines=4, Functions=1, Classes=0", log.output[3])
+            self.assertTrue(any(f"Parsing file: {self.sample_file_path}" in line for line in log.output))
+            self.assertTrue(any("Code Complexity of sample.py: Lines=4, Functions=1, Classes=0" in line for line in log.output))
 
     def test_monitor_code_quality_with_regression(self):
         """
@@ -63,7 +63,7 @@ class TestCodeQuality(unittest.TestCase):
         # Test for regression detection
         with self.assertLogs('root', level='WARNING') as log:
             monitor_code_quality(self.temp_dir)
-            self.assertIn(f"Parsing file: {self.sample_file_path}", log.output[5])
+            self.assertTrue(any(f"Parsing file: {self.sample_file_path}" in line for line in log.output))
             expected_warning = (
                 "sample.py dosyasında gerileme algılandı:\n"
                 "  - Satırlar: 7 (önceki: 4)\n"
@@ -89,7 +89,7 @@ class TestCodeQuality(unittest.TestCase):
         # Test for no regression detection
         with self.assertLogs('root', level='INFO') as log:
             monitor_code_quality(self.temp_dir)
-            self.assertIn(f"Parsing file: {self.sample_file_path}", log.output[5])
+            self.assertTrue(any(f"Parsing file: {self.sample_file_path}" in line for line in log.output))
             self.assertIn("No regression detected in sample.py. Complexity remains the same.", "\n".join(log.output))
 
     def test_monitor_code_quality_with_no_change(self):
@@ -112,7 +112,7 @@ class TestCodeQuality(unittest.TestCase):
         # Test for no change detection
         with self.assertLogs('root', level='INFO') as log:
             monitor_code_quality(self.temp_dir)
-            self.assertIn(f"Parsing file: {self.sample_file_path}", log.output[5])
+            self.assertTrue(any(f"Parsing file: {self.sample_file_path}" in line for line in log.output))
             self.assertIn("No regression detected in sample.py. Complexity remains the same.", "\n".join(log.output))
 
     def test_monitor_code_quality_with_significant_regression(self):
@@ -142,7 +142,7 @@ class TestCodeQuality(unittest.TestCase):
         # Test for significant regression detection
         with self.assertLogs('root', level='WARNING') as log:
             monitor_code_quality(self.temp_dir)
-            self.assertIn(f"Parsing file: {self.sample_file_path}", log.output[5])
+            self.assertTrue(any(f"Parsing file: {self.sample_file_path}" in line for line in log.output))
             expected_warning = (
                 "sample.py dosyasında gerileme algılandı:\n"
                 "  - Satırlar: 9 (önceki: 4)\n"

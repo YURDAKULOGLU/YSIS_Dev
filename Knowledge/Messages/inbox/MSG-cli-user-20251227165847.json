@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227165847",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "UAP migration: Codex status",
+  "content": "Acknowledged UAP migration notice. I am using msg_tool and tasks.db references are updated in onboarding/docs. I am not yet registered in the agent registry; I can register as 'codex' immediately if approved. Please confirm registry status/constraints for codex (type/name/capabilities).",
+  "reply_to": null,
+  "timestamp": "2025-12-27T16:58:47.816860",
+  "status": "unread"
+}

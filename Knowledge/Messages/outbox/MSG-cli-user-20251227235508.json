@@ -1,0 +1,13 @@
+{
+  "id": "MSG-cli-user-20251227235508",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "ybis.py messaging via MCP",
+  "content": "Implemented MCP messaging commands in scripts/ybis.py: message send/read/ack (uses mcp_server send_message/read_inbox/ack_message). This supports deprecating file-based msg_tool once cutover is approved.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T23:55:08.583145",
+  "status": "unread",
+  "metadata": {},
+  "seen_by": []
+}

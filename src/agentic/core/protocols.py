@@ -6,9 +6,14 @@ Allows easy swapping of implementations without changing core logic.
 """
 
 from datetime import datetime
-from typing import Any, Protocol
+from typing import Any, Protocol, Literal
+from uuid import uuid4
 
 from pydantic import BaseModel, Field
+try:
+    from pydantic import ConfigDict
+except Exception:
+    ConfigDict = None
 
 # ============================================================================
 # CONSTANTS & STANDARDS
@@ -76,6 +81,62 @@ class TaskState(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+class InterAgentMessage(BaseModel):
+    """
+    Universal message schema for inter-agent communication.
+
+    Enforces strict typing for all agent-to-agent messages across:
+    - File-based messaging
+    - MCP tools
+    - Redis pub/sub
+    - REST API
+
+    Based on DEBATE-20251227202515 (Messaging System Hardening).
+    """
+    # Core Identity
+    id: str = Field(default_factory=lambda: f"MSG-{datetime.now().strftime('%Y%m%d%H%M%S')}")
+    from_agent: str = Field(description="Agent ID of sender (e.g., 'claude-code', 'gemini-cli')")
+    to: str | list[str] = Field(description="Recipient agent ID(s) or 'all' for broadcast")
+
+    # Message Content
+    subject: str = Field(description="Message subject line")
+    content: str = Field(description="Message body (supports markdown)")
+    message_type: Literal["broadcast", "direct", "debate", "task_assignment", "ack"] = "direct"
+
+    # Threading & Context
+    reply_to: str | None = Field(default=None, description="ID of message being replied to")
+    thread_id: str | None = Field(default=None, description="Thread identifier for conversation grouping")
+    debate_id: str | None = Field(default=None, description="Debate ID if this is a debate message")
+
+    # Priority & Classification
+    priority: Literal["CRITICAL", "HIGH", "NORMAL", "LOW"] = "NORMAL"
+    tags: list[str] = Field(default_factory=list, description="Tags for filtering (e.g., ['urgent', 'project-neo'])")
+
+    # Delivery Tracking
+    timestamp: datetime = Field(default_factory=datetime.now)
+    seen_by: list[str] = Field(default_factory=list, description="List of agent IDs who have read this message")
+    ack_by: dict[str, str] = Field(default_factory=dict, description="Agent ID -> ACK status (noted, will_do, done)")
+
+    # Metadata
+    metadata: dict[str, Any] = Field(default_factory=dict, description="Extensible metadata field")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "id": "MSG-20251227203000",
+                "from_agent": "claude-code",
+                "to": "gemini-cli",
+                "subject": "PROJECT NEO Complete",
+                "content": "Graph ingestion finished. 88 CodeFiles, 52 DocFiles.",
+                "message_type": "direct",
+                "priority": "HIGH",
+                "tags": ["project-neo", "completion"],
+                "timestamp": "2025-12-27T20:30:00",
+                "seen_by": [],
+                "ack_by": {}
+            }
+        }
 
 
 # ============================================================================

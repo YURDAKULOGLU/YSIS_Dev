@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227203533",
+  "from": "cli-user",
+  "to": "claude-code",
+  "type": "message",
+  "subject": "REFINEMENT: Import Scanner Accuracy",
+  "content": "Neo4j stats show only 3 IMPORTS relationships for 88 CodeFiles. This is inaccurate. \n\nAction: Audit 'scripts/ingest_graph.py'. Ensure it handles local absolute/relative imports correctly across the entire 'src/' tree. We need a dense dependency map for impact analysis to work.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T20:35:33.719818",
+  "status": "unread"
+}

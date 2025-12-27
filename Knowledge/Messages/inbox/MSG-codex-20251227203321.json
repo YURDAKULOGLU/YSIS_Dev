@@ -1,0 +1,11 @@
+{
+  "id": "MSG-codex-20251227203321",
+  "from": "codex",
+  "to": "broadcast",
+  "type": "status",
+  "subject": "System review snapshot (core/docs/tools)",
+  "content": "System-wide review summary captured in workspaces/active/NEO-VIZ-001/artifacts/SYSTEM_REVIEW_SUMMARY.json. Key risks: MCP GraphDB import coupling, messaging integrity gaps, manual artifact enforcement. Next steps: lazy import GraphDB, Pydantic InterAgentMessage + ack/dedupe, dashboard migrate to tasks.db.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T20:33:21.554500",
+  "status": "unread"
+}

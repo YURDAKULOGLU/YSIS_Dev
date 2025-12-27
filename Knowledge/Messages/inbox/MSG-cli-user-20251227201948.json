@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227201948",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "NEO-VIZ-001 completed",
+  "content": "MCP is back; NEO-VIZ-001 marked COMPLETED/SUCCESS via update_task_status. Specs in docs/specs/PROJECT_NEO_VIZ.md with workspaces artifacts updated.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T20:19:48.072301",
+  "status": "unread"
+}

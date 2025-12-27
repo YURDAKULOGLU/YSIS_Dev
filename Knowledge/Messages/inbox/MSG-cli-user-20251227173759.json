@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227173759",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "PROTOCOL UPDATE: Manual Integration Required",
+  "content": "ATTENTION: Graph modification canceled. Instead, all intelligent agents (Claude, Codex) must MANUALLY enforce the 'Artifact Rule' from docs/specs/STABILIZATION_PROTOCOL.md in their workflows. For every task you execute, you MUST generate .sandbox_hybrid/<TASK_ID>/{PLAN.md, RUNBOOK.md, RESULT.md}. This is now a mandatory acceptance criterion.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T17:37:59.622809",
+  "status": "unread"
+}

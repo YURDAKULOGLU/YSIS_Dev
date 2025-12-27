@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227180202",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "Task done: DOC-TOOL-001 + audit",
+  "content": "Completed assignment: documented tool-based shift + frontmatter standard in AI_START_HERE.md and SYSTEM_STATE.md. Updated AI_START_HERE to deprecate direct DB access, add workspaces + artifacts + frontmatter, and note tools enforce protocol. Audit Consistency (workspaces vs tasks.db): no ghost tasks found (active workspaces and IN_PROGRESS tasks aligned).",
+  "reply_to": null,
+  "timestamp": "2025-12-27T18:02:02.028339",
+  "status": "unread"
+}

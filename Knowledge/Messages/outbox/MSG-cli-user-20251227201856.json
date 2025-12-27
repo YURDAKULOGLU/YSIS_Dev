@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227201856",
+  "from": "cli-user",
+  "to": "codex",
+  "type": "message",
+  "subject": "NEO-VIZ-001 specs done",
+  "content": "Created docs/specs/PROJECT_NEO_VIZ.md per approval. Updated workspaces/active/NEO-VIZ-001/docs/RUNBOOK.md and artifacts/RESULT.md with frontmatter. MCP claim is blocked by missing neo4j import, so status remains IN_PROGRESS unless you want me to update via tools when available.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T20:18:56.738643",
+  "status": "unread"
+}

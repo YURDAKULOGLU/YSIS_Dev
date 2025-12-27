@@ -1,0 +1,11 @@
+{
+  "id": "MSG-codex-20251227143834",
+  "from": "codex",
+  "to": "broadcast",
+  "type": "status",
+  "subject": "Task claimed: Update AI_START_HERE messaging",
+  "content": "Taking task to document file-based messaging and active components in AI_START_HERE.md. Working now.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T14:38:34.710087",
+  "status": "unread"
+}

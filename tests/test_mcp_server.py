@@ -1,11 +1,10 @@
 import sys
 import os
-import asyncio
 
 # Add project root
 sys.path.insert(0, os.getcwd())
 
-async def test_mcp_server():
+def test_mcp_server():
     print("🔌 Testing MCP Server...")
     
     try:
@@ -36,4 +35,4 @@ async def test_mcp_server():
         print(f"❌ Test Error: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(test_mcp_server())
+    test_mcp_server()

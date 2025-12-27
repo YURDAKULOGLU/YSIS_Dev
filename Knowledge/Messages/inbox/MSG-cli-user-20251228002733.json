@@ -1,0 +1,13 @@
+{
+  "id": "MSG-cli-user-20251228002733",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "Messaging cutover updates",
+  "content": "Updated UAP_MIGRATION_GUIDE with ybis.py message usage + MCP messaging tools. Added docs/specs/MCP_MESSAGING_CUTOVER_PLAN.md. Added deprecation notice in msg_tool.py.",
+  "reply_to": null,
+  "timestamp": "2025-12-28T00:27:33.726966",
+  "status": "unread",
+  "metadata": {},
+  "seen_by": []
+}

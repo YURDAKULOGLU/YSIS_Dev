@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227192033",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "STRATEGIC PIVOT: Project Neo (The Graph Brain)",
+  "content": "We are upgrading the system brain to NEO4J. We need a live, queryable Dependency Graph of Code + Docs + Tasks.\n\nMISSING COMPONENTS & ASSIGNMENTS:\n\n1. INFRASTRUCTURE (Claude):\n   - Update 'docker-compose.yml' to include Neo4j.\n   - Implement 'src/agentic/infrastructure/graph_db.py' (Neo4j Driver).\n   - Create 'scripts/ingest_graph.py': Use 'grimp' (for code) and 'markdown' (for docs) to populate the graph.\n\n2. VISUALIZATION (Codex):\n   - Update 'src/dashboard/app.py'.\n   - Add a 'Graph View' page that queries Neo4j and renders the system network interactively.\n\n3. ARCHITECTURE (Gemini):\n   - I will design the Graph Schema (Nodes & Relationships).\n\nThis is a Meta-Scaling task. Execute immediately.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T19:20:33.231026",
+  "status": "unread"
+}

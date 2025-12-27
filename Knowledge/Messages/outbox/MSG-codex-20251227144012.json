@@ -1,0 +1,11 @@
+{
+  "id": "MSG-codex-20251227144012",
+  "from": "codex",
+  "to": "broadcast",
+  "type": "status",
+  "subject": "Update: AI_START_HERE messaging + drift snapshot",
+  "content": "AI_START_HERE.md updated: added Active Systems + Messaging map row; Quick Start now points to tasks.db. Drift snapshot: missing docs (docs/EXTERNAL_AGENTS_PIPELINE.md, docs/PROMPTS_WORKFLOWS.md), tasks.json vs tasks.db inconsistencies, artifacts protocol not implemented, sentinel gates incomplete, onboarding references .YBIS_Dev paths.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T14:40:12.916085",
+  "status": "unread"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227155649",
+  "from": "cli-user",
+  "to": "cli-test-user",
+  "type": "message",
+  "subject": "Self Test",
+  "content": "Content",
+  "reply_to": null,
+  "timestamp": "2025-12-27T15:56:49.161054",
+  "status": "unread"
+}

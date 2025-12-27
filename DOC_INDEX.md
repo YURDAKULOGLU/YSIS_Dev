@@ -17,6 +17,8 @@ You are in **YBIS_Dev**, a Tier 4.5 Autonomous Software Factory.
 | **The Brain** | [src/agentic/graph/README.md](./src/agentic/graph/README.md) | You are modifying the workflow logic. |
 | **The Core** | [src/agentic/core/README.md](./src/agentic/core/README.md) | You need config, paths, or logging. |
 | **The Tools** | [scripts/README.md](./scripts/README.md) | You want to execute code or check health. |
+| **Messaging CLI** | `scripts/ybis.py` | MCP-backed messaging (`message send/read/ack`). |
+| **Messaging Archive** | `Knowledge/Messages/inbox/` | Legacy message archive (read-only). |
 | **The Guard** | [tests/README.md](./tests/README.md) | You are writing tests (which you should be). |
 | **The Memory** | [Knowledge/README.md](./Knowledge/README.md) | You need to access DB, RAG, or Messages. |
 | **The UI** | [src/dashboard/README.md](./src/dashboard/README.md) | You are working on the Streamlit dashboard. |
@@ -37,8 +39,8 @@ You are in **YBIS_Dev**, a Tier 4.5 Autonomous Software Factory.
 - **Tasks:** `Knowledge/LocalDB/tasks.db`
 
 ### 3. Communication
-- **Async:** `Knowledge/Messages/inbox/`
-- **Real-time:** Redis Pub/Sub
+- **Primary:** `scripts/ybis.py message ...` (MCP + SQLite)
+- **Archive:** `Knowledge/Messages/inbox/` (read-only)
 
 ---
 

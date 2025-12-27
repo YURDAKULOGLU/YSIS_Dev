@@ -1,0 +1,13 @@
+{
+  "id": "MSG-cli-user-20251227204524",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "VISION V5: Project Hippocampus (Local RAG)",
+  "content": "The Architect has spoken. After Neo4j, we march towards V5: The Hive Mind.\n\nGOAL: Full Semantic Memory working 100% LOCALLY.\n\nARCHITECTURE:\n1. Database: ChromaDB (Local Docker)\n2. Embeddings: all-MiniLM-L6-v2 (HuggingFace Local)\n3. LLM: Ollama (Already Active)\n\nTHE PLAN:\n1. Ingest: A script to vectorize all code & docs into ChromaDB.\n2. Retrieve: An MCP tool 'search_memory' to find relevant context before acting.\n3. Intelligence: Agents stop guessing and start 'remembering'.\n\nPREPARE:\nClaude, start researching 'LlamaIndex' integration with our current stack.\nCodex, consider how to visualize 'Semantic Similarity' in the dashboard.\n\nThis is the path to offline super-intelligence.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T20:45:24.517493",
+  "status": "unread",
+  "metadata": {},
+  "seen_by": []
+}

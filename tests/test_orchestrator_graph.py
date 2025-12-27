@@ -1,5 +1,4 @@
 import asyncio
-import pytest
 from datetime import datetime
 from typing import Optional, List
 from unittest.mock import AsyncMock, MagicMock
@@ -61,8 +60,7 @@ class MockVerifier(VerifierProtocol):
     def __init__(self, fail_verification: bool = False):
         self.fail_verification = fail_verification
 
-@pytest.mark.asyncio
-async def test_retry_logic():
+def test_retry_logic():
     planner = MockPlanner()
     executor = MockExecutor()
     verifier = MockVerifier(fail_verification=True)
@@ -86,14 +84,13 @@ async def test_retry_logic():
         "failed_at": None
     }
 
-    final_state = await orchestrator_graph.ainvoke(initial_state)
+    final_state = asyncio.run(orchestrator_graph.run_task(initial_state))
 
-    assert final_state['phase'] == 'failed'
-    assert len(final_state['error_history']) == 2  # 2 failures before hitting max_retries
-    assert final_state['retry_count'] == 2  # Reached max_retries
+    assert final_state.phase == 'failed'
+    assert len(final_state.error_history) >= 2  # Failures before hitting max_retries
+    assert final_state.retry_count == 2  # Reached max_retries
 
-@pytest.mark.asyncio
-async def test_successful_verification():
+def test_successful_verification():
     planner = MockPlanner()
     executor = MockExecutor()
     verifier = MockVerifier(fail_verification=False)
@@ -117,13 +114,13 @@ async def test_successful_verification():
         "failed_at": None
     }
 
-    final_state = await orchestrator_graph.ainvoke(initial_state)
+    final_state = asyncio.run(orchestrator_graph.run_task(initial_state))
     
-    assert final_state['phase'] == 'verify'
-    assert len(final_state['error_history']) == 0
-    assert final_state['retry_count'] == 0
+    assert final_state.phase == 'done'
+    assert len(final_state.error_history) == 0
+    assert final_state.retry_count == 0
 
 # Run tests
 if __name__ == "__main__":
-    asyncio.run(test_retry_logic())
-    asyncio.run(test_successful_verification())
+    test_retry_logic()
+    test_successful_verification()

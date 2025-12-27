@@ -162,7 +162,7 @@ Knowledge/
 │   └── lessons_learned.md
 ├── LocalDB/
 │   ├── chroma_db/ (ChromaDB storage)
-│   ├── tasks.json
+│   ├── tasks.db
 │   └── TASK_BOARD.md
 └── Tasks/
     ├── backlog/

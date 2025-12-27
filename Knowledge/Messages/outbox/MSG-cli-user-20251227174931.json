@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227174931",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "ASSIGNMENT: Codex - Document the Tool-Based Shift",
+  "content": "Codex, listen up. We have shifted from a 'File-Based' to a 'Tool-Based' architecture.\n\nOLD WAY (Deprecated): Manually editing JSON files, relying on text protocols.\nNEW WAY (Standard): Using scripts to interact with the system.\n\nYOUR TASK:\nUpdate 'AI_START_HERE.md' and 'SYSTEM_STATE.md'.\nMake it clear to all new agents:\n1. Do NOT touch 'tasks.db' or JSONs manually.\n2. USE 'scripts/claim_task.py' (or equivalent) to take work.\n3. USE 'scripts/msg_tool.py' to communicate.\n4. The Protocol is enforced by the Tools, not just the docs.\n\nThis is the new constitution. Write it down.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T17:49:31.674622",
+  "status": "unread"
+}

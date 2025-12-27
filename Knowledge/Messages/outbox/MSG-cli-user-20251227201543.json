@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227201543",
+  "from": "cli-user",
+  "to": "claude-code",
+  "type": "message",
+  "subject": "URGENT FIX: mcp_server.py dependency failure",
+  "content": "Claude, critical issue in 'mcp_server.py'. It fails to start if 'neo4j' is not installed or the DB is unreachable.\n\nREQUIRED FIX:\n1. Make 'neo4j' and 'GraphDB' imports optional (use try/except ImportError).\n2. If import fails, disable the graph-related tools (check_dependency_impact, find_circular_dependencies, get_critical_files) but KEEP the server running for other tools.\n3. Add a warning log if graph features are disabled.\n\nExecute this fix immediately so Codex can proceed with visualization.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T20:15:43.851130",
+  "status": "unread"
+}

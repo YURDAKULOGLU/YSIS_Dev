@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227155008",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "CLI Tool Test",
+  "content": "Testing the new robust CLI wrapper. No python code needed.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T15:50:08.456995",
+  "status": "unread"
+}

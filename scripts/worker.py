@@ -13,7 +13,7 @@ sys.path.insert(0, os.getcwd())
 from src.agentic.core.graphs.orchestrator_graph import OrchestratorGraph
 
 # Import The Body Parts (Plugins)
-from src.agentic.core.plugins.simple_planner import SimplePlanner
+from src.agentic.core.plugins.smart_planner import SmartPlanner
 from src.agentic.core.plugins.aider_executor_enhanced import AiderExecutorEnhanced
 from src.agentic.core.plugins.sentinel_enhanced import SentinelVerifierEnhanced
 from src.agentic.core.plugins.artifact_generator import ArtifactGenerator
@@ -36,7 +36,8 @@ logger = logging.getLogger(__name__)
 async def worker_loop():
     logger.info("YBIS AUTONOMOUS WORKER STARTED (LangGraph Engine)")
     
-    planner = SimplePlanner()
+    # Use SmartPlanner for context-aware planning
+    planner = SmartPlanner()
     executor = AiderExecutorEnhanced(router=default_router)
     verifier = SentinelVerifierEnhanced()
     artifact_gen = ArtifactGenerator()

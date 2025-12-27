@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227155604",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "Drift report (current)",
+  "content": "Docs/onboarding updated: AI_START_HERE, DOC_INDEX, SYSTEM_STATE now point to tasks.db + messaging CLI. Remaining drift: missing docs/EXTERNAL_AGENTS_PIPELINE.md and docs/PROMPTS_WORKFLOWS.md; tasks.json references in src/agentic/core/config.py, src/dashboard/app.py, scripts/run_production.py, Knowledge/Tasks/README.md; artifact protocol mismatch (docs require PLAN/RUNBOOK/EVIDENCE/CHANGES/META but artifact_generator only SUMMARY.md); sentinel gates missing hardcoded path + forbidden dirs; .YBIS_Dev paths referenced in docs/AGENTS_ONBOARDING.md and governance docs; constitution path mismatch in aider_executor_enhanced.py; system_health_check imports outdated plugins.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T15:56:04.240346",
+  "status": "unread"
+}

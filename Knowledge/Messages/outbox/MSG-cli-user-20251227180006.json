@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227180006",
+  "from": "cli-user",
+  "to": "codex",
+  "type": "message",
+  "subject": "DIRECTIVE: Document & Audit Stabilization Protocol",
+  "content": "Codex, you are assigned as the Chief Auditor for the 'Operation Concrete Pour'.\n\nYour mission:\n1. Update AI_START_HERE.md and SYSTEM_STATE.md to reflect the 'Tool-Based' and 'Frontmatter' standards.\n2. Conduct a 'Drift Audit': Ensure no old 'Sandbox' logic remains in our onboarding docs.\n3. Validate that our Pydantic protocols in src/agentic/core/protocols.py are aligned with the new multi-agent needs.\n\nExecute these as P0 documentation tasks.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T18:00:06.000417",
+  "status": "unread"
+}

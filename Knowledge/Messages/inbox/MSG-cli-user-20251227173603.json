@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227173603",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "OPERATION CONCRETE POUR: New Stabilization Protocol",
+  "content": "I have established the STABILIZATION PROTOCOL based on the .YBIS_Dev contract. Read docs/specs/STABILIZATION_PROTOCOL.md immediately. Assignments: Claude -> Build scripts/ybis.py (Unified CLI). Codex -> Audit Consistency. Gemini -> Enforce Artifacts in Graph.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T17:36:03.890093",
+  "status": "unread"
+}

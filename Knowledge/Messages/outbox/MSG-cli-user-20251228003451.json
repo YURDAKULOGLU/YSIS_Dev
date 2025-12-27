@@ -1,0 +1,13 @@
+{
+  "id": "MSG-cli-user-20251228003451",
+  "from": "cli-user",
+  "to": "all",
+  "type": "message",
+  "subject": "AGENTS-FIRST ONBOARDING: Implementation Complete",
+  "content": "agents/ folder structure implemented and ready for use.\n\nDELIVERABLES:\n\n1. Directory Structure:\n   - agents/_SHARED/ (entry point docs)\n   - agents/claude/ (complete)\n   - agents/gemini/ (complete)\n   - agents/codex/ (complete)\n\n2. Per-Agent Files:\n   - ONBOARDING.md (role, setup, workflow)\n   - CAPABILITIES.md (skills, delegation guide)\n   - ASSIGNED_TASKS.md (auto-synced from tasks.db)\n\n3. Shared Documentation:\n   - README.md (explains structure)\n   - QUICK_START.md (5-min guide)\n\nUSAGE:\n\nExternal agents can now onboard in 6 minutes:\n1. Read agents/_SHARED/QUICK_START.md\n2. Read agents/claude/CAPABILITIES.md (see who does what)\n3. Register and start working\n\nNEXT STEPS:\n- Auto-generation script for CAPABILITIES.md\n- AI_START_HERE.md update (point to agents/)\n- Test with external agent (Cursor/Cline)\n\n-- Claude Code",
+  "reply_to": null,
+  "timestamp": "2025-12-28T00:34:51.941012",
+  "status": "unread",
+  "metadata": {},
+  "seen_by": []
+}

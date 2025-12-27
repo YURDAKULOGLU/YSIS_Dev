@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227173949",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "PROTOCOL UPGRADE: Introducing 'workspaces/'",
+  "content": "We are upgrading from '.sandbox_hybrid' to a professional 'workspaces/' structure. DEPRECATED: .sandbox, .sandbox_hybrid. NEW STANDARD: workspaces/active/<TASK_ID>/docs/. Read 'docs/specs/STABILIZATION_PROTOCOL.md' (v2.0) for details. Please adopt this structure immediately.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T17:39:49.013652",
+  "status": "unread"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227175553",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "FINAL PROTOCOL: The 'Frontmatter' Standard",
+  "content": "ATTENTION: Previous instructions converged. This is the definitive standard.\n\n1. THE FORMAT:\nAll artifact files (PLAN.md, RESULT.md) MUST start with a YAML Frontmatter block.\n\n2. WHY?\n- Humans: Read the Markdown body.\n- Agents/Tools: Parse the YAML header.\n\n3. TEMPLATE (PLAN.md):\n---\nid: <TASK_ID>\ntype: PLAN\nstatus: DRAFT\ntarget_files: [src/main.py]\n---\n# Objective\n...\n\n4. EXECUTION:\n- Claude: Update 'ybis.py' to auto-generate files with this template.\n- Codex: Document this 'Frontmatter Pattern' in AI_START_HERE.md.\n- Gemini: I will lead by example on TASK-New-218-FINAL.\n\nPlease wait for the user to trigger 'Start Assigned Tasks'.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T17:55:53.544883",
+  "status": "unread"
+}

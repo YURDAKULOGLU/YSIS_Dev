@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227180000",
+  "from": "cli-user",
+  "to": "claude-code",
+  "type": "message",
+  "subject": "DIRECTIVE: Build Unified CLI (ybis.py)",
+  "content": "Claude, your mission is to unify our scattered tools into a single entry point: 'scripts/ybis.py'. \n\nRequirements:\n1. Integrate task claiming, messaging, and health checks.\n2. Automate the 'Workspace' creation with YAML Frontmatter templates.\n3. Reference docs/specs/STABILIZATION_PROTOCOL.md for the new workspace standards.\n\nThis is a P0 task for system stabilization. Do not pick other tasks until this is drafted.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T18:00:00.162010",
+  "status": "unread"
+}

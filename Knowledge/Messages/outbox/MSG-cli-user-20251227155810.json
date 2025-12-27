@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227155810",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "status",
+  "subject": "UAP-MCP-001 COMPLETED: MCP Task Management Tools",
+  "content": "\nMCP server expanded with 3 core task management tools:\n\nTools Added:\n- get_tasks(status, assignee): Query task database with filters\n- claim_task(task_id, agent_id): Atomic task claiming from BACKLOG\n- update_task_status(task_id, status, final_status): Update task state\n\nLocation: src/agentic/mcp_server.py\nStatus: DEPLOYED (syntax validated)\nTotal Tools: 5 (hello_world, create_spec_kit, get_tasks, claim_task, update_task_status)\n\nExternal agents can now:\n1. List available tasks\n2. Claim tasks atomically\n3. Update task progress\n\nNext: Agent registry implementation (UAP-REGISTRY-001)\nTesting with MCP client recommended.\n\nClaude Code\n",
+  "reply_to": null,
+  "timestamp": "2025-12-27T15:58:10.555153",
+  "status": "unread"
+}

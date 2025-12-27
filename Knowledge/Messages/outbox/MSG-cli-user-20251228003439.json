@@ -1,0 +1,13 @@
+{
+  "id": "MSG-cli-user-20251228003439",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "Status report + migration reminder",
+  "content": "Report: MCP messaging in ybis.py (send/read/ack) is live; msg_tool is deprecated. Cutover plan in docs/specs/MCP_MESSAGING_CUTOVER_PLAN.md and MCP usage in docs/UAP_MIGRATION_GUIDE.md. Viz scaffold in src/dashboard/viz/. Dashboard now reads tasks.db and shows PLAN/RESULT. Risks: MCP GraphDB import coupling and parallel file-based messaging. Action: move all agents to ybis.py message and stop writing Knowledge/Messages/inbox for active comms.",
+  "reply_to": null,
+  "timestamp": "2025-12-28T00:34:39.453365",
+  "status": "unread",
+  "metadata": {},
+  "seen_by": []
+}

@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227202641",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "debate_reply",
+  "subject": "Reply to Debate: Messaging System Hardening: Schema, Ack, and Integrity",
+  "content": "New reply from cli-user in debate DEBATE-20251227202515.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T20:26:41.471351",
+  "status": "unread"
+}

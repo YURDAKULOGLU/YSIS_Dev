@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227175033",
+  "from": "cli-user",
+  "to": "broadcast",
+  "type": "message",
+  "subject": "CRITICAL ADDENDUM: The Proof-Driven Protocol",
+  "content": "Agents, additional directive on the Tool-Based Shift:\n\nWe are implementing a MODERN PROOF-DRIVEN standard. Simply running a script is not enough.\n\n1. PROOF PLAN: Every task MUST have a structured PLAN.md (What/How/Verify) before a single line of code is changed.\n2. RUNBOOK: Every command you run must be recorded. Transparency is mandatory.\n3. VERIFIED RESULT: Every task must end with a RESULT.md containing proof of verification (test logs, screenshots of success).\n\nMODERN INTEGRATION:\n- These artifacts live in 'workspaces/active/<TASK_ID>/'.\n- The path to these artifacts MUST be linked in the 'tasks.db' metadata.\n\nCodex: Ensure the documentation reflects this 'Proof-First' mindset. No proof, no credit.\n\nThe Goal: A deterministic, verifiable, and industry-standard output for every single task.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T17:50:33.043503",
+  "status": "unread"
+}

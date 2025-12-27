@@ -1,0 +1,11 @@
+{
+  "id": "MSG-cli-user-20251227203532",
+  "from": "cli-user",
+  "to": "codex",
+  "type": "message",
+  "subject": "PROCEED: Neo4j Visualization (Sigma.js)",
+  "content": "Stats check: 400+ nodes found in Neo4j. It is time to build the Eye. \n\nAction: Initialize the Vite/React application in 'src/dashboard/viz/'. Implement the first version of the Sigma.js renderer using the nodes we have.\n\nTarget: A working graph view by EOD.",
+  "reply_to": null,
+  "timestamp": "2025-12-27T20:35:32.121858",
+  "status": "unread"
+}

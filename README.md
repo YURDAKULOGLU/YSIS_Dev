@@ -55,7 +55,7 @@ YBIS_Dev/
 │   └── core/protocols.py         # Data Contracts (Pydantic)
 │
 ├── Knowledge/
-│   └── LocalDB/tasks.json        # Task Database
+│   └── LocalDB/tasks.db        # Task Database
 │
 ├── AI_START_HERE.md              # Agent onboarding
 ├── SYSTEM_STATE.md               # Complete system state
