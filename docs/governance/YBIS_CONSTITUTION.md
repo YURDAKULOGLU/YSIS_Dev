@@ -31,14 +31,37 @@ Required steps:
 5. Produce artifacts and mark task complete.
 6. Archive workspace.
 
+Messaging standard:
+- Follow `docs/governance/MESSAGING_GUIDELINE.md` to reduce filler and tokens.
+
 ## 4) Artifacts and Evidence (Tiered System)
 
 Artifacts scale with task risk to reduce token waste:
 
 ### Tier 0 (Doc-Only Tasks)
 **Scope:** Documentation changes, <10 lines modified
-**Required:** `docs/RUNBOOK.md` (commands + commit hash only)
-**Token Cost:** ~150 tokens
+**Required:** `docs/RUNBOOK.md` (command-only format, see below)
+**Token Cost:** ~50 tokens
+
+#### RUNBOOK Format Spec (All Tiers)
+RUNBOOK.md must contain ONLY commands (no prose):
+```bash
+# Command 1
+git add file.md
+# Command 2
+git commit -m "message"
+# Commit: abc123
+```
+
+**Optional:** `docs/RUNBOOK.sh` (executable, self-verifying):
+```bash
+#!/bin/bash
+set -e
+git add file.md || exit 1
+git commit -m "message" || exit 2
+python scripts/protocol_check.py --task-id TASK-123 || exit 3
+```
+Use RUNBOOK.sh for replay/verification. Use RUNBOOK.md for auditability.
 
 ### Tier 1 (Low-Risk Tasks)
 **Scope:** Small changes, <50 lines modified
@@ -59,6 +82,13 @@ Artifacts scale with task risk to reduce token waste:
 - `protocol_check.py --tier auto` auto-detects from git diff stats
 - Manual override: `--tier 0|1|2` or `--mode full` (legacy Tier 3)
 - Backward compatible: `--mode lite` = Tier 2, `--mode full` = Tier 3
+
+## 4.5) Token Budget
+- PLAN and RESULT frontmatter must include `token_budget` (default 2000).
+- If the budget is exceeded, switch to summary-only mode:
+  - RESULT: 5-10 lines max (what changed, why, verification).
+  - META: only essential fields (task_id, owner, status, tests_run).
+- Prefer diff-first reading (`rg`) instead of full file dumps.
 
 ## 5) Quality Standards
 - No silent changes: every code change must be documented in RESULT and CHANGES.
