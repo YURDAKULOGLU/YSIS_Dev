@@ -20,7 +20,7 @@ Goal: eliminate drift and lock the execution spine.
 
 Scope:
 - Single entrypoint: scripts/run_orchestrator.py (constitutional requirement - ONLY runner)
-- Legacy wrappers deprecated: run_next.py, run_production.py (use --mode flags instead)
+- No alternative runners: Use --mode flags for different execution modes
 - Canonical brain: src/agentic/core/graphs/orchestrator_graph.py
 - Workflow registry as source of truth
 - Onboarding docs aligned

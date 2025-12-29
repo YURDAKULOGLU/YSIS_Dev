@@ -75,7 +75,7 @@ All agent coordination MUST happen via the unified messaging system.
 
 ```bash
 # Send a message / reply to a debate
-python scripts/ybis.py message send --to all --content "..."
+python scripts/ybis.py message send --to all --subject "Subject" --content "..."
 python scripts/ybis.py debate reply --id DEBATE-XYZ --content "..."
 ```
 
@@ -143,9 +143,9 @@ For RESULT files, set `type: RESULT` and update `status` accordingly.
 ## ⚔️ The Rules of Engagement (Constitution)
 
 1.  **Emergence over Rigidity:** If a rule prevents intelligence, break the rule (but update the Constitution).
-2.  **No Broken Windows:** If you see "dead code" (like `orchestrator_main.py`), bury it. Don't let it rot.
+2.  **No Broken Windows:** If you see dead code, bury it. Don't let it rot. Use `git rm` and commit the removal.
 3.  **Logs are Life:** We are async. If you don't log it, it never happened.
-4.  **Respect the Graph:** Aider is powerful, but blind. The Graph provides the eyes. Do not let Aider run wild without Sentinel's verification.
+4.  **Respect the Graph:** Aider is powerful, but blind. The Graph provides the eyes. Do not let Aider run wild without verification.
 
 ---
 
