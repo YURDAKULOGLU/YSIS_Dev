@@ -1,4 +1,4 @@
-from src.components.memory.RAGMemory import RAGMemory
+from src.modules.memory.RAGMemory import RAGMemory
 
 class InformationRetrievalService:
     def __init__(self):

@@ -37,7 +37,7 @@ We use a single Pydantic model (`TaskState`) defined in `src/agentic/core/protoc
 
 ## 4. PERSISTENCE LAYER (SQLite)
 
-The system has moved away from `tasks.json`. 
+The system has moved away from file-based task storage.
 - **DB Path:** `Knowledge/LocalDB/tasks.db`
 - **Bridge:** `src/agentic/infrastructure/db.py`
 - **Capability:** Supports concurrent access from multiple workers and the Dashboard.
@@ -47,8 +47,8 @@ The system has moved away from `tasks.json`.
 ## 5. SELF-IMPROVEMENT (Tier 5 Readiness)
 
 The system is now capable of "Spec-Driven Development" (SDD).
-- Ajanlar `docs/specs/` altında yeni ozalitler (Blueprints) oluşturabilir.
-- Sistem bu ozalitleri `proposed_tasks` üzerinden yeni görevlere dönüştürebilir.
+- Agents can create new specifications (Blueprints) under `docs/specs/`.
+- The system can convert these specifications into new tasks via `proposed_tasks`.
 
 ---
 *Architectural Blueprint - Established 2025-12-22*

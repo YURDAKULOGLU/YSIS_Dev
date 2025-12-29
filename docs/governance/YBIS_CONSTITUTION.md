@@ -83,6 +83,24 @@ Use RUNBOOK.sh for replay/verification. Use RUNBOOK.md for auditability.
 - Manual override: `--tier 0|1|2` or `--mode full` (legacy Tier 3)
 - Backward compatible: `--mode lite` = Tier 2, `--mode full` = Tier 3
 
+### META.json Constitution Tags
+All META.json files (Tier 2+) must include `constitution_tags` array:
+```json
+{
+  "task_id": "TASK-123",
+  "constitution_tags": ["§1", "§3", "§4"]
+}
+```
+
+**Tag Mapping** (see `docs/governance/TAGGING_STANDARD.md`):
+- **§1**: Prime Directives (Core Principles)
+- **§2**: Corporate Hierarchy (Roles & Accountability)
+- **§3**: Operational Protocols (Execution)
+- **§4**: Artifacts & Evidence (Quality Standards)
+- **§5**: Risk & Quality Gates
+
+**Purpose**: Enables automated compliance verification and token-efficient constitutional alignment tracking.
+
 ## 4.5) Token Budget
 - PLAN and RESULT frontmatter must include `token_budget` (default 2000).
 - If the budget is exceeded, switch to summary-only mode:
