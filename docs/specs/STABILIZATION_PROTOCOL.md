@@ -1,6 +1,8 @@
 
 # STABILIZATION PROTOCOL: "DB-Driven Execution" (v3.0)
 
+> **Governance Alignment:** This protocol implements requirements from [`docs/governance/YBIS_CONSTITUTION.md`](../governance/YBIS_CONSTITUTION.md) §3 (Execution Protocol) and §4 (Artifacts).
+
 **Philosophy:** SQLite is the Brain (`tasks.db`), Filesystem is the Workbench (`workspaces/`).
 
 ## 1. THE GOLDEN RULE
