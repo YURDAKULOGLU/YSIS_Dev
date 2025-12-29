@@ -19,6 +19,22 @@ We do not build from scratch. We steal the best organs from the giants:
 
 ---
 
+## 📜 Governance (READ FIRST)
+
+**CRITICAL:** Before you do anything, read the supreme law:
+- **Constitution:** [`docs/governance/YBIS_CONSTITUTION.md`](docs/governance/YBIS_CONSTITUTION.md)
+- **Action Plan:** [`docs/specs/GOVERNANCE_ACTION_PLAN.md`](docs/specs/GOVERNANCE_ACTION_PLAN.md)
+
+These documents define:
+- **Single execution spine:** `scripts/run_orchestrator.py` is the only runner
+- **MCP-first:** Use `scripts/ybis.py` for all task operations
+- **Artifact requirements:** PLAN, RUNBOOK, RESULT, META, CHANGES (lite mode)
+- **Local-first:** Local providers default, cloud is feature-flagged
+
+**Violations block task completion.** The constitution is non-negotiable.
+
+---
+
 ## 🎭 Choose Your Avatar
 
 You are not a generic bot. Identify your role based on your capabilities:
@@ -32,7 +48,7 @@ You are not a generic bot. Identify your role based on your capabilities:
 ### 2. The Surgeon (Claude 3.5 Sonnet)
 *   **Role:** Deep code refactoring, complex debugging, surgical insertions.
 *   **Mode:** `Hybrid / Manual`
-*   **Superpower:** Handling massive context windows to understand how `src/agentic/graph/workflow.py` impacts `scripts/worker.py`.
+*   **Superpower:** Handling massive context windows to understand how `src/agentic/core/graphs/orchestrator_graph.py` impacts `scripts/worker.py`.
 
 ### 3. The Grunt (Local LLMs / Aider)
 *   **Role:** Mass production, unit test generation, boilerplate.
@@ -41,48 +57,26 @@ You are not a generic bot. Identify your role based on your capabilities:
 
 ---
 
-## 🛠️ The Modes of Interaction (Choose Your Weapon)
+## 🛠️ The Unified Execution Model (The Only Way)
 
-We don't force you into a single path. Pick the tool that fits the mission.
+We have unified all execution paths into a single, MCP-first entry point. 
 
-### Mode A: "Atomic Execution" (The Preferred Way)
-*Best for: Multi-agent environments. Safely claims a task and executes it.*
-This uses the **Atomic Claim** mechanism to ensure no two agents work on the same task.
+### 🚀 The Master Runner: `scripts/run_orchestrator.py`
+This is now the **ONLY** supported way to run tasks. It handles the entire lifecycle:
+`Claim Task -> Plan -> Execute (Aider) -> Verify (Sentinel) -> Archive`.
 
 ```bash
 # Safely claim and run the next available task
-python scripts/run_next.py
-```
-*Flow: DB (Atomic Claim) -> OrchestratorGraph -> Sandbox -> Success/Failure Update*
-
-### Mode D: "Official Communication" (Messaging CLI)
-*Best for: Sending broadcasts, replying to debates, and system reports.*
-
-```bash
-# Send a broadcast message
-python scripts/ybis.py message send --to broadcast --subject "Update" --content "Task finished."
-
-# Reply to an ongoing debate
-python scripts/ybis.py message send --to all --type debate --subject DEBATE-XYZ --content "I agree with the proposal."
-
-# Start a new debate
-python scripts/ybis.py debate start --topic "Short topic" --proposal "Context + options A/B/C" --agent your-agent-id
+python scripts/run_orchestrator.py
 ```
 
-### Mode B: "Continuous Production"
-*Best for: A dedicated worker node that never stops.*
+### 💬 Official Communication: Messaging CLI
+All agent coordination MUST happen via the unified messaging system.
 
 ```bash
-# Polls tasks and runs them indefinitely
-python scripts/run_production.py
-```
-
-### Mode C: "Direct DB Access" (Deprecated)
-*Deprecated: use MCP tools or `scripts/run_next.py` instead.*
-
-```bash
-# Preferred: use MCP tools (Python example)
-python -c "import sys; sys.path.insert(0,'src'); from agentic.mcp_server import claim_task; print(claim_task('TASK-ID','your-id'))"
+# Send a message / reply to a debate
+python scripts/ybis.py message send --to all --content "..."
+python scripts/ybis.py debate reply --id DEBATE-XYZ --content "..."
 ```
 
 ---
@@ -91,31 +85,27 @@ python -c "import sys; sys.path.insert(0,'src'); from agentic.mcp_server import 
 
 | Landmark | Real Path | Description |
 |----------|-----------|-------------|
-| **The Config** | `src/agentic/core/config.py` | Path management. |
+| **The Brain** | `src/agentic/core/graphs/orchestrator_graph.py` | **MANDATORY.** The modular LangGraph engine. |
 | **The Database** | `Knowledge/LocalDB/tasks.db` | **SQLITE.** The source of truth for all tasks. |
-| **The Runner** | `scripts/run_next.py` | The main execution script for agents. |
-| **The Brain** | `src/agentic/core/graphs/orchestrator_graph.py` | The NEW LangGraph Orchestrator. |
-| **Messaging CLI** | `scripts/ybis.py` | **MCP-backed** messaging (`message send/read/ack`). |
-| **Messaging Archive** | `Knowledge/Messages/inbox/` | Legacy message archive (read-only). |
+| **The Master Runner** | `scripts/run_orchestrator.py` | **ENTRY POINT.** Use this for all work. |
+| **Messaging CLI** | `scripts/ybis.py` | **COMMUNICATIONS.** Unified MCP messaging. |
+| **The Config** | `src/agentic/core/config.py` | **PATHS.** Always use this for path resolution. |
 
 ---
 
 ## ??? Active Systems (Live)
 
-- **MCP messaging:** `scripts/ybis.py message ...` (MCP tools + SQLite messages table).
-- **Messaging archive:** `Knowledge/Messages/inbox/` and `Knowledge/Messages/outbox/` (legacy files; do not write).
-- **Dashboard UI:** `src/dashboard/app.py` (Messaging tab for inbox/send/ack).
-- **MCP server:** `src/agentic/mcp_server.py` (task tools + registry).
-- **CrewAI Bridge API:** Flask REST endpoints under `src/agentic/bridges/`.
-- **Atomic task claiming:** SQLite-backed claim in `src/agentic/core/plugins/task_board_manager.py`.
-- **Redis:** Listener is ready; run `scripts/listen.py` when needed.
+- **MCP Task Ops:** Task claiming and updates are handled via `mcp_server.py`.
+- **Unified Messaging:** SQLite-backed messaging via `ybis.py`.
+- **Dashboard UI:** `src/dashboard/app.py` for visualization.
+- **Sentinel:** Automatic verification and auto-fix during the run cycle.
 
 ---
 
 ## Tool-Based Protocol (Mandatory)
 
 - Do not edit `tasks.db` or any JSON files directly.
-- Claim/update tasks via MCP tools (`claim_task`, `update_task_status`) or `scripts/run_next.py`.
+- Claim/update tasks via MCP tools (`claim_task`, `update_task_status`) or `scripts/run_orchestrator.py`.
 - Use `scripts/ybis.py message` for all agent messaging.
 - The protocol is enforced by tools; docs describe the rules.
 - Workspace paths are tracked in `tasks.db` metadata by tools; do not write metadata manually.
