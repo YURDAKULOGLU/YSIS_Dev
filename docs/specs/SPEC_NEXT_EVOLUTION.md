@@ -49,7 +49,15 @@ Implement SDD Foundation by creating Pydantic models and updating technical docu
 ## EXECUTION STEPS:
 1. Create `src/agentic/core/sdd_schema.py` with Pydantic models for `Blueprint`, `Contract`, and `Validation`.
 2. Rewrite `docs/specs/SPEC_NEXT_EVOLUTION.md` to include detailed technical documentation referencing the new schemas.
-3. Execute `python scripts/add_task.py` to add the implementation task to the backlog.
+3. Create implementation task using MCP-first approach (constitutional requirement):
+   ```bash
+   # Via ybis.py (recommended)
+   python scripts/ybis.py create "Implement SDD schema" --details "..." --priority HIGH
+
+   # Via MCP tool (if available in agent context)
+   mcp_tools.create_task(goal="Implement SDD schema", details="...", priority="HIGH")
+   ```
+   Note: Direct script execution (`scripts/add_task.py`) is deprecated per YBIS_CONSTITUTION.md §2 (MCP-first).
 
 ## TECHNICAL DOCUMENTATION:
 ### Pydantic Models
