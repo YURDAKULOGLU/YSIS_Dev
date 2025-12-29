@@ -14,15 +14,16 @@ The goal is consistency: same inputs, same outputs, same safety boundaries, same
 - ❌ Never touch `.git/**`
 
 ### Runtime state policy
-- Runtime artifacts must go to `.YBIS_Dev/.sandbox/**` or `.YBIS_Dev/.sandbox_hybrid/**`
-- Knowledge base state (if any) must go to `.YBIS_Dev/40_KNOWLEDGE_BASE/**`
+- Runtime artifacts must go to `workspaces/active/<TASK_ID>/` per YBIS_CONSTITUTION.md §3
+- Subdirectories: `docs/` (PLAN, RUNBOOK), `artifacts/` (RESULT, META), `tests/`
+- Knowledge base state (if any) must go to `Knowledge/**`
 
 ### No local DB / no “agent memory services” (MVP constraint)
 For the MVP pipeline, do **not** rely on local databases (Chroma/SQLite/Redis) or background daemons.
 All coordination and memory must be expressed as plain files:
-- task files under `.YBIS_Dev/Meta/Active/Tasks/**`
-- artifacts under `.YBIS_Dev/.sandbox_hybrid/<TASK_ID>/**`
-- handoffs under `.YBIS_Dev/Meta/Active/communication_log.md`
+- Tasks: `Knowledge/LocalDB/tasks.db` (SQLite, authoritative)
+- Artifacts: `workspaces/active/<TASK_ID>/` (per constitution)
+- Messages: `Knowledge/LocalDB/tasks.db` (messages table)
 
 ---
 
@@ -54,15 +55,16 @@ Example:
 
 ## 4) Mandatory Artifacts Per Task
 
-For each executed task, generate artifacts under:
-- `.YBIS_Dev/.sandbox_hybrid/<TASK_ID>/` (preferred)
-  - `PLAN.md` (what/why)
-  - `RUNBOOK.md` (commands run, in order)
-  - `DECISIONS.json` (versions/options chosen)
-  - `STATE_SNAPSHOT.json` (minimal state: inputs/outputs, hashes, timestamps)
-  - `RESULT.md` (what changed, what remains, risks)
+For each executed task, generate artifacts under `workspaces/active/<TASK_ID>/`:
+- `docs/PLAN.md` (what/why)
+- `docs/RUNBOOK.md` (commands run, in order)
+- `artifacts/RESULT.md` (what changed, what remains, risks)
+- `artifacts/META.json` (task metadata, metrics, phases)
+- `CHANGES/changed_files.json` (file inventory with purposes)
 
-If `.sandbox_hybrid` is not used, use `.YBIS_Dev/.sandbox/<TASK_ID>/` with same filenames.
+Per YBIS_CONSTITUTION.md §4, artifact modes:
+- Lite (default): PLAN, RUNBOOK, RESULT, META, CHANGES
+- Full (risk:high): Lite + EVIDENCE/summary.md
 
 ---
 

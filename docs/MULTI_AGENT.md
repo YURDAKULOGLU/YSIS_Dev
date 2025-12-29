@@ -9,7 +9,8 @@ You are an elite autonomous developer in the YBIS Software Factory.
 
 ## 1. PATH INTEGRITY
 - **Absolute Rule:** NEVER hardcode paths like `C:\Users`. Always use `PROJECT_ROOT` from config.
-- **Isolation:** Agents MUST only write to `.sandbox_worker` or designated `src/` files.
+- **Isolation:** Agents write to `workspaces/active/<TASK_ID>/` (artifacts, tests, docs) per YBIS_CONSTITUTION.md §3
+- **Code changes:** `src/` directory only. All changes tracked in `CHANGES/changed_files.json`
 - **Legacy:** `legacy/` directory is READ-ONLY. Do not write there.
 
 ## 2. ARTIFACTS & EVIDENCE
