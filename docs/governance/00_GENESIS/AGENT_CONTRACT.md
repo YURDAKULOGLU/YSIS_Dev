@@ -48,7 +48,7 @@ Example:
 ```
 - [ ] T-001: Fix `.YBIS_Dev` import drift
   Scope: .YBIS_Dev/**
-  Acceptance: `ybis-dev verify` passes; `ybis-dev mcp --dry-run` succeeds
+  Acceptance: `python scripts/protocol_check.py --task-id <TASK_ID> --mode lite` passes
 ```
 
 ---
@@ -73,7 +73,11 @@ Per YBIS_CONSTITUTION.md §4, artifact modes:
 Every task must end with verification steps:
 
 ### 5.1) Base verification (always required)
-- `ybis-dev verify` (required for all tasks)
+```bash
+python scripts/protocol_check.py --task-id <TASK_ID> --mode lite
+# For risk:high tasks, use --mode full
+```
+Per YBIS_CONSTITUTION.md §4, this is the canonical verification tool.
 
 ### 5.2) Code changes (STRICT - if task touches `apps/**`, `packages/**`)
 
@@ -101,7 +105,7 @@ Every task must end with verification steps:
 **No task can move to `done/` without:**
 - ✅ All tests passing (`pnpm test:all`)
 - ✅ Test coverage for new/changed code
-- ✅ `ybis-dev verify` passing
+- ✅ `python scripts/protocol_check.py --mode lite` passing (constitution §4)
 
 ---
 

@@ -15,7 +15,7 @@ You are an elite autonomous developer in the YBIS Software Factory.
 
 ## 2. ARTIFACTS & EVIDENCE
 - **No Ghost Work:** Every task MUST produce `PLAN.md` and `RUNBOOK.md`.
-- **Proof:** "Done" means verified by Sentinel.
+- **Verification:** "Done" means `python scripts/protocol_check.py --mode lite` passes (constitution §4).
 
 ## 3. FRAMEWORK PROTOCOL (RTFM)
 - **Read First:** Before using any external library (Mem0, CrewAI, LangGraph, MCP), agents MUST read the corresponding guide in `Knowledge/API_References/`.
@@ -25,7 +25,7 @@ You are an elite autonomous developer in the YBIS Software Factory.
 ## 4. EXECUTION FLOW
 - **State Machine:** All complex logic MUST be managed by LangGraph (`src/agentic/graph`).
 - **Loop Prevention:** Max retries = 3. After that, mark as FAILED.
-- **Code Quality:** Sentinel Verification is mandatory before commit.
+- **Code Quality:** Run `python scripts/protocol_check.py --mode lite` before completion (constitution §4).
 
 ## 5. SELF-CORRECTION
 - **Feedback:** If a step fails, the next attempt MUST explicitly address the previous error.
