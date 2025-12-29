@@ -25,10 +25,19 @@ YBIS is designed as an **Open Agentic Platform** compliant with the **Model Cont
 
 ## How to Connect (For External Agents)
 
-### Method 1: The "Brain" Connection (Preferred)
-*   **Protocol:** MCP (Model Context Protocol) over SSE.
-*   **Endpoint:** `http://localhost:8000/sse` (when `ybis_server.py --brain-mode` is running).
-*   **Capabilities:**
+### Method 1: The "Brain" Connection (External Agents Only)
+
+**Brain Architecture** (per Governance Action Plan):
+*   **Canonical Brain:** `src/agentic/core/graphs/orchestrator_graph.py` (single source of truth)
+*   **Execution Spine:** `scripts/run_orchestrator.py` (only runner, constitutional requirement)
+*   **MCP Interface:** `scripts/ybis.py` (task operations, messaging)
+
+**For External Agents:**
+*   **Protocol:** MCP (Model Context Protocol) over SSE
+*   **Endpoint:** `http://localhost:8000/sse` (when `ybis_server.py --brain-mode` is running)
+*   **Note:** Server mode is OPTIONAL and for external integrations only. Internal agents use `orchestrator_graph.py` directly via `run_orchestrator.py`.
+
+**Capabilities:**
     -   `get_repo_tree()`: See the world.
     -   `get_next_task()`: Get work.
     -   `ask_user()`: Get permission.
