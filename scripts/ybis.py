@@ -10,6 +10,7 @@ import argparse
 import sqlite3
 import json
 import sys
+import os
 from pathlib import Path
 from datetime import datetime
 import shutil
@@ -105,6 +106,20 @@ completed_at: {datetime.now().isoformat()}
 """
         return frontmatter
 
+    def _check_required_artifacts(self, workspace_path: Path) -> list[str]:
+        mode = os.getenv("YBIS_ARTIFACT_MODE", "lite").lower()
+        required = [
+            workspace_path / "docs" / "PLAN.md",
+            workspace_path / "docs" / "RUNBOOK.md",
+            workspace_path / "artifacts" / "RESULT.md",
+            workspace_path / "CHANGES" / "changed_files.json",
+            workspace_path / "META.json",
+        ]
+        if mode == "full":
+            required.append(workspace_path / "EVIDENCE" / "summary.md")
+        missing = [str(path) for path in required if not path.exists()]
+        return missing
+
     def create_task(self, goal: str, details: str = "", priority: str = "MEDIUM"):
         """Create a new task in the database."""
         conn = self._get_connection()
@@ -115,8 +130,8 @@ completed_at: {datetime.now().isoformat()}
             task_id = f"TASK-New-{random.randint(1000, 9999)}"
             
             cursor.execute("""
-                INSERT INTO tasks (id, goal, details, priority, status, assignee, created_at, updated_at)
-                VALUES (?, ?, ?, ?, 'BACKLOG', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                INSERT INTO tasks (id, goal, details, priority, status, assignee, updated_at)
+                VALUES (?, ?, ?, ?, 'BACKLOG', NULL, CURRENT_TIMESTAMP)
             """, (task_id, goal, details, priority))
             
             conn.commit()
@@ -186,6 +201,12 @@ completed_at: {datetime.now().isoformat()}
 
             conn.commit()
 
+            print("[REMINDER] Before completion, run:")
+            print(f"  python scripts/protocol_check.py --task-id {task_id} --mode lite")
+            print("  For risk:high use: --mode full (or set YBIS_ARTIFACT_MODE=full)")
+            print("[REMINDER] Required artifacts (lite): PLAN.md, RUNBOOK.md, RESULT.md, META.json, CHANGES/changed_files.json")
+            print("[REMINDER] Required artifacts (full): + EVIDENCE/summary.md")
+
             print(f"[SUCCESS] Task {task_id} claimed by {agent_id}")
             print(f"[INFO] Workspace: {workspace_path}")
             print(f"[INFO] Edit plan: {workspace_path / 'docs' / 'PLAN.md'}")
@@ -235,6 +256,14 @@ completed_at: {datetime.now().isoformat()}
             # Generate RESULT.md
             result_content = self._generate_frontmatter_result(task_id, row[0], status)
             (workspace_path / "artifacts" / "RESULT.md").write_text(result_content, encoding='utf-8')
+
+            missing = self._check_required_artifacts(workspace_path)
+            if missing:
+                print("[ERROR] Missing required artifacts:")
+                for item in missing:
+                    print(f"- {item}")
+                print("[ERROR] Refusing to complete task without artifacts.")
+                return False
 
             # Archive workspace
             now = datetime.now()

@@ -36,7 +36,7 @@ async def run_memory_fix():
        - Use 'os.getcwd()' to find the project root dynamically.
        - Set the new database path to: project_root / 'Knowledge' / 'LocalDB'.
        - Ensure the directory 'Knowledge/LocalDB' exists (create it if missing using os.makedirs).
-       - Set 'self.json_path' to 'tasks.json' inside that directory.
+       - Set 'self.db_path' to 'tasks.db' inside that directory.
        - Set 'self.md_path' to 'TASK_BOARD.md' inside that directory.
        
     OBJECTIVE: 

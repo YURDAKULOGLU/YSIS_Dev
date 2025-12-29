@@ -29,7 +29,7 @@ async def run_system_refactor():
     task_description = """
     SYSTEMIC REFACTOR: Implement Centralized Configuration.
     
-    We have a recurring issue with file paths (e.g. finding 'tasks.json') being hardcoded or calculated incorrectly in multiple files.
+    We have a recurring issue with file paths (e.g. finding 'tasks.db') being hardcoded or calculated incorrectly in multiple files.
     We need a 'Single Source of Truth'.
     
     INSTRUCTIONS:
@@ -37,7 +37,7 @@ async def run_system_refactor():
        - It must dynamically detect the PROJECT_ROOT (using pathlib).
        - It must define constants:
          - DATA_DIR = PROJECT_ROOT / "Knowledge" / "LocalDB"
-         - TASKS_DB_PATH = DATA_DIR / "tasks.json"
+         - TASKS_DB_PATH = DATA_DIR / "tasks.db"
          - CHROMA_DB_PATH = DATA_DIR / "chroma_db"
     
     2. Refactor 'src/dashboard/app.py':

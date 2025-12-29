@@ -14,7 +14,7 @@
 
 ## 🚀 Tier 5: Self-Architecture (CURRENT)
 - [ ] **Roadmap Agent:** An agent that analyzes this document and updates it based on system progress.
-- [ ] **SQL-Powered Task Board:** Migrating from `tasks.json` to SQLite for high concurrency.
+- [x] **SQL-Powered Task Board:** Migrated from file-based tasks to SQLite for high concurrency.
 - [ ] **Config Brain:** Centralized Pydantic-Settings for the entire factory.
 - [ ] **Architect Agent:** An agent that can modify `orchestrator_graph.py` to add new capabilities.
 
@@ -29,7 +29,7 @@
 ---
 
 ## 🛠️ ACTIVE MISSIONS (For Roadmap Agent)
-1.  **Mission SQLite:** Replace `TaskBoardManager` logic with SQLite.
+1.  **Mission SQLite:** Completed (TaskBoardManager now uses SQLite).
 2.  **Mission Dashboard:** Revitalize `src/dashboard` to show the LangGraph flow in real-time.
 3.  **Mission RAG Mastery:** Improve `RAGMemory` to automatically index `docs/governance` for all agents.
 

@@ -215,7 +215,7 @@ print("Migration successful!")
 
 ## Breaking Changes
 
-1. **tasks.json is DEPRECATED** - Use `tasks.db` only
+1. **File-based tasks are removed** - Use `tasks.db` only
 2. **Manual JSON editing in Knowledge/Messages/ is PROHIBITED** - Use `scripts/ybis.py message`
 3. **Direct SQLite writes for agents table require using MCP tools**
 
@@ -236,7 +236,7 @@ print("Migration successful!")
 - [ ] Using `scripts/ybis.py message` for messaging
 - [ ] Sending periodic heartbeats
 - [ ] No direct JSON file manipulation
-- [ ] No references to tasks.json
+- [ ] No legacy file-based task references
 
 ---
 

@@ -33,15 +33,16 @@ st.set_page_config(
 # --- SIDEBAR ---
 st.sidebar.title("🏭 YBIS Factory")
 st.sidebar.markdown("---")
-page = st.sidebar.radio("Navigation", ["Dashboard", "Task Board", "Messaging", "Memory Bank", "Research Lab", "System Health"])
+page = st.sidebar.radio("Navigation", ["Dashboard", "Task Board", "Messaging", "Hive Mind", "Memory Bank", "Research Lab", "System Health"])
 
 # --- HELPERS ---
-DB_PATH = Path("Knowledge/LocalDB/tasks.db")
-MESSAGES_DIR = Path("Knowledge/Messages")
+from src.dashboard.components.hive_visualizer import render_hive_mind
+DB_PATH = PROJECT_ROOT / "Knowledge/LocalDB/tasks.db"
+MESSAGES_DIR = PROJECT_ROOT / "Knowledge/Messages"
 
 def _load_mcp_tools():
     try:
-        from agentic import mcp_server
+        from src.agentic import mcp_server
         return mcp_server
     except Exception:
         return None
@@ -337,6 +338,10 @@ elif page == "Messaging":
                             st.write(_read_text(path) or "")
                         else:
                             st.code(json.dumps(data, indent=2))
+
+elif page == "Hive Mind":
+    st.title("🧠 Hive Mind Intelligence")
+    render_hive_mind()
 
 elif page == "Memory Bank":
     st.title("🧠 Mem0 Neural Link")

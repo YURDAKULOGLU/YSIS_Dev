@@ -36,7 +36,7 @@ async def run_build_dashboard():
     1. Create a new directory structure: 'src/dashboard/' and 'src/dashboard/templates/'.
     2. Create 'src/dashboard/app.py':
        - A Flask application running on port 5000.
-       - A route '/' that reads the 'Knowledge/LocalDB/tasks.json' file directly.
+       - A route '/' that reads the 'Knowledge/LocalDB/tasks.db' file directly.
        - Passes the task data (backlog, in_progress, done) to the template.
     3. Create 'src/dashboard/templates/index.html':
        - A modern, dark-themed HTML dashboard.

@@ -1,15 +1,10 @@
 """
-TaskBoardManager - JSON-based Task Persistence.
+TaskBoardManager - SQLite-based Task Persistence.
 
-Reads and writes tasks from/to .YBIS_Dev/Meta/Active/tasks.json (Source of Truth)
-And optionally syncs to TASK_BOARD.md for visibility.
+Can sync TASK_BOARD.md for visibility.
 """
 
-import os
-import json
-import asyncio
 from typing import Optional, Dict, Any, List
-from pathlib import Path
 from src.agentic.infrastructure.db import TaskDatabase
 
 class TaskBoardManager:
@@ -20,8 +15,6 @@ class TaskBoardManager:
         
         # Determine paths
         self.db_path = db_path or str(DATA_DIR / "tasks.db")
-        self.json_path = PROJECT_ROOT / "Knowledge" / "LocalDB" / "tasks.json"
-        
         self.db = TaskDatabase(self.db_path)
         self._initialized = False
 
@@ -29,34 +22,7 @@ class TaskBoardManager:
         """Lazy initialization of the database."""
         if not self._initialized:
             await self.db.initialize()
-            # AUTO-MIGRATION: If JSON exists, move to DB
-            if os.path.exists(self.json_path):
-                await self._migrate_from_json()
             self._initialized = True
-
-    async def _migrate_from_json(self):
-        """Migrate existing tasks from JSON to SQLite."""
-        print(f"[TaskBoard] Migrating data from {self.json_path} to SQLite...")
-        try:
-            with open(self.json_path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-
-            for list_name, status in [("backlog", "BACKLOG"), ("in_progress", "IN_PROGRESS"), ("done", "DONE")]:
-                for task in data.get(list_name, []):
-                    task['status'] = status
-                    await self.db.add_task(task)
-
-            # Archive the old JSON to avoid repeated migration
-            # Make idempotent: if .migrated exists, delete original instead
-            migrated_path = str(self.json_path) + ".migrated"
-            if os.path.exists(migrated_path):
-                print("[TaskBoard] .migrated already exists, removing original JSON...")
-                os.remove(self.json_path)
-            else:
-                os.rename(self.json_path, migrated_path)
-            print("[TaskBoard] Migration successful. JSON archived.")
-        except Exception as e:
-            print(f"[TaskBoard] Migration failed: {e}")
 
     async def get_next_task(self) -> Optional[Dict[str, Any]]:
         """Get next available task (Priority to IN_PROGRESS, then BACKLOG)."""
@@ -168,9 +134,9 @@ class TaskBoardManager:
     def _sync_to_markdown(self, data: Dict[str, Any]):
         """Generate TASK_BOARD.md from data."""
         lines = [
-            "# YBIS_Dev Task Board (JSON Synced)",
+            "# YBIS_Dev Task Board (DB Synced)",
             "",
-            "**Protocol:** Auto-Generated from `tasks.json`",
+            "**Protocol:** Auto-Generated from `tasks.db`",
             f"**Last Update:** {self._get_timestamp()}",
             "",
             "---",

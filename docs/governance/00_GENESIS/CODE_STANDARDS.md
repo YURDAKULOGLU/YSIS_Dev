@@ -55,7 +55,7 @@ path = "../Knowledge/LocalDB"
 ```python
 from src.agentic.core.config import PROJECT_ROOT, DATA_DIR
 path = PROJECT_ROOT / "src"
-path = DATA_DIR / "tasks.json"
+path = DATA_DIR / "tasks.db"
 ```
 
 ---
