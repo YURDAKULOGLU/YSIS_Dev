@@ -83,6 +83,15 @@ class LocalRAG:
         """Check if RAG is available and initialized."""
         return CHROMADB_AVAILABLE and self._initialized
 
+    def document_count(self) -> int:
+        """Get the number of documents in the collection."""
+        if not self._initialized:
+            return 0
+        try:
+            return self.collection.count()
+        except Exception:
+            return 0
+
     def add_document(
         self,
         doc_id: str,

@@ -59,6 +59,8 @@ except ImportError:
 USE_CREWAI = os.getenv("YBIS_USE_CREWAI", "true").lower() == "true"
 USE_RAG = os.getenv("YBIS_USE_RAG", "true").lower() == "true"
 USE_STORY_SHARDING = os.getenv("YBIS_USE_SHARDING", "true").lower() == "true"
+USE_HEALTH_CHECK = os.getenv("YBIS_HEALTH_CHECK", "true").lower() == "true"
+AUTO_REMEDIATION = os.getenv("YBIS_AUTO_REMEDIATION", "false").lower() == "true"
 
 # MCP 2025-11-25 async support is expected to be added in mcp_server upgrade.
 
@@ -428,14 +430,38 @@ async def run_loop(agent_id: str, poll_interval: int) -> int:
         await _run_task(task, agent_id)
 
 
+def _run_startup_health_check():
+    """Run system health check at startup."""
+    if not USE_HEALTH_CHECK:
+        return
+
+    try:
+        from src.agentic.core.plugins.health_monitor import HealthMonitor
+        monitor = HealthMonitor(auto_create_tasks=AUTO_REMEDIATION)
+        issues = monitor.run_all_checks()
+
+        if issues:
+            monitor.print_report()
+            critical = sum(1 for i in issues if i.severity == "CRITICAL")
+            if critical > 0:
+                print(f"[Startup] {critical} critical issues detected - check health report")
+    except Exception as e:
+        print(f"[Startup] Health check failed: {e}")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="YBIS MCP-first orchestrator")
     parser.add_argument("--task-id", help="Run a specific task ID")
     parser.add_argument("--agent", default=None, help="Agent ID override")
     parser.add_argument("--loop", action="store_true", help="Run continuously")
     parser.add_argument("--poll-interval", type=int, default=10, help="Loop sleep in seconds")
+    parser.add_argument("--skip-health", action="store_true", help="Skip startup health check")
 
     args = parser.parse_args(argv)
+
+    # Run health check at startup
+    if not args.skip_health:
+        _run_startup_health_check()
 
     agent_id = args.agent or f"codex-{socket.gethostname()}"
 

@@ -41,7 +41,13 @@ class OrchestratorGraph:
     async def _planner_node(self, s: TaskState) -> dict[str, Any]:
         print(f"\n[Graph:PLAN] Analyzing task: {s.task_id}")
 
-        plan_obj = await self.planner.plan(s.task_description, {})
+        # Handle both sync and async planners (CrewAI is sync, SimplePlanner is async)
+        import inspect
+        plan_result = self.planner.plan(s.task_description, {})
+        if inspect.iscoroutine(plan_result):
+            plan_obj = await plan_result
+        else:
+            plan_obj = plan_result
         return {"plan": plan_obj, "phase": "plan"}
 
     async def _executor_node(self, s: TaskState) -> dict[str, Any]:
@@ -102,7 +108,11 @@ class OrchestratorGraph:
         print(f"\n[Graph:COMMIT] Committing changes for {s.task_id}...")
 
         commit_msg = s.plan.objective if s.plan else "Task completed by YBIS"
-        success = await self.git_manager.commit_task(s.task_id, commit_msg)
+        success = await self.git_manager.commit_task(
+            s.task_id,
+            commit_msg,
+            allowed_files=s.files_modified
+        )
 
         if success:
             # Optionally push (can be toggled via config)
@@ -214,9 +224,5 @@ class OrchestratorGraph:
             final_state = TaskState.model_validate(final_output)
         else:
             final_state = final_output
-
-        if final_state.phase == 'done':
-            commit_msg = final_state.plan.objective if final_state.plan else "Task completed by YBIS"
-            await self.git_manager.commit_task(task_id, commit_msg)
 
         return final_state
