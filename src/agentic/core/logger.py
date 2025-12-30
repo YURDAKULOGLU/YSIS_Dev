@@ -1,5 +1,7 @@
 import sys
+import threading
 from pathlib import Path
+
 from loguru import logger
 
 # Config
@@ -38,10 +40,21 @@ logger.add(
 
 # 4. JSON Sink (For Machine Analysis / RAG)
 # Perfect for when agents need to "investigate" logs programmatically.
+json_lock = threading.Lock()
+
+def json_serializer(record):
+    with json_lock:
+        return {
+            "time": record["time"].strftime("%Y-%m-%d %H:%M:%S"),
+            "level": record["level"].name,
+            "task_id": record["extra"].get("task_id", ""),
+            "message": record["message"]
+        }
+
 logger.add(
     LOG_DIR / "system.json.log",
     rotation="10 MB",
-    serialize=True,
+    serialize=json_serializer,
     level="DEBUG"
 )
 
