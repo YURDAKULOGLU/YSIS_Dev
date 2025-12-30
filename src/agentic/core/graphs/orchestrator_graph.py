@@ -119,12 +119,16 @@ class OrchestratorGraph:
 
         try:
             artifacts = await self.artifact_gen.generate(s)
+            workspace_root = Path(s.artifacts_path).resolve().parent
             for file_name, content in artifacts.items():
-                full_path = os.path.join(s.artifacts_path, file_name)
-                os.makedirs(os.path.dirname(full_path), exist_ok=True)
+                if os.path.isabs(file_name):
+                    full_path = Path(file_name)
+                else:
+                    full_path = workspace_root / file_name
+                full_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(full_path, "w", encoding="utf-8") as f:
                     f.write(content if isinstance(content, str) else "\n".join(content))
-            print(f"[Graph:ARTIFACTS] [OK] Artifacts written to {s.artifacts_path}")
+            print(f"[Graph:ARTIFACTS] [OK] Artifacts written under {workspace_root}")
         except Exception as e:
             print(f"[Graph:ARTIFACTS] [WARN] Failed to generate artifacts: {e}")
 

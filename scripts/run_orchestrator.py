@@ -68,6 +68,7 @@ id: {task_id}
 type: PLAN
 status: DRAFT
 created_at: {datetime.now().isoformat()}
+token_budget: 2000
 target_files: []
 ---
 # Task: {task_goal}
@@ -90,11 +91,14 @@ target_files: []
 
 def _write_result_stub(task_id: str, task_goal: str, status: str, artifacts_dir: Path) -> None:
     result_path = artifacts_dir / "RESULT.md"
+    if result_path.exists() and result_path.read_text(encoding="utf-8").strip():
+        return
     frontmatter = f"""---
 id: {task_id}
 type: RESULT
 status: {status}
 completed_at: {datetime.now().isoformat()}
+token_budget: 2000
 ---
 # Task Result: {task_goal}
 
@@ -248,7 +252,8 @@ async def _run_task(task: dict, agent_id: str) -> str:
     status = "COMPLETED" if phase == "done" else "FAILED"
     final_status = "SUCCESS" if status == "COMPLETED" else "FAILED"
     mcp_server.update_task_status(task_id, status, final_status)
-    _write_result_stub(task_id, task.get("goal", ""), final_status, artifacts_dir)
+    if status != "COMPLETED":
+        _write_result_stub(task_id, task.get("goal", ""), final_status, artifacts_dir)
     print(f"Task Finished with status: {status}")
     return status
 
