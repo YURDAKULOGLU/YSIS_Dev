@@ -1,12 +1,21 @@
-import os
-import subprocess
 import asyncio
+import os
 from collections import deque
 from pathlib import Path
-from typing import List, Dict, Any, Optional
-from src.agentic.core.protocols import ExecutorProtocol, Plan, CodeResult
+
+from src.agentic.core.config import (
+    AIDER_BIN,
+    AIDER_CHAT_LANGUAGE,
+    AIDER_ENCODING,
+    AIDER_VENV_PATH,
+    ALLOWLIST_MODE,
+    ENABLE_VALIDATION,
+    SANDBOX_MODE,
+    USE_ACI,
+)
 from src.agentic.core.plugins.model_router import default_router
-from src.agentic.core.config import USE_ACI, ALLOWLIST_MODE, SANDBOX_MODE, ENABLE_VALIDATION
+from src.agentic.core.protocols import CodeResult, ExecutorProtocol, Plan
+
 
 class AiderExecutorEnhanced(ExecutorProtocol):
     """
@@ -45,15 +54,126 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             # Logging must never block execution
             pass
 
-    async def _collect_git_status(self, git_root: Path) -> List[str]:
+    async def _collect_git_status(self, git_root: Path) -> list[str]:
         proc = await asyncio.create_subprocess_shell(
-            "git status --porcelain",
+            "git status --porcelain=v1 -uall",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             cwd=str(git_root)
         )
         stdout, _ = await proc.communicate()
         return stdout.decode("utf-8").splitlines()
+
+    def _parse_git_status(self, status_lines: list[str]) -> dict[str, str]:
+        parsed: dict[str, str] = {}
+        for line in status_lines:
+            if not line:
+                continue
+            status_code = line[:2].strip()
+            path = line[3:].strip().replace('"', '')
+            if " -> " in path:
+                path = path.split(" -> ")[-1].strip()
+            parsed[path] = status_code or "??"
+        return parsed
+
+    def _extract_aider_failure(self, stdout_text: str, stderr_text: str) -> str | None:
+        combined = "\n".join([stdout_text or "", stderr_text or ""]).lower()
+        signatures = [
+            "the search section must exactly match",
+            ">>>>>>> replace",
+            "summarizer unexpectedly failed",
+            "summarization failed",
+            "cannot schedule new futures after shutdown",
+            "please explain the changes",
+            "please explain changes",
+            "lutfen yapmam",
+            "anlad",
+            "only 3 reflections allowed",
+            "valueerror: badgatewayerror",
+            "please consider reporting this bug to help improve aider",
+        ]
+        for sig in signatures:
+            if sig in combined:
+                return f"Aider failure detected: {sig}"
+        return None
+
+    def _collect_context_files(self, target_files: list[str], git_root: Path) -> list[str]:
+        """
+        Collect context files for --read injection.
+
+        This ensures Aider sees the actual file content before editing.
+        Also includes related files (imports, tests, etc.)
+        """
+        context_files = []
+
+        for target in target_files:
+            target_path = git_root / target
+
+            # 1. If file exists, add it as context (Aider will see current content)
+            if target_path.exists():
+                context_files.append(target)
+
+            # 2. Find related test file
+            if target.endswith('.py'):
+                test_candidates = [
+                    target.replace('src/', 'tests/').replace('.py', '_test.py'),
+                    target.replace('src/', 'tests/test_'),
+                    f"tests/test_{Path(target).stem}.py"
+                ]
+                for test_path in test_candidates:
+                    if (git_root / test_path).exists():
+                        context_files.append(test_path)
+                        break
+
+            # 3. Find related imports (simple heuristic)
+            if target_path.exists() and target.endswith('.py'):
+                try:
+                    content = target_path.read_text(encoding='utf-8')
+                    # Look for local imports
+                    import re
+                    local_imports = re.findall(r'from (src\.[^\s]+) import', content)
+                    for imp in local_imports[:3]:  # Limit to 3
+                        imp_path = imp.replace('.', '/') + '.py'
+                        if (git_root / imp_path).exists():
+                            context_files.append(imp_path)
+                except Exception:
+                    pass
+
+        # Deduplicate while preserving order
+        seen = set()
+        unique = []
+        for f in context_files:
+            if f not in seen:
+                seen.add(f)
+                unique.append(f)
+
+        return unique[:10]  # Limit context to 10 files
+
+    def _resolve_aider_command(self) -> list[str]:
+        if AIDER_BIN:
+            candidate = Path(AIDER_BIN)
+            if candidate.exists():
+                return [str(candidate)]
+
+        venv_root = Path(AIDER_VENV_PATH)
+        windows_bin = venv_root / "Scripts" / "aider.exe"
+        windows_shim = venv_root / "Scripts" / "aider"
+        posix_bin = venv_root / "bin" / "aider"
+
+        if windows_bin.exists():
+            return [str(windows_bin)]
+        if windows_shim.exists():
+            return [str(windows_shim)]
+        if posix_bin.exists():
+            return [str(posix_bin)]
+
+        return ["aider"]
+
+    def _write_message_file(self, sandbox_path: str, content: str) -> Path:
+        log_dir = self._ensure_log_dir(sandbox_path)
+        message_path = log_dir / "aider_message.txt"
+        message_path.write_text(content, encoding="utf-8")
+        return message_path
 
     async def _stream_to_file(self, stream: asyncio.StreamReader, log_path: Path, buffer: deque) -> None:
         with log_path.open("w", encoding="utf-8") as handle:
@@ -66,7 +186,10 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                 handle.flush()
                 buffer.append(text)
 
-    async def execute(self, plan: Plan, sandbox_path: str, error_history: List[str] = None, retry_count: int = 0) -> CodeResult:
+    async def execute(
+        self, plan: Plan, sandbox_path: str,
+        error_history: list[str] = None, retry_count: int = 0
+    ) -> CodeResult:
         """
         Execute the plan with enhanced prompt engineering and strict enforcement.
 
@@ -80,7 +203,10 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         # Original direct execution (fallback)
         return await self._execute_direct(plan, sandbox_path, error_history, retry_count)
 
-    async def _execute_direct(self, plan: Plan, sandbox_path: str, error_history: List[str] = None, retry_count: int = 0) -> CodeResult:
+    async def _execute_direct(
+        self, plan: Plan, sandbox_path: str,
+        error_history: list[str] = None, retry_count: int = 0
+    ) -> CodeResult:
         """
         Direct Aider execution (original behavior).
         No ACI constraints - full shell access to Aider.
@@ -92,7 +218,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         constitution = ""
         if os.path.exists(self.constitution_path):
             try:
-                with open(self.constitution_path, "r", encoding="utf-8") as f:
+                with open(self.constitution_path, encoding="utf-8") as f:
                     constitution = f.read()
             except Exception:
                 pass
@@ -100,7 +226,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         # 2. Construct the Hyper-Prompt
         prompt = "### YBIS ENHANCED EXECUTION PROTOCOL ###\n"
         prompt += "You are an elite autonomous developer in the YBIS Software Factory.\n\n"
-        
+
         if constitution:
             prompt += "## CONSTITUTIONAL MANDATES (FOLLOW STRICTLY):\n"
             prompt += constitution + "\n\n"
@@ -110,6 +236,13 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         prompt += "- Documentation: Google-style docstrings for all classes and functions.\n"
         prompt += "- Typing: MANDATORY type hints for all parameters and return types.\n"
         prompt += "- Quality: Ensure the code passes 'ruff check' with zero errors.\n\n"
+        prompt += "## EXECUTION RULES:\n"
+        prompt += "- Do not ask clarifying questions. Make reasonable assumptions and proceed.\n"
+        prompt += "- Provide only actionable edits. No meta commentary.\n\n"
+        prompt += "## WINDOWS PATHS:\n"
+        prompt += "- Use raw strings for Windows paths (prefix with r\"\") to avoid escape errors.\n\n"
+        prompt += "## OUTPUT LANGUAGE:\n"
+        prompt += "- Respond only in English. Avoid non-ASCII characters.\n\n"
 
         prompt += "## TEST-FIRST WORKFLOW:\n"
         prompt += "1. Identify the core logic being added or modified.\n"
@@ -131,7 +264,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         # 3. Handle File Paths
         from src.agentic.core.config import PROJECT_ROOT
         git_root = Path(PROJECT_ROOT).resolve()
-        
+
         files = plan.files_to_modify if plan.files_to_modify else []
         if not files:
             return CodeResult(
@@ -148,7 +281,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                 full_path = f_path
             else:
                 full_path = git_root / f_path
-            
+
             try:
                 rel_to_root = full_path.relative_to(git_root)
                 normalized_files.append(str(rel_to_root))
@@ -163,25 +296,45 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             prompt += f"- {f}\n"
 
         # 4. Construct Command
-        cmd = ["aider"]
+        cmd = self._resolve_aider_command()
         cmd.extend(normalized_files)
-        
+
+        # 4.1 Add --read flags for context injection (CRITICAL FIX)
+        # This ensures Aider sees actual file content before trying SEARCH/REPLACE
+        context_files = self._collect_context_files(normalized_files, git_root)
+        for ctx_file in context_files:
+            if ctx_file not in normalized_files:  # Don't double-add edit targets
+                cmd.extend(["--read", ctx_file])
+        if context_files:
+            print(f"[AiderEnhanced] Context injection: {len(context_files)} files via --read")
+
         prompt += f"\nNote: All paths provided are relative to the Git Root: {git_root}\n"
-        cmd.extend(["--message", prompt])
+        message_path = self._write_message_file(sandbox_path, prompt)
+        cmd.extend(["--message-file", str(message_path)])
 
         model_full_name = model_config.model_name
         if model_config.provider == "ollama":
             model_full_name = f"ollama/{model_config.model_name}"
         cmd.extend(["--model", model_full_name])
-        
+
+        edit_format = "whole" if retry_count > 0 else "diff"
         cmd.extend([
             "--model-settings-file", "config/aider_model_settings.yml",
             "--no-show-model-warnings",
             "--no-pretty",
             "--no-auto-lint",
             "--no-suggest-shell-commands",
+            "--edit-format", edit_format,
+            "--no-multiline",
             "--aiderignore", "config/.sandbox_aiderignore",
+            "--encoding", AIDER_ENCODING,
+            "--chat-language", AIDER_CHAT_LANGUAGE,
+            "--no-restore-chat-history",
+            "--input-history-file", str(self._ensure_log_dir(sandbox_path) / "aider_input_history.txt"),
+            "--chat-history-file", str(self._ensure_log_dir(sandbox_path) / "aider_chat_history.md"),
+            "--llm-history-file", str(self._ensure_log_dir(sandbox_path) / "aider_llm_history.jsonl"),
             "--yes",
+            "--yes-always",
             "--no-auto-commits"
         ])
 
@@ -192,12 +345,16 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             stderr_path = log_dir / "aider_stderr.log"
             stdout_tail = deque(maxlen=200)
             stderr_tail = deque(maxlen=200)
+            pre_status = self._parse_git_status(await self._collect_git_status(git_root))
+            env = os.environ.copy()
+            env["PYTHONUTF8"] = "1"
+            env["AIDER_ENCODING"] = AIDER_ENCODING
             process = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
                 cwd=str(git_root),
-                env=os.environ
+                env=env
             )
             stdout_task = asyncio.create_task(self._stream_to_file(process.stdout, stdout_path, stdout_tail))
             stderr_task = asyncio.create_task(self._stream_to_file(process.stderr, stderr_path, stderr_tail))
@@ -218,19 +375,21 @@ class AiderExecutorEnhanced(ExecutorProtocol):
 
             stdout_text = "".join(stdout_tail)
             stderr_text = "".join(stderr_tail)
+            detected_failure = self._extract_aider_failure(stdout_text, stderr_text)
 
             # Detect Changes (strict allowlist)
             actual_files = {}
             try:
                 status_lines = await self._collect_git_status(git_root)
+                post_status = self._parse_git_status(status_lines)
+                delta = {
+                    path: status
+                    for path, status in post_status.items()
+                    if pre_status.get(path) != status
+                }
                 unexpected = []
                 allowed_set = {Path(p).as_posix() for p in normalized_files}
-                for line in status_lines:
-                    status_code = line[:2].strip()
-                    path = line[3:].strip().replace('"', '')
-                    if " -> " in path:
-                        path = path.split(" -> ")[-1].strip()
-
+                for path, status_code in delta.items():
                     posix_path = Path(path).as_posix()
                     if posix_path in allowed_set:
                         abs_path = (git_root / path).resolve()
@@ -253,6 +412,9 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             error_message = None
             if not success:
                 error_message = "Aider execution timed out" if timed_out else "Aider execution failed (see logs)"
+            if detected_failure:
+                error_message = detected_failure if not error_message else f"{error_message}; {detected_failure}"
+                success = False
 
             return CodeResult(
                 files_modified=actual_files,
@@ -271,7 +433,10 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                 error=str(e)
             )
 
-    async def _execute_with_aci(self, plan: Plan, sandbox_path: str, error_history: List[str] = None, retry_count: int = 0) -> CodeResult:
+    async def _execute_with_aci(
+        self, plan: Plan, sandbox_path: str,
+        error_history: list[str] = None, retry_count: int = 0
+    ) -> CodeResult:
         """
         Execute using Agent-Computer Interface (ACI).
 
@@ -283,12 +448,12 @@ class AiderExecutorEnhanced(ExecutorProtocol):
 
         This is safer than direct execution but may be less flexible.
         """
-        print(f"[AiderEnhanced] Executing with ACI (constrained mode)")
+        print("[AiderEnhanced] Executing with ACI (constrained mode)")
 
         # Lazy-load ACI
         if self._aci is None:
-            from src.agentic.core.execution import AgentComputerInterface
             from src.agentic.core.config import PROJECT_ROOT
+            from src.agentic.core.execution import AgentComputerInterface
 
             self._aci = AgentComputerInterface(
                 base_dir=str(PROJECT_ROOT),
@@ -312,7 +477,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         constitution = ""
         if os.path.exists(self.constitution_path):
             try:
-                with open(self.constitution_path, "r", encoding="utf-8") as f:
+                with open(self.constitution_path, encoding="utf-8") as f:
                     constitution = f.read()
             except Exception:
                 pass
@@ -330,6 +495,16 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         prompt += "- Documentation: Google-style docstrings for all classes and functions.\n"
         prompt += "- Typing: MANDATORY type hints for all parameters and return types.\n"
         prompt += "- Quality: Ensure the code passes 'ruff check' with zero errors.\n\n"
+        prompt += "## EXECUTION RULES:\n"
+        prompt += "- Do not ask clarifying questions. Make reasonable assumptions and proceed.\n"
+        prompt += "- Provide only actionable edits. No meta commentary.\n\n"
+        prompt += "## WINDOWS PATHS:\n"
+        prompt += "- Use raw strings for Windows paths (prefix with r\"\") to avoid escape errors.\n\n"
+        prompt += "## OUTPUT LANGUAGE:\n"
+        prompt += "- Respond only in English. Avoid non-ASCII characters.\n\n"
+        if retry_count > 0:
+            prompt += "## RETRY MODE:\n"
+            prompt += "- Apply full-file edits (no SEARCH/REPLACE blocks).\n\n"
 
         prompt += "## TEST-FIRST WORKFLOW:\n"
         prompt += "1. Identify the core logic being added or modified.\n"
@@ -380,11 +555,12 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             prompt += f"- {f}\n"
 
         # Build command
-        cmd_parts = ["aider"]
+        cmd_parts = self._resolve_aider_command()
         cmd_parts.extend(normalized_files)
 
         prompt += f"\nNote: All paths provided are relative to the Git Root: {git_root}\n"
-        cmd_parts.extend(["--message", prompt])
+        message_path = self._write_message_file(sandbox_path, prompt)
+        cmd_parts.extend(["--message-file", str(message_path)])
 
         model_full_name = model_config.model_name
         if model_config.provider == "ollama":
@@ -397,19 +573,36 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             "--no-pretty",
             "--no-auto-lint",
             "--no-suggest-shell-commands",
+            "--edit-format", "diff",
+            "--no-multiline",
             "--aiderignore", "config/.sandbox_aiderignore",
+            "--encoding", AIDER_ENCODING,
+            "--chat-language", AIDER_CHAT_LANGUAGE,
+            "--no-restore-chat-history",
+            "--input-history-file", str(self._ensure_log_dir(sandbox_path) / "aider_input_history.txt"),
+            "--chat-history-file", str(self._ensure_log_dir(sandbox_path) / "aider_chat_history.md"),
+            "--llm-history-file", str(self._ensure_log_dir(sandbox_path) / "aider_llm_history.jsonl"),
             "--yes",
+            "--yes-always",
             "--no-auto-commits"
         ])
 
         # Execute through ACI (sandboxed)
-        command = ' '.join(cmd_parts)
+        quoted_parts = []
+        for part in cmd_parts:
+            if " " in part or "\t" in part:
+                quoted_parts.append(f"\"{part}\"")
+            else:
+                quoted_parts.append(part)
+        command = ' '.join(quoted_parts)
 
         try:
             log_dir = self._ensure_log_dir(sandbox_path)
+            pre_status = self._parse_git_status(await self._collect_git_status(git_root))
             result = await self._aci.run_command(command, timeout=300, cwd=str(git_root))
             self._write_log(log_dir, "aider_stdout.log", result.stdout)
             self._write_log(log_dir, "aider_stderr.log", result.stderr)
+            detected_failure = self._extract_aider_failure(result.stdout, result.stderr)
 
             if not result.success:
                 return CodeResult(
@@ -417,21 +610,22 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                     commands_run=[command],
                     outputs={"stdout": result.stdout, "stderr": result.stderr},
                     success=False,
-                    error=result.message
+                    error=detected_failure or result.message
                 )
 
             # Detect changes (strict allowlist)
             actual_files = {}
             try:
                 status_lines = await self._collect_git_status(git_root)
+                post_status = self._parse_git_status(status_lines)
+                delta = {
+                    path: status
+                    for path, status in post_status.items()
+                    if pre_status.get(path) != status
+                }
                 unexpected = []
                 allowed_set = {Path(p).as_posix() for p in normalized_files}
-                for line in status_lines:
-                    status_code = line[:2].strip()
-                    path = line[3:].strip().replace('"', '')
-                    if " -> " in path:
-                        path = path.split(" -> ")[-1].strip()
-
+                for path, status_code in delta.items():
                     posix_path = Path(path).as_posix()
                     if posix_path in allowed_set:
                         abs_path = (git_root / path).resolve()
@@ -455,8 +649,8 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                 files_modified=actual_files,
                 commands_run=[command],
                 outputs={"stdout": result.stdout, "stderr": result.stderr, "status": "ACI-Executed"},
-                success=True,
-                error=None
+                success=False if detected_failure else True,
+                error=detected_failure
             )
 
         except Exception as e:

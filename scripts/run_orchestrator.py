@@ -19,27 +19,46 @@ from pathlib import Path
 # Ensure project root is on sys.path
 sys.path.insert(0, os.getcwd())
 
+from src.agentic import mcp_server
 from src.agentic.core.config import (
-    PROJECT_ROOT,
-    USE_LITELLM,
-    LITELLM_QUALITY,
-    USE_SPEC_FIRST,
-    REQUIRE_SPEC,
     AUTO_GENERATE_SPEC,
-    VALIDATE_PLAN,
-    VALIDATE_IMPLEMENTATION,
+    LITELLM_QUALITY,
+    MIN_IMPL_SCORE,
     MIN_PLAN_SCORE,
-    MIN_IMPL_SCORE
+    PROJECT_ROOT,
+    REQUIRE_SPEC,
+    USE_LITELLM,
+    USE_SPEC_FIRST,
+    VALIDATE_IMPLEMENTATION,
+    VALIDATE_PLAN,
 )
 from src.agentic.core.graphs.orchestrator_graph import OrchestratorGraph
-from src.agentic.core.protocols import TaskState
+from src.agentic.core.plugins.aider_executor_enhanced import AiderExecutorEnhanced
+from src.agentic.core.plugins.artifact_generator import ArtifactGenerator
+from src.agentic.core.plugins.sentinel_enhanced import SentinelVerifierEnhanced
 from src.agentic.core.plugins.simple_planner import SimplePlanner
 from src.agentic.core.plugins.simple_planner_v2 import SimplePlannerV2
-from src.agentic.core.plugins.aider_executor_enhanced import AiderExecutorEnhanced
-from src.agentic.core.plugins.sentinel_enhanced import SentinelVerifierEnhanced
-from src.agentic.core.plugins.artifact_generator import ArtifactGenerator
 from src.agentic.core.plugins.spec_first_workflow import SpecFirstWorkflow, WorkflowConfig
-from src.agentic import mcp_server
+from src.agentic.core.plugins.story_sharder import StorySharder  # noqa: F401 - will be used in Phase 2
+from src.agentic.core.protocols import TaskState
+
+# Optional imports for enhanced pipeline
+try:
+    from src.agentic.crews.planning_crew import CREWAI_AVAILABLE, PlanningCrew
+except ImportError:
+    CREWAI_AVAILABLE = False
+    PlanningCrew = None
+
+try:
+    from src.agentic.tools.local_rag import CHROMADB_AVAILABLE, get_local_rag
+except ImportError:
+    CHROMADB_AVAILABLE = False
+    get_local_rag = None
+
+# Feature flags for legacy pipeline components
+USE_CREWAI = os.getenv("YBIS_USE_CREWAI", "true").lower() == "true"
+USE_RAG = os.getenv("YBIS_USE_RAG", "true").lower() == "true"
+USE_STORY_SHARDING = os.getenv("YBIS_USE_SHARDING", "true").lower() == "true"
 
 # MCP 2025-11-25 async support is expected to be added in mcp_server upgrade.
 
@@ -157,7 +176,7 @@ def _run_closed_loop_verification(task_id: str, files_modified: list[str]) -> bo
     try:
         result = subprocess.run(
             [sys.executable, "scripts/protocol_check.py", "--task-id", task_id, "--tier", "auto", "--json"],
-            capture_output=True,
+            check=False, capture_output=True,
             text=True,
             timeout=30
         )
@@ -197,15 +216,30 @@ def _run_closed_loop_verification(task_id: str, files_modified: list[str]) -> bo
             ok = False
 
     # Tier 2 and above: Use protocol_check.py
-    else:
-        if result.returncode != 0:
-            ok = False
-            print(result.stderr.strip())
+    elif result.returncode != 0:
+        ok = False
+        print(result.stderr.strip())
 
     return ok
 
 
 def _select_planner():
+    """
+    Select the best available planner.
+
+    Priority:
+    1. CrewAI (multi-agent) - if available and enabled
+    2. SimplePlannerV2 (LiteLLM) - if enabled
+    3. SimplePlanner (Ollama direct) - fallback
+    """
+    # Try CrewAI first (legacy pipeline restoration)
+    if USE_CREWAI and CREWAI_AVAILABLE:
+        try:
+            print("[Planner] Using CrewAI PlanningCrew (Product Owner + Architect)")
+            return PlanningCrew()
+        except Exception as exc:
+            print(f"[Planner] CrewAI unavailable: {exc}. Falling back.")
+
     # Check USE_LITELLM flag from config (YBIS_USE_LITELLM env var)
     if USE_LITELLM:
         try:
@@ -220,11 +254,43 @@ def _select_planner():
     return SimplePlanner()
 
 
+def _enrich_context_with_rag(task_description: str) -> dict:
+    """
+    Enrich task context with RAG results.
+
+    Returns dict with:
+    - rag_context: Relevant code snippets
+    - related_files: List of related file paths
+    """
+    context = {}
+
+    if not USE_RAG or not CHROMADB_AVAILABLE or get_local_rag is None:
+        return context
+
+    try:
+        rag = get_local_rag()
+        if rag.is_available():
+            print("[RAG] Searching for relevant context...")
+            context['rag_context'] = rag.search(task_description, limit=5)
+            context['related_files'] = rag.search_files(task_description, limit=3)
+            print(f"[RAG] Found {len(context.get('related_files', []))} related files")
+    except Exception as e:
+        print(f"[RAG] Context enrichment failed: {e}")
+
+    return context
+
+
 async def _run_task(task: dict, agent_id: str) -> str:
     task_id = task["id"]
     root, docs_dir, artifacts_dir = _ensure_workspace(task_id)
 
     task_description = _build_task_description(task)
+
+    # === LEGACY PIPELINE RESTORATION: RAG Context Enrichment ===
+    print(f"\n[Pipeline] Starting enhanced pipeline for {task_id}")
+    rag_context = _enrich_context_with_rag(task_description)
+    if rag_context:
+        print(f"[Pipeline] RAG context enriched: {len(rag_context.get('rag_context', ''))} chars")
 
     # === SPEC-FIRST WORKFLOW INTEGRATION ===
     if USE_SPEC_FIRST:
@@ -281,14 +347,25 @@ async def _run_task(task: dict, agent_id: str) -> str:
     # Create plan stub only if not using spec-first or spec-first doesn't create it
     _write_plan_stub(task_id, task.get("goal", ""), docs_dir)
 
+    # === LEGACY PIPELINE: Enrich task description with RAG context ===
+    enriched_description = task_description
+    if rag_context.get('rag_context'):
+        enriched_description += f"\n\n=== RELEVANT CODE CONTEXT (from RAG) ===\n{rag_context['rag_context']}"
+    if rag_context.get('related_files'):
+        related_list = "\n".join(f"- {f}" for f in rag_context['related_files'])
+        enriched_description += f"\n\n=== RELATED FILES ===\n{related_list}"
+
     initial_state = TaskState(
         task_id=task_id,
-        task_description=task_description,
+        task_description=enriched_description,
         artifacts_path=str(artifacts_dir)
     )
 
+    # Select planner (CrewAI -> LiteLLM -> SimplePlanner)
+    planner = _select_planner()
+
     orchestrator = OrchestratorGraph(
-        planner=_select_planner(),
+        planner=planner,
         executor=AiderExecutorEnhanced(),
         verifier=SentinelVerifierEnhanced(),
         artifact_gen=ArtifactGenerator()

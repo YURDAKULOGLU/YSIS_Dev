@@ -12,6 +12,11 @@ mem0ai
 crewai
 mcp
 
+# Intelligence Layer (Hive Architecture)
+dspy-ai
+instructor
+httpx
+
 # Universal AI Providers (LiteLLM + SDKs)
 litellm
 anthropic
@@ -44,6 +49,7 @@ psutil
 aiosqlite
 loguru
 langfuse
-tree-sitter-languages
+tree-sitter-language-pack
+tree-sitter==0.24.0
 open-interpreter
 ruff
