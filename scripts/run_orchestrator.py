@@ -11,6 +11,7 @@ import asyncio
 import json
 import os
 import socket
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -32,7 +33,6 @@ from src.agentic.core.config import (
 )
 from src.agentic.core.graphs.orchestrator_graph import OrchestratorGraph
 from src.agentic.core.protocols import TaskState
-from src.agentic.core.llm import ProviderFactory
 from src.agentic.core.plugins.simple_planner import SimplePlanner
 from src.agentic.core.plugins.simple_planner_v2 import SimplePlannerV2
 from src.agentic.core.plugins.aider_executor_enhanced import AiderExecutorEnhanced
@@ -149,6 +149,62 @@ def _build_task_description(task: dict) -> str:
     return description
 
 
+def _run_closed_loop_verification(task_id: str, files_modified: list[str]) -> bool:
+    print("[Gate] Running closed-loop verification...")
+    ok = True
+
+    # Determine task tier using protocol_check.py (with --json for machine parsing)
+    try:
+        result = subprocess.run(
+            [sys.executable, "scripts/protocol_check.py", "--task-id", task_id, "--tier", "auto", "--json"],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+
+        tier_info = json.loads(result.stdout)
+        tier = tier_info.get("tier")
+
+        if not tier_info.get("success", False):
+            ok = False
+            missing = tier_info.get("missing", [])
+            print(f"[Gate] Missing artifacts: {missing}")
+            return ok
+
+    except Exception as exc:
+        ok = False
+        print(f"[Gate] protocol_check failed: {exc}")
+        return ok
+
+    # Tier 0: Only check RUNBOOK.md
+    if tier == 0:
+        runbook_path = Path("workspaces/active") / task_id / "docs" / "RUNBOOK.md"
+        if not runbook_path.exists():
+            print(f"[Gate] Missing artifact for {task_id}: docs/RUNBOOK.md")
+            ok = False
+
+    # Tier 1: Check RUNBOOK.md and RESULT.md
+    elif tier == 1:
+        runbook_path = Path("workspaces/active") / task_id / "docs" / "RUNBOOK.md"
+        result_path = Path("workspaces/active") / task_id / "artifacts" / "RESULT.md"
+
+        if not runbook_path.exists():
+            print(f"[Gate] Missing artifact for {task_id}: docs/RUNBOOK.md")
+            ok = False
+
+        if not result_path.exists() or len(result_path.read_text(encoding="utf-8").strip().splitlines()) < 5:
+            print("[Gate] RESULT.md must be at least 5 lines long for Tier 1 tasks.")
+            ok = False
+
+    # Tier 2 and above: Use protocol_check.py
+    else:
+        if result.returncode != 0:
+            ok = False
+            print(result.stderr.strip())
+
+    return ok
+
+
 def _select_planner():
     # Check USE_LITELLM flag from config (YBIS_USE_LITELLM env var)
     if USE_LITELLM:
@@ -248,8 +304,27 @@ async def _run_task(task: dict, agent_id: str) -> str:
         _write_result_stub(task_id, task.get("goal", ""), "FAILED", artifacts_dir)
         return "FAILED"
 
-    phase = getattr(final_state, "phase", "unknown") if not isinstance(final_state, dict) else final_state.get("phase", "unknown")
+    if isinstance(final_state, dict):
+        phase = final_state.get("phase", "unknown")
+    else:
+        phase = getattr(final_state, "phase", "unknown")
     status = "COMPLETED" if phase == "done" else "FAILED"
+
+    if status == "COMPLETED":
+        files_modified = []
+        if isinstance(final_state, dict):
+            files_modified = final_state.get("files_modified", [])
+        else:
+            files_modified = final_state.files_modified or []
+
+        if not _run_closed_loop_verification(task_id, files_modified):
+            status = "FAILED"
+            final_status = "VERIFICATION_FAILED"
+            mcp_server.update_task_status(task_id, status, final_status)
+            _write_result_stub(task_id, task.get("goal", ""), final_status, artifacts_dir)
+            print(f"Task Finished with status: {status}")
+            return status
+
     final_status = "SUCCESS" if status == "COMPLETED" else "FAILED"
     mcp_server.update_task_status(task_id, status, final_status)
     if status != "COMPLETED":

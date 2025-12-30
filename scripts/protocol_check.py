@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
 Protocol check for task artifacts with tier support.
+
+Supports --json flag for machine-readable output (used by run_orchestrator.py).
 """
 import argparse
+import json
 import subprocess
 from pathlib import Path
 
@@ -97,6 +100,7 @@ def main() -> int:
     parser.add_argument("--auto-archive", action="store_true", help="Fallback to archive/YYYY/MM if not found in active")
     parser.add_argument("--mode", default=None, choices=["lite", "full"], help="Legacy: Artifact mode (use --tier instead)")
     parser.add_argument("--tier", default="auto", help="Artifact tier: 0 (doc-only), 1 (low-risk), 2 (standard), auto (detect from git)")
+    parser.add_argument("--json", action="store_true", help="Output JSON format for machine parsing")
     args = parser.parse_args()
 
     base = Path(args.root) / args.task_id
@@ -151,13 +155,34 @@ def main() -> int:
         if not path.exists():
             missing.append(rel)
 
+    # Determine numeric tier for JSON output
+    tier_num = tier if isinstance(tier, int) else 2  # 'full' maps to 2
+
     if missing:
-        print(f"[FAIL] Missing artifacts for {args.task_id} ({tier_name}):")
-        for item in missing:
-            print(f"- {item}")
+        if args.json:
+            print(json.dumps({
+                "success": False,
+                "tier": tier_num,
+                "tier_name": tier_name,
+                "task_id": args.task_id,
+                "missing": missing
+            }))
+        else:
+            print(f"[FAIL] Missing artifacts for {args.task_id} ({tier_name}):")
+            for item in missing:
+                print(f"- {item}")
         return 1
 
-    print(f"[OK] All required artifacts present for {args.task_id} ({tier_name}).")
+    if args.json:
+        print(json.dumps({
+            "success": True,
+            "tier": tier_num,
+            "tier_name": tier_name,
+            "task_id": args.task_id,
+            "missing": []
+        }))
+    else:
+        print(f"[OK] All required artifacts present for {args.task_id} ({tier_name}).")
     return 0
 
 
