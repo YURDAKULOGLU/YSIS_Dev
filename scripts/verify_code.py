@@ -120,6 +120,8 @@ def run_related_tests(file_path: str) -> tuple[bool, str]:
         path.parent / "tests" / f"test_{path.name}",
         Path("tests") / f"test_{path.stem}.py",
         Path("tests") / path.parent.name / f"test_{path.name}",
+        Path("tests") / "unit" / f"test_{path.stem}.py",  # tests/unit/test_*.py
+        Path("tests") / "integration" / f"test_{path.stem}.py",  # tests/integration/test_*.py
     ]
 
     test_file = None

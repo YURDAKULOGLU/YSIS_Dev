@@ -414,7 +414,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
 
             # Method 1: Use Aider's "Applied edit to" output
             for edit_path in applied_edits:
-                edit_path = edit_path.strip()
+                edit_path = edit_path.strip().replace('\r', '')
                 posix_path = Path(edit_path).as_posix()
                 if posix_path in allowed_set or edit_path in normalized_files:
                     abs_path = (git_root / edit_path).resolve()

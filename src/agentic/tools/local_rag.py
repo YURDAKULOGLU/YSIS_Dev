@@ -82,6 +82,11 @@ class LocalRAG:
             print(f"[LocalRAG] Init failed: {e}")
             self._initialized = False
 
+    @property
+    def is_initialized(self) -> bool:
+        """Check if LocalRAG is initialized."""
+        return self._initialized
+
     def is_available(self) -> bool:
         """Check if RAG is available and initialized."""
         return CHROMADB_AVAILABLE and self._initialized
