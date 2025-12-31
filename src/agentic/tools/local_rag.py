@@ -18,6 +18,9 @@ except ImportError:
 
 from src.agentic.core.config import PROJECT_ROOT
 
+# Constants
+DOC_PREVIEW_MAX_LENGTH = 500
+
 
 class LocalRAG:
     """
@@ -96,7 +99,7 @@ class LocalRAG:
         self,
         doc_id: str,
         content: str,
-        metadata: dict = None
+        metadata: dict[str, str] | None = None
     ) -> bool:
         """
         Add a document to the knowledge base.
@@ -174,12 +177,12 @@ class LocalRAG:
         Search for relevant context.
 
         Args:
-            query: Search query
-            limit: Maximum results
-            filter_type: Optional filter by document type
+            query (str): Search query.
+            limit (int, optional): Maximum results. Defaults to 5.
+            filter_type (str, optional): Optional filter by document type. Defaults to None.
 
         Returns:
-            Formatted context string
+            str: Formatted context string.
         """
         if not self.is_available():
             return "[LocalRAG] Not available - proceeding without knowledge base context."
@@ -205,7 +208,7 @@ class LocalRAG:
                 distance = results['distances'][0][i] if results.get('distances') else 0
 
                 # Truncate long documents
-                doc_preview = doc[:500] + "..." if len(doc) > 500 else doc
+                doc_preview = doc[:DOC_PREVIEW_MAX_LENGTH] + "..." if len(doc) > DOC_PREVIEW_MAX_LENGTH else doc
 
                 formatted += f"\n--- [{source}] (relevance: {1-distance:.2f}) ---\n"
                 formatted += doc_preview
@@ -299,16 +302,32 @@ class LocalRAG:
                 print(f"[LocalRAG] Clear failed: {e}")
 
 
-# Singleton instance
-_instance: LocalRAG | None = None
+class _LocalRAGSingleton:
+    """Singleton holder to avoid global statement."""
+
+    _instance: LocalRAG | None = None
+
+    @classmethod
+    def get_instance(cls) -> LocalRAG:
+        """
+        Get or create the singleton LocalRAG instance.
+
+        Returns:
+            LocalRAG: The singleton instance of LocalRAG.
+        """
+        if cls._instance is None:
+            cls._instance = LocalRAG()
+        return cls._instance
+
+    @classmethod
+    def reset_instance(cls):
+        """Reset the singleton instance to None for testing scenarios."""
+        cls._instance = None
 
 
 def get_local_rag() -> LocalRAG:
     """Get or create the singleton LocalRAG instance."""
-    global _instance
-    if _instance is None:
-        _instance = LocalRAG()
-    return _instance
+    return _LocalRAGSingleton.get_instance()
 
 
 # Convenience alias

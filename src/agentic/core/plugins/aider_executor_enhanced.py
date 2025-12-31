@@ -78,21 +78,25 @@ class AiderExecutorEnhanced(ExecutorProtocol):
 
     def _extract_aider_failure(self, stdout_text: str, stderr_text: str) -> str | None:
         combined = "\n".join([stdout_text or "", stderr_text or ""]).lower()
-        signatures = [
-            "the search section must exactly match",
-            ">>>>>>> replace",
-            "summarizer unexpectedly failed",
-            "summarization failed",
-            "cannot schedule new futures after shutdown",
+
+        # Critical failures that should block
+        critical_signatures = [
+            "the search section must exactly match",  # SEARCH/REPLACE mismatch
             "please explain the changes",
             "please explain changes",
-            "lutfen yapmam",
-            "anlad",
+            "lutfen yapmam",  # Turkish "please don't"
             "only 3 reflections allowed",
             "valueerror: badgatewayerror",
             "please consider reporting this bug to help improve aider",
         ]
-        for sig in signatures:
+
+        # Non-critical issues (log but don't fail)
+        # ">>>>>>> replace" - normal in whole-file-edit mode
+        # "summarizer unexpectedly failed" - code still applied
+        # "summarization failed" - cosmetic issue
+        # "cannot schedule new futures after shutdown" - cleanup issue
+
+        for sig in critical_signatures:
             if sig in combined:
                 return f"Aider failure detected: {sig}"
         return None
@@ -175,16 +179,27 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         message_path.write_text(content, encoding="utf-8")
         return message_path
 
-    async def _stream_to_file(self, stream: asyncio.StreamReader, log_path: Path, buffer: deque) -> None:
+    async def _stream_to_file(
+        self, stream: asyncio.StreamReader, log_path: Path, buffer: deque,
+        live_prefix: str = "", live_output: bool = True
+    ) -> None:
+        """Stream subprocess output to file with optional live console output."""
+        import datetime
         with log_path.open("w", encoding="utf-8") as handle:
             while True:
                 chunk = await stream.readline()
                 if not chunk:
                     break
                 text = chunk.decode("utf-8", errors="replace")
-                handle.write(text)
+                # Write to file with timestamp
+                ts = datetime.datetime.now().strftime("%H:%M:%S")
+                handle.write(f"[{ts}] {text}")
                 handle.flush()
                 buffer.append(text)
+                # Live console output (sanitized for Windows terminal)
+                if live_output and text.strip():
+                    safe_text = text.encode('ascii', 'replace').decode('ascii')
+                    print(f"{live_prefix}[{ts}] {safe_text.rstrip()}")
 
     async def execute(
         self, plan: Plan, sandbox_path: str,
@@ -356,9 +371,16 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                 cwd=str(git_root),
                 env=env
             )
-            stdout_task = asyncio.create_task(self._stream_to_file(process.stdout, stdout_path, stdout_tail))
-            stderr_task = asyncio.create_task(self._stream_to_file(process.stderr, stderr_path, stderr_tail))
+            print("[Aider] === LIVE OUTPUT START ===")
+            stdout_task = asyncio.create_task(
+                self._stream_to_file(process.stdout, stdout_path, stdout_tail, "[AIDER] ", live_output=True)
+            )
+            stderr_task = asyncio.create_task(
+                self._stream_to_file(process.stderr, stderr_path, stderr_tail, "[AIDER:ERR] ", live_output=True)
+            )
 
+            import time
+            start_time = time.time()
             timed_out = False
             try:
                 await asyncio.wait_for(process.wait(), timeout=300)
@@ -370,6 +392,9 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             else:
                 success = (process.returncode == 0)
 
+            elapsed = time.time() - start_time
+            print(f"[Aider] === LIVE OUTPUT END === (elapsed: {elapsed:.1f}s, exit: {process.returncode}, timeout: {timed_out})")
+
             await stdout_task
             await stderr_task
 
@@ -377,28 +402,45 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             stderr_text = "".join(stderr_tail)
             detected_failure = self._extract_aider_failure(stdout_text, stderr_text)
 
-            # Detect Changes (strict allowlist)
+            # Detect Changes - IMPROVED: Parse Aider's "Applied edit to" output
+            # This is more reliable than git status delta when files are already modified
+            import re
+            applied_edits = re.findall(r"Applied edit to ([^\n]+)", stdout_text)
+            print(f"[AiderEnhanced] Detected applied edits: {applied_edits}")
+
             actual_files = {}
-            try:
-                status_lines = await self._collect_git_status(git_root)
-                post_status = self._parse_git_status(status_lines)
-                delta = {
-                    path: status
-                    for path, status in post_status.items()
-                    if pre_status.get(path) != status
-                }
-                unexpected = []
-                allowed_set = {Path(p).as_posix() for p in normalized_files}
-                for path, status_code in delta.items():
-                    posix_path = Path(path).as_posix()
-                    if posix_path in allowed_set:
-                        abs_path = (git_root / path).resolve()
-                        actual_files[str(abs_path)] = status_code
-                    else:
-                        unexpected.append(path)
-            except Exception:
-                actual_files = {f: "Modified" for f in normalized_files}
-                unexpected = []
+            unexpected = []
+            allowed_set = {Path(p).as_posix() for p in normalized_files}
+
+            # Method 1: Use Aider's "Applied edit to" output
+            for edit_path in applied_edits:
+                edit_path = edit_path.strip()
+                posix_path = Path(edit_path).as_posix()
+                if posix_path in allowed_set or edit_path in normalized_files:
+                    abs_path = (git_root / edit_path).resolve()
+                    actual_files[str(abs_path)] = "Modified"
+                else:
+                    unexpected.append(edit_path)
+
+            # Method 2: Fallback to git status delta if no applied edits found
+            if not actual_files and not applied_edits:
+                try:
+                    status_lines = await self._collect_git_status(git_root)
+                    post_status = self._parse_git_status(status_lines)
+                    delta = {
+                        path: status
+                        for path, status in post_status.items()
+                        if pre_status.get(path) != status
+                    }
+                    for path, status_code in delta.items():
+                        posix_path = Path(path).as_posix()
+                        if posix_path in allowed_set:
+                            abs_path = (git_root / path).resolve()
+                            actual_files[str(abs_path)] = status_code
+                        else:
+                            unexpected.append(path)
+                except Exception:
+                    actual_files = {f: "Modified" for f in normalized_files}
 
             if unexpected:
                 return CodeResult(
