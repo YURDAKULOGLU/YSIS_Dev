@@ -115,6 +115,21 @@ class OrchestratorGraph:
         )
 
         if success:
+            # POST-COMMIT MEMORY TRIGGER (Constitution Section 4.2)
+            # Delta-ingest modified files into RAG to keep Knowledge Base fresh
+            try:
+                from src.agentic.tools.local_rag import get_local_rag
+                rag = get_local_rag()
+                if rag.is_available() and s.files_modified:
+                    ingested = 0
+                    for file_path in s.files_modified:
+                        if rag.add_code_file(file_path):
+                            ingested += 1
+                    if ingested > 0:
+                        print(f"[Graph:RAG] Delta-ingested {ingested} files into Knowledge Base")
+            except Exception as e:
+                print(f"[Graph:RAG] Delta-ingestion warning: {e}")
+
             # Optionally push (can be toggled via config)
             # await self.git_manager.push_changes()
             return {"phase": "done", "final_status": "SUCCESS"}
