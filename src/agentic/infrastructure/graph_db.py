@@ -126,13 +126,31 @@ class GraphDB:
     def create_reference(self, from_path: str, to_path: str, ref_type: str = "markdown_link"):
         """Create REFERENCES relationship between docs/code."""
         with self.driver.session() as session:
-            session.run("""
-                MATCH (from {path: $from})
-                MATCH (to {path: $to})
+            # Try to match any node type (DocFile, CodeFile) by path
+            # Use OPTIONAL MATCH to avoid silent failures and fallback
+            result = session.run("""
+                MATCH (from) WHERE from.path = $from
+                MATCH (to) WHERE to.path = $to
                 MERGE (from)-[r:REFERENCES]->(to)
                 SET r.link_type = $ref_type
                 SET r.last_seen = datetime()
+                RETURN from.path as source, to.path as target
             """, **{"from": from_path, "to": to_path, "ref_type": ref_type})
+            
+            # Check if relationship was created
+            records = list(result)
+            if not records:
+                # Try with normalized path (replace / with \)
+                normalized_from = from_path.replace('/', '\\')
+                normalized_to = to_path.replace('/', '\\')
+                if normalized_from != from_path or normalized_to != to_path:
+                    session.run("""
+                        MATCH (from) WHERE from.path = $from
+                        MATCH (to) WHERE to.path = $to
+                        MERGE (from)-[r:REFERENCES]->(to)
+                        SET r.link_type = $ref_type
+                        SET r.last_seen = datetime()
+                    """, **{"from": normalized_from, "to": normalized_to, "ref_type": ref_type})
 
     # ========== ANALYSIS QUERIES ==========
 
