@@ -486,6 +486,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             "--aiderignore", "config/.sandbox_aiderignore",
             "--encoding", AIDER_ENCODING,
             "--chat-language", AIDER_CHAT_LANGUAGE,
+            "--clear",  # CRITICAL: Clear chat before each task to prevent hallucination
             "--no-restore-chat-history",
             "--input-history-file", str(self._ensure_log_dir(sandbox_path) / "aider_input_history.txt"),
             "--chat-history-file", str(self._ensure_log_dir(sandbox_path) / "aider_chat_history.md"),
@@ -797,6 +798,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             "--aiderignore", "config/.sandbox_aiderignore",
             "--encoding", AIDER_ENCODING,
             "--chat-language", AIDER_CHAT_LANGUAGE,
+            "--clear",  # CRITICAL: Clear chat before each task to prevent hallucination
             "--no-restore-chat-history",
             "--input-history-file", str(self._ensure_log_dir(sandbox_path) / "aider_input_history.txt"),
             "--chat-history-file", str(self._ensure_log_dir(sandbox_path) / "aider_chat_history.md"),
