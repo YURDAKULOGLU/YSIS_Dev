@@ -386,9 +386,12 @@ class AiderExecutorEnhanced(ExecutorProtocol):
 
             try:
                 rel_to_root = full_path.relative_to(git_root)
-                normalized_files.append(str(rel_to_root))
+                # Windows fix: Use forward slashes for subprocess compatibility
+                normalized_path = rel_to_root.as_posix()
+                normalized_files.append(normalized_path)
             except ValueError:
-                normalized_files.append(str(full_path))
+                # Windows fix: Use forward slashes even for absolute paths
+                normalized_files.append(full_path.as_posix())
 
         prompt += "\n## FILE GUARDRAILS:\n"
         prompt += "- Only modify or create files in the explicit list below.\n"
@@ -760,9 +763,12 @@ class AiderExecutorEnhanced(ExecutorProtocol):
 
             try:
                 rel_to_root = full_path.relative_to(git_root)
-                normalized_files.append(str(rel_to_root))
+                # Windows fix: Use forward slashes for subprocess compatibility
+                normalized_path = rel_to_root.as_posix()
+                normalized_files.append(normalized_path)
             except ValueError:
-                normalized_files.append(str(full_path))
+                # Windows fix: Use forward slashes even for absolute paths
+                normalized_files.append(full_path.as_posix())
 
         prompt += "\n## FILE GUARDRAILS:\n"
         prompt += "- Only modify or create files in the explicit list below.\n"
