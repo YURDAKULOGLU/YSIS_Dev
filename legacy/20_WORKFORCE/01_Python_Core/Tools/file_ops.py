@@ -15,7 +15,7 @@ class FileOpsTool:
             dirname = os.path.dirname(file_path)
             if dirname:
                 os.makedirs(dirname, exist_ok=True)
-                
+
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
             return f"Successfully wrote to {file_path}"

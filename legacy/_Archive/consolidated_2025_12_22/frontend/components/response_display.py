@@ -9,7 +9,7 @@ async def display_response(query):
         context_str = "\n".join(context).strip()
     else:
         context_str = str(context).strip()
-    
+
     response = await memory_service.generateResponse(query, [context_str])
     full_response = f"Context:\n{context_str}\n\nResponse:\n{response}"
     print(f"Query: {query}\n{full_response}")

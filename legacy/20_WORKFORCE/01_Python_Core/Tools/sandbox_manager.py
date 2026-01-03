@@ -16,17 +16,17 @@ class SandboxManager:
                 shutil.rmtree(self.sandbox_path)
             except Exception as e:
                 return f"Error cleaning sandbox: {e}"
-        
+
         os.makedirs(self.sandbox_path)
-        
+
         # Copy config files
         configs = ["package.json", "tsconfig.json", ".eslintrc.js"]
         for cfg in configs:
             src = os.path.join(self.project_root, cfg)
             if os.path.exists(src):
                 shutil.copy(src, self.sandbox_path)
-                
-        # We don't copy the whole src to avoid slowness, 
+
+        # We don't copy the whole src to avoid slowness,
         # agents will write specific files they need or we mock dependencies.
         return f"Sandbox initialized at {self.sandbox_path}"
 

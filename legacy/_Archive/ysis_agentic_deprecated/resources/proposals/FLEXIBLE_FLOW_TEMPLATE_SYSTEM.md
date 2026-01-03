@@ -1,7 +1,7 @@
 # Flexible Flow Template System - Design Proposal
 
-**Date:** 2025-12-02  
-**Status:** Proposal - Awaiting User Feedback  
+**Date:** 2025-12-02
+**Status:** Proposal - Awaiting User Feedback
 **Context:** User wants "aşırı flexible" flow template system that can handle diverse user needs
 
 ---
@@ -87,7 +87,7 @@ interface FlowTemplate {
   category: string; // 'productivity' | 'health' | 'work' | 'personal' | etc.
   tags: string[]; // ['morning', 'planning', 'automation']
   icon: string; // emoji or icon name
-  
+
   // Flexible configuration
   config: {
     trigger: {
@@ -95,7 +95,7 @@ interface FlowTemplate {
       schedule?: string; // cron expression
       event?: string; // future: 'task_completed', 'note_created', etc.
     };
-    
+
     // Variable inputs (user can customize)
     variables: Array<{
       name: string; // 'project_name', 'workout_duration', etc.
@@ -111,9 +111,9 @@ interface FlowTemplate {
         pattern?: string;
       };
     }>;
-    
+
     steps: FlowStep[];
-    
+
     // Conditional logic (future)
     conditions?: Array<{
       if: string; // '{{task_count}} > 5'
@@ -121,13 +121,13 @@ interface FlowTemplate {
       else?: string[]; // step IDs if condition false
     }>;
   };
-  
+
   // Metadata
   author?: string; // 'ybis' | 'community' | user_id
   popularity?: number; // usage count
   rating?: number; // user ratings
   usage_count?: number;
-  
+
   // AI Integration
   ai_prompts?: {
     creation: string; // "Create a flow for {{user_input}}"
@@ -164,7 +164,7 @@ Users should be able to create flows via natural language:
 
 ```
 User: "Her pazartesi sabah 10'da haftalık rapor oluştur"
-AI: Recognizes intent → Finds/clones "Weekly Review" template → 
+AI: Recognizes intent → Finds/clones "Weekly Review" template →
     Adjusts schedule to Monday 10 AM → Creates flow → Confirms
 ```
 
@@ -206,19 +206,19 @@ steps:
     content: |
       Good morning! Today is {{day_of_week}}.
       Wake up time: {{wake_up_time}}
-      
+
       {{#if include_workout}}
       Workout planned: {{workout_duration}} minutes
       {{/if}}
-      
+
       Today's priorities:
       - [ ] Top priority task
       - [ ] Second priority
-      
+
   - type: createTask
     title: "Morning routine completed"
     priority: "low"
-    
+
   {{#if include_workout}}
   - type: sendNotification
     title: "Workout Time!"
@@ -258,20 +258,20 @@ steps:
       Deadline: {{deadline}}
       Team Size: {{team_size}}
       Priority: {{priority}}
-      
+
       ## Phases
       1. Planning
-      2. Execution  
+      2. Execution
       3. Review
-      
+
   - type: createTask
     title: "Define {{project_name}} requirements"
     priority: "{{priority}}"
-    
+
   - type: createTask
     title: "Create {{project_name}} timeline"
     priority: "medium"
-    
+
   {{#if team_size > 1}}
   - type: createCalendarEvent
     title: "{{project_name}} - Team Kickoff Meeting"
@@ -304,25 +304,25 @@ steps:
   - type: sendNotification
     title: "Focus Mode Activated"
     body: "{{duration}} minute focus session starting"
-    
+
   - type: createNote
     title: "🎯 Focus Session - {{now}}"
     content: |
       ## Focus Goal
       {{focus_goal}}
-      
+
       Duration: {{duration}} minutes
       Start: {{now}}
       End: {{end_time}} (calculated)
-      
+
   - type: delay
     duration: "{{duration}}"
     unit: "minutes"
-    
+
   - type: sendNotification
     title: "Focus Mode Ended"
     body: "Great work! Time for a break."
-    
+
   - type: createNote
     title: "✅ Focus Session Complete"
     content: |
@@ -359,7 +359,7 @@ AI can suggest templates based on:
 
 **Example:**
 ```
-AI: "I noticed you create daily planning notes every morning. 
+AI: "I noticed you create daily planning notes every morning.
      Would you like me to set up an automated 'Daily Planning' flow?"
 ```
 
@@ -479,7 +479,3 @@ Based on common productivity needs, start with **10-15 templates** across catego
 ---
 
 **Awaiting:** User survey results to refine template priorities and categories.
-
-
-
-

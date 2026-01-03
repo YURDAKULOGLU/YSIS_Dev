@@ -951,4 +951,3 @@ Eğer "Tamamdır, resim netleşti" diyorsan, artık teoriyi kapatıp Tier 1'in i
 
 
 Gemini hata yapabildiğinden verdiği yanıtları doğrulayın.
-

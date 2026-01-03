@@ -110,7 +110,7 @@ Tailored versions of YBIS for specific industries, fueled by RAG & Specialized F
 ### **6. The "Chat Fatigue" (UX Solution)**
 *   **Observation:** Chat is slow for repetitive tasks ("Set Alarm").
 *   **Solution:** **Live Widgets**.
-*   **Interaction:** 
+*   **Interaction:**
     *   **Bottom:** Chat (Proactive/Complex requests).
     *   **Top:** Swipable, Interactive Widgets (Reactive/Fast Lane).
     *   **Dynamic:** Widgets update live as the AI works.

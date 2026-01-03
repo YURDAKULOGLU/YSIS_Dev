@@ -1,7 +1,7 @@
 # YBIS Quick Start Guide
 
-**Goal:** Get you coding in 5 minutes  
-**Audience:** Developers ready to implement  
+**Goal:** Get you coding in 5 minutes
+**Audience:** Developers ready to implement
 **Last Updated:** 2025-11-04
 **Note:** Widget-based navigation implemented (AD-019)
 
@@ -73,8 +73,8 @@ YBIS/
 
 ### Option A: Mobile App Screens (Recommended Start)
 
-**What:** Create basic Expo Router screens  
-**Why:** Foundation for all features  
+**What:** Create basic Expo Router screens
+**Why:** Foundation for all features
 **Effort:** 2-3 hours
 
 **Files to create:**
@@ -113,8 +113,8 @@ npm run start  # Start Expo dev server
 
 ### Option B: Auth Implementation
 
-**What:** Google OAuth with Expo Auth Session  
-**Why:** Users need to login  
+**What:** Google OAuth with Expo Auth Session
+**Why:** Users need to login
 **Effort:** 3-4 hours
 
 **Files to create/modify:**
@@ -149,8 +149,8 @@ packages/core/src/ports/
 
 ### Option C: Backend Health Check
 
-**What:** Simple health check endpoint  
-**Why:** Verify backend works  
+**What:** Simple health check endpoint
+**Why:** Verify backend works
 **Effort:** 30 minutes
 
 **Files to create:**
@@ -193,23 +193,23 @@ curl http://localhost:3000/health
 
 ### I want to...
 
-**...understand the tech stack**  
+**...understand the tech stack**
 → Read `YBIS_STANDARDS/tech-stack.md`
 
-**...see what's been done**  
+**...see what's been done**
 → Check `Güncel/DEVELOPMENT_LOG.md`
 
-**...know the coding standards**  
+**...know the coding standards**
 → Review `YBIS_STANDARDS/2_Kalite_Ve_Standartlar/README.md`
 
-**...understand architecture decisions**  
-→ Read `YBIS_STANDARDS/1_Anayasa/README.md` (Principles)  
+**...understand architecture decisions**
+→ Read `YBIS_STANDARDS/1_Anayasa/README.md` (Principles)
 → Read `YBIS_STANDARDS/README.md` (For overall architecture guidance)
 
-**...see the task list**  
+**...see the task list**
 → Open `YBIS_STANDARDS/README.md` (Refer to the Control Center for task management)
 
-**...use BMad commands**  
+**...use BMad commands**
 → Read `../.YBIS_Dev/AI_SYSTEM_GUIDE.md`
 
 ---
@@ -410,5 +410,5 @@ YBIS supports **BMad Method** for structured AI-driven development.
 
 ---
 
-**Ready to code?** Pick Option A (Mobile Screens) and let's go! 🚀  
+**Ready to code?** Pick Option A (Mobile Screens) and let's go! 🚀
 **Want structure?** See [`../.YBIS_Dev/AI_SYSTEM_GUIDE.md`](../.YBIS_Dev/AI_SYSTEM_GUIDE.md) for full BMad guide.

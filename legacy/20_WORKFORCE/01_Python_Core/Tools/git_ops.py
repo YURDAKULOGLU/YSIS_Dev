@@ -13,7 +13,7 @@ class GitOpsTool:
     def create_branch(self, branch_name: str) -> str:
         """Create and checkout a new branch."""
         if not self.repo: return "Git unavailable."
-        
+
         try:
             current = self.repo.active_branch
             new_branch = self.repo.create_head(branch_name)
@@ -25,7 +25,7 @@ class GitOpsTool:
     def commit_changes(self, message: str) -> str:
         """Stage all changes and commit."""
         if not self.repo: return "Git unavailable."
-        
+
         try:
             self.repo.git.add(A=True)
             self.repo.index.commit(message)

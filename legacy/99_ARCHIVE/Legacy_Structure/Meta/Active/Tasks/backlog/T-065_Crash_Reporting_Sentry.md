@@ -51,4 +51,3 @@ EXPO_PUBLIC_SENTRY_DSN=https://xxx@sentry.io/xxx
 - Crashes reported to Sentry
 - Source maps uploaded for readable stack traces
 - Alerts configured for errors
-

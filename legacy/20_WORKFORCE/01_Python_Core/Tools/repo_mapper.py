@@ -9,14 +9,14 @@ class RepoMapperTool:
     def get_tree(self, max_depth: int = 2) -> str:
         """Get project tree"""
         lines = []
-        
+
         def walk(path: Path, prefix: str = "", depth: int = 0):
             if depth > max_depth:
                 return
             try:
                 items = sorted(path.iterdir(), key=lambda p: (not p.is_dir(), p.name))
                 items = [i for i in items if i.name not in self.ignore_dirs]
-                
+
                 for i, item in enumerate(items):
                     is_last = i == len(items) - 1
                     connector = "+-- " if is_last else "|-- "

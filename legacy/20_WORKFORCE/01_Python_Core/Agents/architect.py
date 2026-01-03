@@ -16,8 +16,8 @@ class ArchitectPlan(BaseModel):
 class ArchitectAgent(YBISAgent):
     def __init__(self, router: IntelligentRouter):
         super().__init__(
-            agent_id="architect", 
-            router=router, 
+            agent_id="architect",
+            router=router,
             task_type=TaskType.ARCHITECTURE,
             output_model=ArchitectPlan # Use output_model for structured output
         )
@@ -56,7 +56,7 @@ class ArchitectAgent(YBISAgent):
         ```
         CRITICAL: If your output does not strictly conform to the ArchitectPlan Pydantic model and its JSON schema, the entire system will fail. You MUST produce a valid JSON object.
         """
-        
+
         try:
             plan: ArchitectPlan = await self.run(prompt)
             return plan

@@ -1,8 +1,8 @@
 # YBIS Hybrid Agentic Stack
 ## "Best of All Worlds" Architecture
 
-**Tarih:** 13 Aralık 2025  
-**Versiyon:** 1.0  
+**Tarih:** 13 Aralık 2025
+**Versiyon:** 1.0
 **Kod Adı:** YBIS-OS
 
 ---
@@ -297,32 +297,32 @@ from pydantic_settings import BaseSettings
 
 class YBISConfig(BaseSettings):
     """Central configuration for YBIS Agentic Stack"""
-    
+
     # LangSmith
     langsmith_api_key: str = os.getenv("LANGSMITH_API_KEY", "")
     langsmith_project: str = "ybis-agentic"
     langsmith_tracing: bool = True
-    
+
     # Anthropic (Cloud)
     anthropic_api_key: str = os.getenv("ANTHROPIC_API_KEY", "")
     cloud_model: str = "claude-sonnet-4-20250514"
-    
+
     # Ollama (Local)
     ollama_host: str = "http://localhost:11434"
     local_primary_model: str = "deepseek-coder-v2:33b"
     local_fast_model: str = "qwen2.5-coder:14b"
-    
+
     # Mem0
     mem0_api_key: str = os.getenv("MEM0_API_KEY", "")
-    
+
     # Supabase
     supabase_url: str = os.getenv("SUPABASE_URL", "")
     supabase_key: str = os.getenv("SUPABASE_ANON_KEY", "")
-    
+
     # Routing
     prefer_local: bool = True
     cloud_tasks: list[str] = ["architecture", "critical_decision", "complex_debug"]
-    
+
     class Config:
         env_file = ".env"
 
@@ -348,20 +348,20 @@ import json
 class UnifiedMemory:
     """
     Combines Mem0 (episodic) and Supabase (semantic) memory.
-    
+
     - Mem0: User preferences, past sessions, learned patterns
     - Supabase: Codebase knowledge, documentation
     """
-    
+
     def __init__(self, config):
         # Episodic memory (Mem0)
         self.mem0 = MemoryClient(api_key=config.mem0_api_key)
-        
+
         # Semantic memory (Supabase pgvector)
         self.supabase = create_client(config.supabase_url, config.supabase_key)
-    
+
     # ==================== EPISODIC (Mem0) ====================
-    
+
     def remember_interaction(self, messages: list, user_id: str, agent_id: str):
         """Store conversation in episodic memory"""
         self.mem0.add(
@@ -370,19 +370,19 @@ class UnifiedMemory:
             agent_id=agent_id,
             metadata={"type": "interaction"}
         )
-    
+
     def recall_user_context(self, query: str, user_id: str) -> list[dict]:
         """Retrieve relevant user memories"""
         results = self.mem0.search(query, user_id=user_id, limit=5)
         return results.get("results", [])
-    
+
     def get_user_preferences(self, user_id: str) -> dict:
         """Get all stored preferences for a user"""
         memories = self.mem0.get_all(user_id=user_id)
         return {m["id"]: m["memory"] for m in memories.get("results", [])}
-    
+
     # ==================== SEMANTIC (Supabase RAG) ====================
-    
+
     def search_codebase(self, query: str, limit: int = 5) -> list[dict]:
         """Semantic search over indexed codebase"""
         # Using Supabase's match_documents function (pgvector)
@@ -395,7 +395,7 @@ class UnifiedMemory:
             }
         ).execute()
         return response.data
-    
+
     def search_documentation(self, query: str, limit: int = 5) -> list[dict]:
         """Semantic search over documentation"""
         response = self.supabase.rpc(
@@ -407,7 +407,7 @@ class UnifiedMemory:
             }
         ).execute()
         return response.data
-    
+
     def _embed(self, text: str) -> list[float]:
         """Generate embedding for text"""
         # Using Supabase's built-in embedding or external service
@@ -415,12 +415,12 @@ class UnifiedMemory:
         from langchain_ollama import OllamaEmbeddings
         embeddings = OllamaEmbeddings(model="nomic-embed-text")
         return embeddings.embed_query(text)
-    
+
     # ==================== UNIFIED INTERFACE ====================
-    
+
     def get_context(
-        self, 
-        query: str, 
+        self,
+        query: str,
         user_id: str,
         include_code: bool = True,
         include_docs: bool = True,
@@ -431,40 +431,40 @@ class UnifiedMemory:
         Returns structured context for agent consumption.
         """
         context = {}
-        
+
         if include_user:
             context["user_memories"] = self.recall_user_context(query, user_id)
-        
+
         if include_code:
             context["relevant_code"] = self.search_codebase(query)
-        
+
         if include_docs:
             context["relevant_docs"] = self.search_documentation(query)
-        
+
         return context
-    
+
     def format_for_prompt(self, context: dict) -> str:
         """Format context for injection into prompt"""
         sections = []
-        
+
         if context.get("user_memories"):
             memories = "\n".join(f"- {m['memory']}" for m in context["user_memories"])
             sections.append(f"## User Context\n{memories}")
-        
+
         if context.get("relevant_code"):
             code_refs = "\n".join(
-                f"- {c['metadata']['file_path']}: {c['content'][:200]}..." 
+                f"- {c['metadata']['file_path']}: {c['content'][:200]}..."
                 for c in context["relevant_code"]
             )
             sections.append(f"## Relevant Code\n{code_refs}")
-        
+
         if context.get("relevant_docs"):
             doc_refs = "\n".join(
                 f"- {d['metadata']['title']}: {d['content'][:200]}..."
                 for d in context["relevant_docs"]
             )
             sections.append(f"## Relevant Documentation\n{doc_refs}")
-        
+
         return "\n\n".join(sections)
 ```
 
@@ -507,30 +507,30 @@ class IntelligentRouter:
     - Cost sensitivity
     - Latency requirements
     """
-    
+
     def __init__(self, config):
         self.config = config
-        
+
         # Initialize models
         self.local_primary = ChatOllama(
             model=config.local_primary_model,
             base_url=config.ollama_host,
             num_ctx=32768
         )
-        
+
         self.local_fast = ChatOllama(
             model=config.local_fast_model,
             base_url=config.ollama_host,
             num_ctx=32768
         )
-        
+
         self.cloud = ChatAnthropic(
             model=config.cloud_model,
             max_tokens=8192
         )
-    
+
     def route(
-        self, 
+        self,
         task_type: TaskType,
         complexity: TaskComplexity = TaskComplexity.MEDIUM,
         force_cloud: bool = False,
@@ -540,7 +540,7 @@ class IntelligentRouter:
         Intelligently route to the best model for the task.
         Returns (model, decision).
         """
-        
+
         # Force overrides
         if force_cloud:
             return self.cloud, RoutingDecision(
@@ -548,17 +548,17 @@ class IntelligentRouter:
                 runtime="cloud",
                 reason="Forced cloud by user"
             )
-        
+
         if force_local:
             return self.local_primary, RoutingDecision(
                 model=self.config.local_primary_model,
                 runtime="local",
                 reason="Forced local by user"
             )
-        
+
         # Critical tasks always go to cloud
         if complexity == TaskComplexity.CRITICAL or task_type in [
-            TaskType.ARCHITECTURE, 
+            TaskType.ARCHITECTURE,
             TaskType.CRITICAL_DECISION
         ]:
             return self.cloud, RoutingDecision(
@@ -566,7 +566,7 @@ class IntelligentRouter:
                 runtime="cloud",
                 reason=f"Critical task type: {task_type}"
             )
-        
+
         # Quick tasks use fast local model
         if task_type in [TaskType.QUICK_FIX, TaskType.CODE_REVIEW] and \
            complexity in [TaskComplexity.LOW, TaskComplexity.MEDIUM]:
@@ -575,7 +575,7 @@ class IntelligentRouter:
                 runtime="local",
                 reason="Quick task, using fast model"
             )
-        
+
         # Code generation uses primary local
         if task_type == TaskType.CODE_GENERATION:
             return self.local_primary, RoutingDecision(
@@ -583,7 +583,7 @@ class IntelligentRouter:
                 runtime="local",
                 reason="Code generation, using local primary"
             )
-        
+
         # Default: local primary (cost savings)
         if self.config.prefer_local:
             return self.local_primary, RoutingDecision(
@@ -591,7 +591,7 @@ class IntelligentRouter:
                 runtime="local",
                 reason="Default local preference"
             )
-        
+
         return self.cloud, RoutingDecision(
             model=self.config.cloud_model,
             runtime="cloud",
@@ -618,7 +618,7 @@ class ConstitutionCompliantCode(BaseModel):
     code: str
     file_path: str
     explanation: str
-    
+
     @field_validator('code')
     @classmethod
     def no_any_type(cls, v: str) -> str:
@@ -626,7 +626,7 @@ class ConstitutionCompliantCode(BaseModel):
         if re.search(r':\s*any\b', v) or re.search(r'<any>', v):
             raise ValueError("Constitution violation: 'any' type is not allowed")
         return v
-    
+
     @field_validator('code')
     @classmethod
     def no_ts_ignore(cls, v: str) -> str:
@@ -634,7 +634,7 @@ class ConstitutionCompliantCode(BaseModel):
         if '@ts-ignore' in v or '@ts-nocheck' in v:
             raise ValueError("Constitution violation: @ts-ignore is not allowed")
         return v
-    
+
     @field_validator('code')
     @classmethod
     def no_console_log(cls, v: str) -> str:
@@ -642,7 +642,7 @@ class ConstitutionCompliantCode(BaseModel):
         if 'console.log' in v and 'logger' not in v.lower():
             raise ValueError("Constitution violation: Use logger instead of console.log")
         return v
-    
+
     @field_validator('code')
     @classmethod
     def port_pattern_check(cls, v: str) -> str:
@@ -673,7 +673,7 @@ class YBISAgent:
     Base agent with Constitution enforcement and memory integration.
     All YBIS agents inherit from this.
     """
-    
+
     def __init__(
         self,
         agent_id: str,
@@ -685,36 +685,36 @@ class YBISAgent:
         self.agent_id = agent_id
         self.router = router
         self.memory = memory
-        
+
         # Load persona from BMAD
         self.persona = self._load_persona(persona_path)
-        
+
         # Create PydanticAI agent
         self.agent = Agent(
             model=None,  # Will be set per-call via router
             output_type=output_type,
             system_prompt=self._build_system_prompt()
         )
-    
+
     def _load_persona(self, path: str) -> dict:
         """Load agent persona from BMAD markdown file"""
         import yaml
         import re
-        
+
         with open(path) as f:
             content = f.read()
-        
+
         # Extract YAML block from markdown
         match = re.search(r'```yaml\n(.*?)\n```', content, re.DOTALL)
         if match:
             return yaml.safe_load(match.group(1))
         return {}
-    
+
     def _build_system_prompt(self) -> str:
         """Build system prompt from persona + Constitution"""
         persona = self.persona.get("persona", {})
-        
-        return f"""You are {self.persona.get('agent', {}).get('name', 'YBIS Agent')}, 
+
+        return f"""You are {self.persona.get('agent', {}).get('name', 'YBIS Agent')},
 a {persona.get('role', 'specialist')}.
 
 ## Style
@@ -736,7 +736,7 @@ You MUST follow these rules in ALL code you generate:
 
 Violations will cause automatic rejection.
 """
-    
+
     async def run(
         self,
         task: str,
@@ -745,19 +745,19 @@ Violations will cause automatic rejection.
         task_type: str = "code_generation"
     ):
         """Execute agent with routing and memory"""
-        
+
         # Get relevant memories
         memory_context = self.memory.get_context(
             query=task,
             user_id=user_id
         )
-        
+
         # Route to appropriate model
         model, decision = self.router.route(
             task_type=task_type,
             complexity="medium"
         )
-        
+
         # Enhance prompt with memory
         enhanced_task = f"""
 {task}
@@ -765,13 +765,13 @@ Violations will cause automatic rejection.
 ## Context from Memory
 {self.memory.format_for_prompt(memory_context)}
 """
-        
+
         # Run agent
         result = await self.agent.run(
             enhanced_task,
             model=model
         )
-        
+
         # Store interaction in memory
         self.memory.remember_interaction(
             messages=[
@@ -781,7 +781,7 @@ Violations will cause automatic rejection.
             user_id=user_id,
             agent_id=self.agent_id
         )
-        
+
         return result
 ```
 
@@ -799,22 +799,22 @@ from langsmith import traceable
 class FeatureDevState(TypedDict):
     task: str
     user_id: str
-    
+
     # Workflow state
     phase: Literal["analyze", "specify", "implement", "review", "complete"]
     iteration: int
     max_iterations: int
-    
+
     # Artifacts
     spec: str
     code: dict[str, str]  # file_path: content
     review_result: dict
-    
+
     # Context
     memory_context: dict
     decisions: list[str]
     blockers: list[str]
-    
+
     # Status
     status: Literal["in_progress", "blocked", "completed", "failed"]
 
@@ -822,33 +822,33 @@ class FeatureDevState(TypedDict):
 class FeatureDevelopmentGraph:
     """
     LangGraph implementation of BMAD feature-development.yaml workflow.
-    
+
     Flow: Analyze → Specify → Implement → Review → (retry or complete)
     """
-    
+
     def __init__(self, agents: dict, memory, router):
         self.agents = agents
         self.memory = memory
         self.router = router
         self.graph = self._build_graph()
-    
+
     def _build_graph(self) -> StateGraph:
         workflow = StateGraph(FeatureDevState)
-        
+
         # Add nodes (each maps to BMAD workflow step)
         workflow.add_node("analyze", self._analyze_node)
         workflow.add_node("specify", self._specify_node)
         workflow.add_node("implement", self._implement_node)
         workflow.add_node("review", self._review_node)
         workflow.add_node("fix", self._fix_node)
-        
+
         # Define flow
         workflow.set_entry_point("analyze")
-        
+
         workflow.add_edge("analyze", "specify")
         workflow.add_edge("specify", "implement")
         workflow.add_edge("implement", "review")
-        
+
         # Conditional: review pass/fail
         workflow.add_conditional_edges(
             "review",
@@ -859,84 +859,84 @@ class FeatureDevelopmentGraph:
                 "escalate": END
             }
         )
-        
+
         workflow.add_edge("fix", "implement")
-        
+
         # Compile with checkpointing
         memory_saver = MemorySaver()
         return workflow.compile(checkpointer=memory_saver)
-    
+
     @traceable(name="analyze_phase")
     async def _analyze_node(self, state: FeatureDevState) -> FeatureDevState:
         """BMAD: Architect analyzes the task"""
         architect = self.agents["architect"]
-        
+
         result = await architect.run(
             task=f"Analyze this feature request and identify technical requirements:\n{state['task']}",
             user_id=state["user_id"],
             task_type="architecture"
         )
-        
+
         state["decisions"].append(f"Analysis: {result.output}")
         state["phase"] = "specify"
         return state
-    
+
     @traceable(name="specify_phase")
     async def _specify_node(self, state: FeatureDevState) -> FeatureDevState:
         """BMAD: Create technical specification"""
         architect = self.agents["architect"]
-        
+
         result = await architect.run(
             task=f"""
             Based on the analysis, create a technical specification.
-            
+
             Task: {state['task']}
             Analysis: {state['decisions'][-1]}
-            
+
             Output a detailed spec following the BMAD spec template.
             """,
             user_id=state["user_id"],
             task_type="architecture"
         )
-        
+
         state["spec"] = result.output.spec if hasattr(result.output, 'spec') else str(result.output)
         state["phase"] = "implement"
         return state
-    
+
     @traceable(name="implement_phase")
     async def _implement_node(self, state: FeatureDevState) -> FeatureDevState:
         """BMAD: Developer implements the spec"""
         developer = self.agents["developer"]
-        
+
         result = await developer.run(
             task=f"""
             Implement the following specification:
-            
+
             {state['spec']}
-            
+
             Follow all Constitution rules. Generate complete, working code.
             """,
             user_id=state["user_id"],
             task_type="code_generation"
         )
-        
+
         # Constitution validation happens in PydanticAI schema
         state["code"][result.output.file_path] = result.output.code
         state["phase"] = "review"
         state["iteration"] += 1
         return state
-    
+
     @traceable(name="review_phase")
     async def _review_node(self, state: FeatureDevState) -> FeatureDevState:
         """BMAD: QA and Code Review"""
         reviewer = self.agents["code_reviewer"]
-        
+
         # Review all generated code
         all_code = "\n\n".join(
-            f"// {path}\n{content}" 
+            f"// {path}\n{content}"
             for path, content in state["code"].items()
         )
-        
+
         result = await reviewer.run(
             task=f"""
             Review this code for:
@@ -944,58 +944,58 @@ class FeatureDevelopmentGraph:
             2. Code quality
             3. Security issues
             4. Test coverage
-            
+
             Code:
             {all_code}
             """,
             user_id=state["user_id"],
             task_type="code_review"
         )
-        
+
         state["review_result"] = {
             "approved": result.output.approved,
             "issues": result.output.issues,
             "constitution_violations": result.output.constitution_violations
         }
-        
+
         return state
-    
+
     async def _fix_node(self, state: FeatureDevState) -> FeatureDevState:
         """Fix issues found in review"""
         developer = self.agents["developer"]
-        
+
         result = await developer.run(
             task=f"""
             Fix these issues in the code:
-            
+
             Issues: {state['review_result']['issues']}
             Constitution Violations: {state['review_result']['constitution_violations']}
-            
+
             Current code:
             {state['code']}
             """,
             user_id=state["user_id"],
             task_type="code_generation"
         )
-        
+
         state["code"][result.output.file_path] = result.output.code
         return state
-    
+
     def _should_retry(self, state: FeatureDevState) -> str:
         """Decide whether to retry, complete, or escalate"""
         review = state["review_result"]
-        
+
         if review["approved"]:
             state["status"] = "completed"
             return "complete"
-        
+
         if state["iteration"] >= state["max_iterations"]:
             state["status"] = "failed"
             state["blockers"].append("Max iterations reached")
             return "escalate"
-        
+
         return "retry"
-    
+
     async def run(self, task: str, user_id: str) -> FeatureDevState:
         """Execute the full workflow"""
         initial_state = FeatureDevState(
@@ -1012,9 +1012,9 @@ class FeatureDevelopmentGraph:
             blockers=[],
             status="in_progress"
         )
-        
+
         config = {"configurable": {"thread_id": f"feature-{user_id}-{hash(task)}"}}
-        
+
         final_state = await self.graph.ainvoke(initial_state, config)
         return final_state
 ```
@@ -1038,7 +1038,7 @@ async def search_codebase(query: str, limit: int = 5) -> str:
     """
     from ..memory.unified_memory import UnifiedMemory
     memory = UnifiedMemory(config)
-    
+
     results = memory.search_codebase(query, limit=limit)
     return json.dumps(results, indent=2)
 
@@ -1058,11 +1058,11 @@ async def run_bmad_command(command: str, arguments: str = "") -> str:
     Commands are defined in .YBIS_Dev/BMAD/commands/
     """
     command_path = f".YBIS_Dev/BMAD/commands/{command}.md"
-    
+
     try:
         with open(command_path) as f:
             prompt = f.read()
-        
+
         # Replace $ARGUMENTS placeholder
         prompt = prompt.replace("$ARGUMENTS", arguments)
         return prompt
@@ -1085,11 +1085,11 @@ async def list_available_agents() -> str:
     import os
     agents = []
     agents_dir = ".YBIS_Dev/BMAD/agents/"
-    
+
     for f in os.listdir(agents_dir):
         if f.endswith(".md"):
             agents.append(f.replace(".md", ""))
-    
+
     return json.dumps({"agents": agents})
 
 if __name__ == "__main__":
@@ -1121,7 +1121,7 @@ if __name__ == "__main__":
     "supabase": {
       "command": "npx",
       "args": [
-        "-y", 
+        "-y",
         "@supabase/mcp-server-supabase",
         "--supabase-url", "YOUR_SUPABASE_URL",
         "--service-key", "YOUR_SERVICE_KEY"

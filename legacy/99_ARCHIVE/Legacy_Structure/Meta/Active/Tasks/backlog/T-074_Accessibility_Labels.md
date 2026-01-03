@@ -71,4 +71,3 @@ Add accessibility labels to all interactive elements for screen reader support.
 - All buttons have labels
 - Screen reader can navigate entire app
 - No unlabeled interactive elements
-

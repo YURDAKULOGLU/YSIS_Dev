@@ -1,7 +1,7 @@
 # Update Documentation Command
 
-**Purpose:** Execute documentation maintenance workflow  
-**Trigger:** After code changes, architecture decisions, or task completions  
+**Purpose:** Execute documentation maintenance workflow
+**Trigger:** After code changes, architecture decisions, or task completions
 **Workflow:** documentation-maintenance.yaml
 
 ---
@@ -175,6 +175,6 @@
 
 ---
 
-**Last Updated:** 2025-10-10  
-**Maintained By:** AI Documentation Maintenance System  
+**Last Updated:** 2025-10-10
+**Maintained By:** AI Documentation Maintenance System
 **Next Review:** After next documentation update

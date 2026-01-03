@@ -60,7 +60,7 @@ ENV LD_LIBRARY_PATH=/usr/local/lib
 # Copy Project Files
 # We only copy the .YBIS_Dev directory as that is our scope
 COPY .YBIS_Dev/ ${WORKDIR}/.YBIS_Dev/
-COPY .git/ ${WORKDIR}/.git/ 
+COPY .git/ ${WORKDIR}/.git/
 
 # Set Python Path
 ENV PYTHONPATH="${WORKDIR}:${WORKDIR}/.YBIS_Dev"

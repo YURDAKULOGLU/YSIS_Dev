@@ -2,7 +2,7 @@
 
 - **Source Document:** Closed Beta Sprint - Nexus Delegation
 - **Title:** Flow List Screen - Template'lerden Flow Oluşturma
-- **Description:** 
+- **Description:**
   Flow list ekranına template seçim UI'ı ekle. Kullanıcı mevcut 5 template'den birini seçerek hızlıca flow oluşturabilmeli.
 
   **Mevcut Durum:**
@@ -34,7 +34,6 @@
 - **Assigned To:** @Delegate (Çırak)
 - **Complexity:** Easy
 - **Estimated Effort:** 1-2 hours
-- **Dependencies:** 
+- **Dependencies:**
   - useFlows hook (✅ ready)
   - FLOW_TEMPLATES (✅ ready)
-

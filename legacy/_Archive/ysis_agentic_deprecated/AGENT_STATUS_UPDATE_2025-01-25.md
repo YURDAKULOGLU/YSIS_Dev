@@ -1,6 +1,6 @@
 # Agent Status Update - 25 Ocak 2025
 
-**Agent:** @Cursor (IDE Coder)  
+**Agent:** @Cursor (IDE Coder)
 **Update Time:** 2025-01-25
 
 ---
@@ -54,4 +54,3 @@
 - `agents/coding/T-004_Menu_button_bug_fix.md`
 - `agents/coding/T-004_BUILD_FIX_REPORT.md`
 - `agents/supervisor/WEEKLY_STATUS_REPORT.md` (güncellendi)
-

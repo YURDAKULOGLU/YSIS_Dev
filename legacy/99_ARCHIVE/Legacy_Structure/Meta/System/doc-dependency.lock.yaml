@@ -1,6 +1,6 @@
 dependencies:
   # --- PROJECT LEVEL CHAIN (The work being done) ---
-  
+
   # PRD triggers Architecture updates
   - source: "docs/PRODUCT_REQUIREMENTS.md"
     target: "docs/Architecture.md"
@@ -14,7 +14,7 @@ dependencies:
     source_hash: "initial_placeholder"
 
   # --- SYSTEM LEVEL CHAIN (The way we work) ---
-  
+
   # Governance triggers Automation Rules
   - source: ".YBIS_Dev/Meta/Governance/ONBOARDING_PROTOCOL.md"
     target: ".YBIS_Dev/Meta/System/doc-dependency.lock.yaml"

@@ -33,7 +33,7 @@ notes_agent = Agent(
 )
 
 calendar_agent = Agent(
-    name="Calendar Manager", 
+    name="Calendar Manager",
     model="gpt-4o",
     tools=[google_calendar_api, microsoft_graph_api],
     handoffs=[notes_agent]  # Can delegate to notes
@@ -144,7 +144,7 @@ model_list = [
     }
 ]
 
-router = Router(model_list=model_list, 
+router = Router(model_list=model_list,
                 routing_strategy="simple-shuffle",
                 fallbacks=[
                     {"gpt-4": ["deepseek", "qwen"]},
@@ -171,7 +171,7 @@ Non-Western AI platforms address data sovereignty, regulatory compliance, and re
 For global compliance, deploy regional processing tiers:
 
 **Tier 1 (Global)**: OpenAI, Anthropic, DeepSeek for general processing
-**Tier 2 (European Union)**: Mistral AI or Aleph Alpha for GDPR-sensitive data  
+**Tier 2 (European Union)**: Mistral AI or Aleph Alpha for GDPR-sensitive data
 **Tier 3 (Russia/CIS)**: YandexGPT or GigaChat for local compliance
 **Tier 4 (China)**: Qwen, ERNIE, or Hunyuan for domestic deployments
 **Tier 5 (Regional)**: BharatGPT (India), SEA-LION (Southeast Asia), Maritaca (Brazil)
@@ -328,7 +328,7 @@ async def handle_calendar_webhook(request: Request):
     signature = request.headers.get('X-Goog-Channel-Token')
     if not verify_signature(signature):
         raise HTTPException(403)
-    
+
     # Process notification
     resource_id = request.headers.get('X-Goog-Resource-ID')
     await sync_calendar_events(resource_id)
@@ -380,7 +380,7 @@ Design your productivity app's APIs for automation platforms:
     "inputFields": [
       { "key": "title", "required": true, "type": "string" },
       { "key": "due_date", "required": false, "type": "datetime" },
-      { "key": "assignee", "required": false, "type": "string", 
+      { "key": "assignee", "required": false, "type": "string",
         "dynamic": "user.id.name" }  // Dynamic dropdown
     ],
     "perform": {
@@ -408,12 +408,12 @@ async def create_task(
         existing = await db.get_by_idempotency_key(idempotency_key)
         if existing:
             return existing
-    
+
     # Create task
     task = await db.create_task(task)
     if idempotency_key:
         await db.store_idempotency_key(idempotency_key, task.id)
-    
+
     return task
 ```
 
@@ -441,20 +441,20 @@ class NoteProcessingAgent:
             'auto.offset.reset': 'earliest'
         })
         self.producer = Producer({'bootstrap.servers': 'localhost:9092'})
-    
+
     async def run(self):
         self.consumer.subscribe(['notes.created'])
-        
+
         while True:
             msg = self.consumer.poll(1.0)
             if msg is None:
                 continue
-            
+
             note = json.loads(msg.value())
-            
+
             # Process note with LLM
             analysis = await self.analyze_note(note)
-            
+
             # Emit events for other agents
             self.producer.produce(
                 'notes.analyzed',
@@ -465,7 +465,7 @@ class NoteProcessingAgent:
                     'calendar_events': analysis['events']
                 })
             )
-    
+
     async def analyze_note(self, note):
         response = await openai_client.chat.completions.create(
             model="gpt-4o",
@@ -484,17 +484,17 @@ class TaskAgent:
             'bootstrap.servers': 'localhost:9092',
             'group.id': 'task-processors'
         })
-    
+
     async def run(self):
         self.consumer.subscribe(['notes.analyzed'])
-        
+
         while True:
             msg = self.consumer.poll(1.0)
             if msg is None:
                 continue
-            
+
             data = json.loads(msg.value())
-            
+
             # Create tasks from analysis
             for task in data['suggested_tasks']:
                 await self.create_task(task)
@@ -537,14 +537,14 @@ class CircuitBreaker:
         self.failures = 0
         self.last_failure_time = None
         self.state = "CLOSED"  # CLOSED, OPEN, HALF_OPEN
-    
+
     async def call(self, func, *args, **kwargs):
         if self.state == "OPEN":
             if time.time() - self.last_failure_time \u003e self.timeout:
                 self.state = "HALF_OPEN"
             else:
                 raise CircuitOpenError("Circuit breaker is OPEN")
-        
+
         try:
             result = await func(*args, **kwargs)
             if self.state == "HALF_OPEN":
@@ -554,10 +554,10 @@ class CircuitBreaker:
         except Exception as e:
             self.failures += 1
             self.last_failure_time = time.time()
-            
+
             if self.failures \u003e= self.failure_threshold:
                 self.state = "OPEN"
-            
+
             raise
 ```
 
@@ -628,7 +628,7 @@ df = pd.read_csv('user_data.csv')
 fig = df.plot()
 plt.savefig('analysis.png')
 """)
-    
+
     print(execution.results)  # Safe output
     # File system isolated, network controlled, resource limited
 ```
@@ -660,27 +660,27 @@ For sensitive data, implement **federated learning**:
 class FederatedProductivityModel:
     def __init__(self):
         self.global_model = create_model()
-    
+
     async def train_round(self, client_ids):
         # 1. Send global model to clients
         client_updates = []
-        
+
         for client_id in client_ids:
             # 2. Client trains locally (data never leaves device)
             local_update = await self.client_train(client_id, self.global_model)
             client_updates.append(local_update)
-        
+
         # 3. Aggregate updates (only gradients transmitted)
         self.global_model = self.federated_averaging(client_updates)
-    
+
     async def client_train(self, client_id, global_model):
         # Runs on user's device
         local_data = load_local_productivity_data(client_id)
         local_model = clone_model(global_model)
-        
+
         # Train on local data
         local_model.fit(local_data, epochs=5)
-        
+
         # Return only weight updates, not raw data
         return compute_weight_delta(global_model, local_model)
 ```
@@ -839,4 +839,3 @@ Emerging trends for 2026+: **AI-native extension systems** with built-in LLM int
 Your productivity app should embrace **open standards from day one** (MCP for tools, OpenAPI for integrations, OAuth 2.1 for auth), design for **multi-region compliance** with data residency tiers, implement **defense-in-depth security** with sandboxing and prompt injection prevention, optimize costs through **semantic caching and intelligent routing**, and **build extensibility into core architecture** rather than retrofitting later.
 
 The opportunity is immense: productivity tools augmented with AI agents that understand context, coordinate actions across systems, learn user preferences, and operate globally while respecting regional requirements. Success requires mastering both the technical patterns documented here and the organizational discipline to maintain security, privacy, and reliability as the system scales. The architectural decisions you make today—embracing MCP, implementing proper sandboxing, designing for extensibility—will compound as your platform grows and the ecosystem evolves around these emerging standards.
-

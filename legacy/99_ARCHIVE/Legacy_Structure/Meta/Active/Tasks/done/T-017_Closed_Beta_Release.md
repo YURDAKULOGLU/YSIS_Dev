@@ -5,4 +5,3 @@
 - **Priority:** P1 (High)
 - **Assigned To:** @Gemini
 - **Status:** Completed (see `agents/research/CLOSED_BETA_RELEASE_PROPOSAL.md`)
-

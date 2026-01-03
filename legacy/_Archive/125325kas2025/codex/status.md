@@ -1,7 +1,7 @@
 # Codex Status
 
-**Current Task:** YBIS compliance onboarding + workspace alignment  
-**Status:** §YY½ Active  
+**Current Task:** YBIS compliance onboarding + workspace alignment
+**Status:** §YY½ Active
 **Last Updated:** 2025-11-26 20:01
 
 ## Completed Actions

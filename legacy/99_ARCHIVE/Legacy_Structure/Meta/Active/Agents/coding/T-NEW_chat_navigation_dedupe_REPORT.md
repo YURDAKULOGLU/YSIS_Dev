@@ -136,15 +136,15 @@ pnpm --filter @ybis/mobile run type-check
 ### Manuel Test Gerekli:
 1. **Navigation dedupe:**
    - Aynı ekrana art arda navigate edildiğinde log'un tek basıldığını doğrula
-   
+
 2. **Yeni sohbet button (chat.tsx):**
    - "Yeni Sohbet" butonuna çift tıklayınca sadece bir navigation olmalı
    - Log'da unique marker görünmeli
-   
+
 3. **Pen icon (index.tsx):**
    - Ana ekrandaki pen icon'a basınca aynı guard çalışmalı
    - Log'da "from pen icon" ve unique marker görünmeli
-   
+
 4. **React Strict Mode:**
    - Dev mode'da guard'ların çift render'a karşı koruma yaptığını doğrula
 
@@ -187,4 +187,3 @@ Tüm task maddeleri uygulandı:
 - `nanoid` lightweight ve collision-resistant ID generator
 - Type-safe implementation: `useRef<boolean>(false)`, `useRef<string | undefined>(undefined)`
 - Task'ta belirtilen "boş sohbet filtre düzeltmesi" ve "Opsiyon B" sonraki iterasyonlarda uygulanabilir
-

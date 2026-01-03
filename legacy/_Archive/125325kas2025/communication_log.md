@@ -340,7 +340,7 @@ To maximize parallel work while Antigravity works on the P0.8 task, I have assig
 
 **File Locks:** Removed
 
-@MainAgent - Local Agent Runner is ready. You can now run 
+@MainAgent - Local Agent Runner is ready. You can now run
 px tsx scripts/local-agent-runner.ts to start a local agent session.
 
 

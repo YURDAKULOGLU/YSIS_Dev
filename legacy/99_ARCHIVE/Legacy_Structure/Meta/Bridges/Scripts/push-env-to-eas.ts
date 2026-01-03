@@ -29,7 +29,7 @@ keysToSync.forEach(key => {
         // --scope project limits it to this specific project
         const cmd = `npx eas-cli secret:create --scope project --name ${key} --value "${value}" --type string --force`;
 
-        // stdio: 'pipe' prevents the command from printing the command itself (with secrets) to the parent console if we managed it manually, 
+        // stdio: 'pipe' prevents the command from printing the command itself (with secrets) to the parent console if we managed it manually,
         // but execSync doesn't print by default unless we used 'inherit'.
         // However, we want to capture output to check for success but hide input.
         execSync(cmd, { stdio: 'inherit', cwd: path.resolve(rootDir, 'apps/mobile') });

@@ -55,7 +55,7 @@ ENV LD_LIBRARY_PATH=/usr/local/lib
 # Copy Project Files
 # Context is Project Root. We copy .YBIS_Dev to /app/.YBIS_Dev
 COPY .YBIS_Dev/ ${WORKDIR}/.YBIS_Dev/
-COPY .git/ ${WORKDIR}/.git/ 
+COPY .git/ ${WORKDIR}/.git/
 
 # Set Python Path
 # Includes Project Root and the new Python Core location

@@ -1,6 +1,6 @@
 # YBIS Agentic Architecture Reorganization Plan
-**Tarih:** 13 Aralık 2025  
-**Amaç:** Kapalı Beta → Açık Beta geçişinde "Balta Bileme"  
+**Tarih:** 13 Aralık 2025
+**Amaç:** Kapalı Beta → Açık Beta geçişinde "Balta Bileme"
 **Durum:** Closed Beta ✅ → Organization Phase → Open Beta
 
 ---
@@ -191,7 +191,7 @@
 hardware:
   gpu: "RTX 5090"
   vram: "32GB"
-  
+
 inference_backend: "ollama"  # veya vLLM for production
 
 models:
@@ -199,12 +199,12 @@ models:
     name: "deepseek-coder-v2:33b"
     context: 32768
     use_case: "Code generation, refactoring"
-    
+
   fast_reviewer:
     name: "qwen2.5-coder:14b"
     context: 32768
     use_case: "Quick code review, linting"
-    
+
   reasoning:
     name: "deepseek-r1:32b"  # veya qwq
     context: 32768
@@ -214,11 +214,11 @@ routing_rules:
   - task: "code_generation"
     model: "primary_coder"
     fallback: "cloud_claude"
-    
+
   - task: "quick_review"
     model: "fast_reviewer"
     fallback: null  # No cloud fallback
-    
+
   - task: "architecture"
     model: "cloud_claude"  # Always cloud for critical decisions
     fallback: null
@@ -441,7 +441,7 @@ class AgentState(TypedDict):
 
 # Load Agent Registry
 def load_registry():
-    registry_path = os.path.join(os.path.dirname(__file__), 
+    registry_path = os.path.join(os.path.dirname(__file__),
                                   "../Agents/registry.json")
     with open(registry_path) as f:
         return json.load(f)
@@ -497,20 +497,20 @@ def route_next(state: AgentState) -> str:
 # Build Graph
 def build_feature_graph():
     workflow = StateGraph(AgentState)
-    
+
     # Add nodes
     workflow.add_node("architect", architect_node)
     workflow.add_node("developer", developer_node)
     workflow.add_node("qa-engineer", qa_node)
     workflow.add_node("code-reviewer", reviewer_node)
-    
+
     # Add edges
     workflow.set_entry_point("architect")
     workflow.add_conditional_edges("architect", route_next)
     workflow.add_conditional_edges("developer", route_next)
     workflow.add_conditional_edges("qa-engineer", route_next)
     workflow.add_conditional_edges("code-reviewer", route_next)
-    
+
     # Compile with memory
     memory = MemorySaver()
     return workflow.compile(checkpointer=memory)
@@ -518,7 +518,7 @@ def build_feature_graph():
 # Main execution
 if __name__ == "__main__":
     graph = build_feature_graph()
-    
+
     initial_state = AgentState(
         task="Implement user profile settings screen",
         task_type="feature",
@@ -530,9 +530,9 @@ if __name__ == "__main__":
         status="in_progress",
         output=""
     )
-    
+
     config = {"configurable": {"thread_id": "test-1"}}
-    
+
     for event in graph.stream(initial_state, config):
         print(f"Event: {event}")
 ```
@@ -550,18 +550,18 @@ import os
 
 class HybridModelRouter:
     """Routes tasks to local or cloud models based on config"""
-    
+
     def __init__(self, config_path: str = None):
         if config_path is None:
             config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
-        
+
         with open(config_path) as f:
             self.config = yaml.safe_load(f)
-        
+
         self.local_models = {}
         self.cloud_model = None
         self._init_models()
-    
+
     def _init_models(self):
         # Initialize local models (Ollama)
         for model_key, model_config in self.config["models"].items():
@@ -570,21 +570,21 @@ class HybridModelRouter:
                     model=model_config["name"],
                     num_ctx=model_config.get("context", 8192)
                 )
-        
+
         # Initialize cloud model
         self.cloud_model = ChatAnthropic(
             model="claude-sonnet-4-20250514",
             max_tokens=8192
         )
-    
+
     def route(self, task_type: str, complexity: str = "medium") -> ChatOllama | ChatAnthropic:
         """Route to appropriate model based on task"""
-        
+
         # Always use cloud for critical tasks
         cloud_tasks = self.config["routing"].get("cloud_tasks", [])
         if task_type in cloud_tasks:
             return self.cloud_model
-        
+
         # Use local for cost-sensitive tasks
         if self.config["routing"].get("prefer_local", True):
             if task_type == "code_generation":
@@ -593,27 +593,27 @@ class HybridModelRouter:
                 return self.local_models.get("fast_reviewer", self.cloud_model)
             elif task_type == "reasoning":
                 return self.local_models.get("reasoning", self.cloud_model)
-        
+
         return self.cloud_model
-    
+
     async def invoke(self, task_type: str, system_prompt: str, user_message: str):
         """Invoke the appropriate model"""
         model = self.route(task_type)
-        
+
         messages = [
             SystemMessage(content=system_prompt),
             HumanMessage(content=user_message)
         ]
-        
+
         response = await model.ainvoke(messages)
         return response.content
 
 # Usage example
 if __name__ == "__main__":
     import asyncio
-    
+
     router = HybridModelRouter()
-    
+
     async def test():
         # This will use local DeepSeek
         result = await router.invoke(
@@ -622,7 +622,7 @@ if __name__ == "__main__":
             user_message="Write a React hook for debouncing input."
         )
         print(result)
-    
+
     asyncio.run(test())
 ```
 
@@ -810,5 +810,5 @@ OLLAMA_HOST=http://localhost:11434
 
 ---
 
-**Son Güncelleme:** 13 Aralık 2025  
+**Son Güncelleme:** 13 Aralık 2025
 **Sonraki Review:** Open Beta öncesi

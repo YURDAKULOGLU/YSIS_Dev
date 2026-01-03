@@ -16,15 +16,15 @@ async def run_scenario():
     print("\n" + "="*60)
     print("🧪 YBIS-OS v2 SCENARIO TEST: Data Analysis Script")
     print("="*60)
-    
+
     # Complex Task Definition
     task = "Create a Python script named 'data_analyst.py' that creates a dummy CSV file with employees and calculates average salary per department."
-    
+
     print(f"📋 TASK:\n{task}\n")
-    
+
     # Initialize Graph
     graph = build_graph()
-    
+
     # Constructing state manually to avoid weird TypedDict issues
     initial_state = {
         "task": task,
@@ -39,14 +39,14 @@ async def run_scenario():
         "error": None,
         "retry_count": 0
     }
-    
+
     config = {"configurable": {"thread_id": "scenario-test-1"}}
-    
+
     print("[SYSTEM] Starting Autonomous Loop (Architect -> Dev -> QA)...")
-    
+
     async for event in graph.astream(initial_state, config):
         pass
-        
+
     print("\n" + "="*60)
     print("[SUCCESS] SCENARIO COMPLETED")
     print("="*60)

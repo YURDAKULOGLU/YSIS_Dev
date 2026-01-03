@@ -29,7 +29,7 @@ This report documents design and UX issues observed during closed beta testing. 
 | Delete button | `$red9` | OK (semantic) |
 | Template button | Was `$green9` | Fixed to `$primary` |
 
-**Recommendation:** 
+**Recommendation:**
 - Define semantic color tokens: `$success`, `$warning`, `$danger`, `$info`
 - Use `$primary` for all primary actions
 - Reserve colored badges for semantic meaning only
@@ -515,4 +515,3 @@ The app is functionally complete for closed beta. The issues documented here are
 ---
 
 *This document should be updated as issues are fixed or new observations are made.*
-

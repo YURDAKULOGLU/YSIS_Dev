@@ -2,7 +2,7 @@
 
 - **Source Document:** Closed Beta Sprint - Nexus Delegation
 - **Title:** Schedule Executor için Test Yaz
-- **Description:** 
+- **Description:**
   useScheduleExecutor hook'u ve cron parser için unit testler yaz.
 
   **Test Edilecekler:**
@@ -37,6 +37,5 @@
 - **Assigned To:** @Delegate (Çırak)
 - **Complexity:** Easy
 - **Estimated Effort:** 1-2 hours
-- **Dependencies:** 
+- **Dependencies:**
   - useScheduleExecutor (✅ ready)
-

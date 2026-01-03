@@ -14,16 +14,16 @@ from Agentic.Tools.file_ops import file_ops
 async def main():
     target_file = ".YBIS_Dev/Agentic/Tools/git_ops.py"
     output_file = "docs/technical/git_ops_manual.md"
-    
+
     print(f"Reading {target_file}...")
     code = file_ops.read_file(target_file)
-    
+
     print("Generating documentation...")
     doc = await doc_writer.document_file('git_ops.py', code)
-    
+
     print(f"Writing to {output_file}...")
     file_ops.write_file(output_file, doc)
-    
+
     print("Done!")
 
 if __name__ == "__main__":

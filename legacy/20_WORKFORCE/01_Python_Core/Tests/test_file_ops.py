@@ -15,12 +15,12 @@ def setup_sandbox():
 def test_write_read_file(setup_sandbox):
     path = os.path.join(TEST_DIR, "test.txt")
     content = "Hello World"
-    
+
     # Write
     result = file_ops.write_file(path, content)
     assert "Successfully wrote" in result
     assert os.path.exists(path)
-    
+
     # Read
     read_content = file_ops.read_file(path)
     assert read_content == content
@@ -30,7 +30,7 @@ def test_list_dir(setup_sandbox):
     path2 = os.path.join(TEST_DIR, "file2.txt")
     file_ops.write_file(path1, "1")
     file_ops.write_file(path2, "2")
-    
+
     listing = file_ops.list_dir(TEST_DIR)
     assert "file1.txt" in listing
     assert "file2.txt" in listing

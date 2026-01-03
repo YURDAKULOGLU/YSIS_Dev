@@ -1,7 +1,7 @@
 # T-057: Jest Setup for React Native Tests
 
-**Agent:** @Codex (Terminal Coder)  
-**Status:** Completed  
+**Agent:** @Codex (Terminal Coder)
+**Status:** Completed
 **Scope:** Auth login/signup UI tests under Jest runner
 
 ## Work Completed

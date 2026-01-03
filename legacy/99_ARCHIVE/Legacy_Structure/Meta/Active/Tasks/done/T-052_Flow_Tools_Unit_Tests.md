@@ -2,7 +2,7 @@
 
 - **Source Document:** Closed Beta Sprint - Nexus Delegation
 - **Title:** Flow Tools için Unit Test Yaz
-- **Description:** 
+- **Description:**
   Yeni eklenen flow AI tools için unit testler yaz.
 
   **Test Edilecek Fonksiyonlar:**
@@ -37,7 +37,6 @@
 - **Assigned To:** @Delegate (Çırak)
 - **Complexity:** Easy-Medium
 - **Estimated Effort:** 2-3 hours
-- **Dependencies:** 
+- **Dependencies:**
   - Jest config (✅ ready)
   - Flow functions (✅ ready)
-

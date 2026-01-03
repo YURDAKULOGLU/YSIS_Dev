@@ -2,7 +2,7 @@
 
 - **Source Document:** `RELEASE_READINESS_ASSESSMENT.md`, `docs/epics/7.rag-system.md`
 - **Title:** (P0) Implement queryRAG AI Tool for Document Search
-- **Description:** 
+- **Description:**
   Implement the missing `queryRAG` tool to complete the AI Tool Calling System (Epic 8). This tool allows the AI to search user-uploaded documents using semantic search (pgvector) and retrieve relevant context for answering questions.
 
   **Current Status:**
@@ -43,13 +43,11 @@
 
 - **Priority:** P0 (Critical - Blocks Epic 8 completion)
 - **Assigned To:** @ClaudeCode
-- **Related Tasks:** 
+- **Related Tasks:**
   - Epic 8: AI Tool Calling System
   - Epic 7: RAG System (infrastructure already exists)
 - **Estimated Effort:** 2-3 hours
-- **Dependencies:** 
+- **Dependencies:**
   - RAG infrastructure (✅ already exists)
   - Database access (✅ already exists)
   - OpenAI embeddings (✅ already exists)
-
-

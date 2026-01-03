@@ -1,8 +1,8 @@
 # Flow Templates - Survey-Based Priority List
 
-**Date:** 2025-12-02  
-**Source:** User Survey Results (Turkish + English)  
-**Total Respondents:** ~30 users  
+**Date:** 2025-12-02
+**Source:** User Survey Results (Turkish + English)
+**Total Respondents:** ~30 users
 **Primary Demographics:** 18-24 age, Students, Professionals
 
 ---
@@ -84,7 +84,7 @@ steps:
       status: "todo"
       priority: "high"
       due_date: "{{today}}"
-  
+
   - type: createNote
     title: "📋 Daily Tasks - {{today}}"
     content: |
@@ -92,12 +92,12 @@ steps:
       {{#if priority_tasks}}
       - {{priority_tasks}}
       {{/if}}
-      
+
       ## Overdue Tasks
       {{#if overdue_tasks}}
       - {{overdue_tasks}}
       {{/if}}
-      
+
   - type: sendNotification
     title: "📋 Daily Tasks Ready"
     body: "You have {{task_count}} tasks for today"
@@ -135,31 +135,31 @@ steps:
   - type: queryRAG
     query: "What are my priorities for today based on my notes and tasks?"
     limit: 5
-  
+
   - type: searchTasks
     params:
       status: "todo"
       priority: ["high", "urgent"]
-  
+
   - type: searchEvents
     params:
       start_date: "{{today}}"
       end_date: "{{today}}"
-  
+
   - type: createNote
     title: "📅 Daily Plan - {{today}}"
     content: |
       ## Today's Schedule
       {{events_summary}}
-      
+
       ## Priority Tasks
       {{priority_tasks}}
-      
+
       ## Time Blocks
       - {{work_hours_start}}-12:00: Deep work
       - 12:00-13:00: Lunch
       - 13:00-{{work_hours_end}}: Meetings & tasks
-      
+
   - type: sendNotification
     title: "📅 Daily Plan Ready"
     body: "Your personalized plan for {{today}} is ready!"
@@ -202,31 +202,31 @@ steps:
       ## Study Plan: {{study_subject}}
       Duration: {{study_duration}} minutes
       Start: {{now}}
-      
+
       ## Goals
       - [ ] Understand key concepts
       - [ ] Take notes
       - [ ] Review previous material
-      
+
   - type: createTask
     title: "Complete {{study_subject}} study session"
     priority: "high"
     due_date: "{{today}}"
-  
+
   {{#if include_break}}
   - type: delay
     duration: "{{study_duration / 2}}"
     unit: "minutes"
-  
+
   - type: sendNotification
     title: "⏸️ Break Time!"
     body: "Take a 10-minute break"
   {{/if}}
-  
+
   - type: delay
     duration: "{{study_duration}}"
     unit: "minutes"
-  
+
   - type: sendNotification
     title: "✅ Study Session Complete"
     body: "Great work on {{study_subject}}!"
@@ -265,23 +265,23 @@ steps:
     params:
       status: "done"
       created_at: "{{last_week_start}}"
-  
+
   - type: searchNotes
     query: "weekly summary"
-  
+
   - type: createNote
     title: "📊 Weekly Review - Week {{week_number}}"
     content: |
       ## Completed This Week
       {{completed_tasks_summary}}
-      
+
       ## Achievements
       - [List achievements]
-      
+
       ## Next Week's Goals
       - [ ] Goal 1
       - [ ] Goal 2
-      
+
   - type: sendNotification
     title: "📊 Weekly Review Ready"
     body: "Time to reflect and plan!"
@@ -323,11 +323,11 @@ steps:
       - Important messages
       - Meeting requests
       - Deadlines
-      
+
   - type: sendNotification
     title: "📧 Check Your Email"
     body: "You have new messages to review"
-  
+
   {{#if reminder_types includes "calls"}}
   - type: createTask
     title: "Return important calls"
@@ -369,11 +369,11 @@ steps:
       {{#each budget_categories}}
       - {{category}}: {{amount}}
       {{/each}}
-      
+
       ## Projections
       - Monthly estimate: {{monthly_estimate}}
       - Yearly estimate: {{yearly_estimate}}
-      
+
   - type: sendNotification
     title: "💰 Budget Review"
     body: "Your weekly expense summary is ready"
@@ -416,11 +416,11 @@ steps:
       source: "{{source_language}}"
       target: "{{target_language}}"
       content: "{{user_input}}"
-  
+
   - type: createNote
     title: "🌐 Translation - {{target_language}}"
     content: "{{translated_content}}"
-  
+
   - type: sendNotification
     title: "🌐 Translation Complete"
     body: "Translated to {{target_language}}"
@@ -515,7 +515,3 @@ steps:
 3. Add variable customization UI
 4. Test with beta users
 5. Iterate based on feedback
-
-
-
-

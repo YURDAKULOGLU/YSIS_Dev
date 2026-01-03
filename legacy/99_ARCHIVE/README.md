@@ -1,6 +1,6 @@
 # YBIS-OS (Agentic Operating System)
 
-> **Human-AI Collaborative Development Platform**  
+> **Human-AI Collaborative Development Platform**
 > *Formerly YBIS Mobile App*
 
 [![Status](https://img.shields.io/badge/Status-Operational-green.svg)]()

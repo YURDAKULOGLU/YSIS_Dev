@@ -62,4 +62,3 @@ const handlePress = useCallback(() => doSomething(item.id), [item.id]);
 - No unnecessary re-renders on scroll
 - List performance smooth
 - Documented optimizations
-

@@ -34,7 +34,7 @@ All agents are reminded to strictly adhere to `COLLABORATION_SYSTEM.md` v3.0, es
 Tests were disabled NOT due to Vitest/library compatibility issues, but due to TypeScript configuration problems:
 
 1. ❌ `tsconfig.base.json` excludes all test files globally
-2. ❌ Package `tsconfig.json` files don't include test patterns  
+2. ❌ Package `tsconfig.json` files don't include test patterns
 3. ❌ Test scripts replaced with placeholder messages
 
 **Solution Being Implemented:**
@@ -66,11 +66,11 @@ Fixed test configuration issues with minimal changes following YBIS standards:
 1. ✅ **vitest.config.ts Updates** (database, llm, storage)
    - Added `include: ['src/**/*.{test,spec}.ts']` pattern
    - Vitest now explicitly knows where test files are
-   
+
 2. ✅ **package.json Script Restoration** (all 3 packages)
    - Removed placeholder messages
    - Re-enabled `"test": "vitest run"` scripts
-   
+
 3. ✅ **Environment Verification**
    - Confirmed `.env` file exists with required API keys
    - SUPABASE_URL, SUPABASE_ANON_KEY, OPENAI_API_KEY all present
@@ -120,7 +120,7 @@ NOT a configuration issue - this is a **Rollup AST parsing error**. The parser e
 
 **Root Cause Analysis:**
 1. Vitest uses Rollup/Vite for bundling test files
-2. Rollup parser expects `from` keyword but encounters `typeOf` 
+2. Rollup parser expects `from` keyword but encounters `typeOf`
 3. Likely from `@supabase/supabase-js` or OpenAI SDK internal code
 4. Target ES2020 may not support newer syntax features
 

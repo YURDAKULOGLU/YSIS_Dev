@@ -1,8 +1,8 @@
 # AI Agent Görev Dağılımı
 
-**Version:** 3.0.0  
-**Last Updated:** 2025-10-12  
-**Scope:** Multi-LLM workflow management (.YBIS_Dev scope, project-agnostic)  
+**Version:** 3.0.0
+**Last Updated:** 2025-10-12
+**Scope:** Multi-LLM workflow management (.YBIS_Dev scope, project-agnostic)
 **Status:** Active
 
 **Cross-References:**

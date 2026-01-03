@@ -1,7 +1,7 @@
 # Smoke Test Report - Chat/Menu UI + i18n + Expo Flow
 
-**Date:** 2025-01-25  
-**Agent:** @Cursor (Coding)  
+**Date:** 2025-01-25
+**Agent:** @Cursor (Coding)
 **Status:** ✅ Completed
 
 ---
@@ -341,5 +341,3 @@ t('errors.load_failed')
 - No empty conversations created (policy compliant)
 - All CRUD operations ready for testing
 - Build is ready for production
-
-

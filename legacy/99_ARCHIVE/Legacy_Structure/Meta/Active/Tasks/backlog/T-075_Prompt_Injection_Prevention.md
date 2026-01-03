@@ -41,12 +41,12 @@ const INJECTION_PATTERNS = [
 
 export function sanitizeUserInput(input: string): string {
   let sanitized = input;
-  
+
   // Remove potential injection attempts
   for (const pattern of INJECTION_PATTERNS) {
     sanitized = sanitized.replace(pattern, '[filtered]');
   }
-  
+
   return sanitized;
 }
 
@@ -72,4 +72,3 @@ const sanitizedMessage = sanitizeUserInput(userMessage);
 - Suspicious content filtered
 - AI behavior not manipulatable
 - No false positives on normal input
-

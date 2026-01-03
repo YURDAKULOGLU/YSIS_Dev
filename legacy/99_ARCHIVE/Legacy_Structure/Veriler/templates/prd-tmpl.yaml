@@ -217,7 +217,7 @@ sections:
   - id: overview
     title: Product Overview
     instruction: |
-      Describe the product vision, core value proposition, and target audience. 
+      Describe the product vision, core value proposition, and target audience.
       Focus on WHAT we are building and WHY.
       Explain the core problem this product solves.
     elicit: true

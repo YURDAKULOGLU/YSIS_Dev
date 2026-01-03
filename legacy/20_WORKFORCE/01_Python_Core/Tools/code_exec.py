@@ -12,11 +12,11 @@ class CodeExecutionTool:
         # Create temp file
         filename = f"temp_exec_{uuid.uuid4()}.py"
         filepath = os.path.join(self.work_dir, filename)
-        
+
         try:
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.write(code)
-            
+
             # Execute with timeout
             result = subprocess.run(
                 ["python", filename],
@@ -25,10 +25,10 @@ class CodeExecutionTool:
                 text=True,
                 timeout=10 # 10 seconds limit
             )
-            
+
             output = f"STDOUT:\n{result.stdout}\n\nSTDERR:\n{result.stderr}"
             return output
-            
+
         except subprocess.TimeoutExpired:
             return "Error: Execution timed out (10s limit)."
         except Exception as e:

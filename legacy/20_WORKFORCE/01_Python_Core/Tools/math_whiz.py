@@ -5,7 +5,7 @@ class MathWhiz:
     """
     A simple math utility class for system stress testing.
     """
-    
+
     @staticmethod
     def fibonacci(n: int) -> int:
         """Returns the nth Fibonacci number."""

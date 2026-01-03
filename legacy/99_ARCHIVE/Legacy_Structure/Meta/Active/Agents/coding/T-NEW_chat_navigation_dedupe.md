@@ -12,7 +12,7 @@ Muhtemel nedenler: React Native dev/Strict Mode çift çağrısı, onPress’in 
 Çift log/çift navigasyon tetiklemelerini engelle, yeni sohbet akışını deterministik yap, gerekirse boş sohbet davranışını netleştir.
 
 ## Yapılacaklar
-1) **Logging dedupe (opsiyonel ama önerilir)**  
+1) **Logging dedupe (opsiyonel ama önerilir)**
    - `_layout.tsx` navigation logger’a son path’i hatırlayan bir ref ekle; aynı pathname art arda geliyorsa loglama.
      ```ts
      const lastPathRef = useRef<string>();
@@ -22,7 +22,7 @@ Muhtemel nedenler: React Native dev/Strict Mode çift çağrısı, onPress’in 
        Logger.info(`Navigation to ${pathname}`, { ... });
      }, [pathname, segments]);
      ```
-2) **Yeni sohbet onPress guard**  
+2) **Yeni sohbet onPress guard**
    - `apps/mobile/app/(tabs)/chat.tsx` içindeki `handleCreateNewChat`’e ref tabanlı guard ekle:
      ```ts
      const creatingRef = useRef(false);
@@ -35,12 +35,12 @@ Muhtemel nedenler: React Native dev/Strict Mode çift çağrısı, onPress’in 
      }, [router]);
      ```
    - Aynı guard’ı Navbar’daki pen ikonu için de kullan (index.tsx headerRight).
-3) **Yeni sohbet akışının netleştirilmesi**  
-   - Opsiyon A (en hızlı): Şimdiki davranışı koru ama UX mesajı ekle (boş liste state’inde “Yeni sohbet açıldı, ilk mesajı yazın” toast).  
+3) **Yeni sohbet akışının netleştirilmesi**
+   - Opsiyon A (en hızlı): Şimdiki davranışı koru ama UX mesajı ekle (boş liste state’inde “Yeni sohbet açıldı, ilk mesajı yazın” toast).
    - Opsiyon B (daha deterministik): `handleCreateNewChat` içinde hemen boş conversation oluştur (DB insert) ve ID’yi `/ (tabs)`’e parametre olarak gönder; `useChat` param varsa `loadConversation` çağırır, yoksa yeni chat mode’a geçer. Bu, “listeye yansımıyor” şikayetini çözer ama boş sohbetlerin listede görünmesi için filtreyi kaldırman gerekir.
-4) **Conversation listesi filtre düzeltmesi (isteğe bağlı)**  
+4) **Conversation listesi filtre düzeltmesi (isteğe bağlı)**
    - `chat.tsx`’te `filter(conv => conv.hasMessages)` boş sohbetleri gizliyor. Boş sohbetlerin görünmesini istiyorsan filtreyi kaldır ya da minimum 1 mesaj şartını UX kararı olarak dokümante et.
-5) **İzleme için marker ekle**  
+5) **İzleme için marker ekle**
    - `Logger.info('Starting new conversation', { type: 'USER_ACTION', marker: nanoid() })` gibi benzersiz marker ekle; logda çift marker varsa çift handler tetikleniyor demektir.
 
 ## Test Notları

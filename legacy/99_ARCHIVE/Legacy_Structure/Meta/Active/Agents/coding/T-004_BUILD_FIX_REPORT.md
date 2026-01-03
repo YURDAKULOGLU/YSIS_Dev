@@ -1,7 +1,7 @@
 # T-004 Menu Button Bug Fix & Build/Type/Lint Fixes
 
-**Agent:** @Cursor (IDE Coder)  
-**Date:** 2025-01-25  
+**Agent:** @Cursor (IDE Coder)
+**Date:** 2025-01-25
 **Status:** ✅ Completed
 
 ---
@@ -139,4 +139,3 @@ These are code quality suggestions and do not block development.
 **Next Steps:**
 - Continue with other backlog tasks
 - T-002 vitest parsing issue remains a known blocker (not attempted per instructions)
-

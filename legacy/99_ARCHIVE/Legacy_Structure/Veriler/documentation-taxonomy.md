@@ -1,8 +1,8 @@
 # YBIS Documentation Taxonomy & Refactoring Plan
 
-**Purpose:** Dokümantasyon mimarisi, her dokümanın işlevi, yeri ve ilişkileri  
-**Created:** 2025-10-12  
-**Status:** 🎯 TASARIM & UYGULAMA  
+**Purpose:** Dokümantasyon mimarisi, her dokümanın işlevi, yeri ve ilişkileri
+**Created:** 2025-10-12
+**Status:** 🎯 TASARIM & UYGULAMA
 **Owner:** Documentation Architect
 
 ---
@@ -19,7 +19,7 @@ docs/:
     - README.md
     - TESTING_STRATEGY.md
     - YBIS_PROJE_ANAYASASI.md
-  
+
   Güncel/: 10 files
     - Architecture_better.md
     - DEVELOPMENT_GUIDELINES.md
@@ -31,32 +31,32 @@ docs/:
     - service-integration-strategy.md
     - tasks.md
     - tech-stack.md
-  
+
   vision/: 1 file ✅ (YENİ)
     - PROJECT_VISION.md
-  
+
   roadmap/: 1 file ✅ (YENİ)
     - PRODUCT_ROADMAP.md
-  
+
   strategy/: 2 files ✅ (YENİ)
     - COMPETITIVE_STRATEGY.md
     - MARKET_RESEARCH.md
-  
+
   prd/: 1 file ✅ (GÜNCELLENDİ)
     - PRODUCT_REQUIREMENTS.md
-  
+
   epics/: 1 file
     - tier-1-port-architecture.md
-  
+
   stories/: 2 files
     - 1.1.mobile-app-foundation.md
     - 1.2.backend-api-foundation.md
-  
+
   qa/gates/: 1 file
     - 1.1-mobile-app-foundation.yml
-  
+
   Asset/: [images, icons]
-  
+
   Archive/:
     Legacy/: 26 files (eski stratejik/teknik dokümanlar)
     Product-Roadmap/: 15 files (eski roadmap detayları)
@@ -73,10 +73,10 @@ docs/:
     - enhanced-ide-development-workflow.md
     - install-manifest.yaml
     - user-guide.md
-  
+
   Archive/: 1 file
     - AI_BASLANGIC_REHBERI_v1.0_DEPRECATED.md (Archived - use V2.md instead!)
-  
+
   Veriler/:
     - agents/: 11 agent definitions
     - checklists/: 7 checklists
@@ -103,14 +103,14 @@ docs/:
 
 ### 🌟 TIER -1: STRATEGIC LAYER (Product & Business)
 
-**Amaç:** Projenin NEDEN ve NE'si. Product vision, market strategy, business goals.  
-**Kitle:** Product Manager, CEO, Investors, Strategic stakeholders  
-**Güncelleme Sıklığı:** Quarterly veya major pivot  
+**Amaç:** Projenin NEDEN ve NE'si. Product vision, market strategy, business goals.
+**Kitle:** Product Manager, CEO, Investors, Strategic stakeholders
+**Güncelleme Sıklığı:** Quarterly veya major pivot
 **Kapsam:** Geniş, high-level, minimal teknik detay
 
 ```yaml
 TIER_MINUS_1_STRATEGIC:
-  
+
   docs/vision/PROJECT_VISION.md: ✅ GÜNCEL (v2.0)
     purpose: "Why YBIS exists, target market, problem/solution"
     audience: "Team, investors, strategic decisions"
@@ -123,7 +123,7 @@ TIER_MINUS_1_STRATEGIC:
       - PRODUCT_ROADMAP.md (timeline priorities)
       - COMPETITIVE_STRATEGY.md (positioning)
       - YBIS_PROJE_ANAYASASI.md (architecture principles)
-    
+
   docs/roadmap/PRODUCT_ROADMAP.md: ✅ GÜNCEL (v2.0)
     purpose: "Timeline, phases, milestone breakdown"
     audience: "Team, stakeholders, investors"
@@ -137,7 +137,7 @@ TIER_MINUS_1_STRATEGIC:
     informs:
       - tasks.md (execution)
       - DEVELOPMENT_LOG.md (timeline validation)
-    
+
   docs/strategy/MARKET_RESEARCH.md: ✅ GÜNCEL (v2.0)
     purpose: "Market analysis, TAM/SAM/SOM, competitor landscape"
     audience: "Product Manager, Marketing, Investors"
@@ -151,7 +151,7 @@ TIER_MINUS_1_STRATEGIC:
       - COMPETITIVE_STRATEGY.md (positioning)
       - PRODUCT_ROADMAP.md (priorities)
       - PROJECT_VISION.md (validation)
-    
+
   docs/strategy/COMPETITIVE_STRATEGY.md: ✅ GÜNCEL (v2.0)
     purpose: "Positioning, moats, competitive response scenarios"
     audience: "Product Manager, Marketing, Strategic team"
@@ -167,7 +167,7 @@ TIER_MINUS_1_STRATEGIC:
       - YBIS_PROJE_ANAYASASI.md (competitive moats → architecture)
 ```
 
-**✅ TIER -1 DURUM:**  
+**✅ TIER -1 DURUM:**
 - 4/4 doküman GÜNCEL (Vision, Roadmap, Market Research, Competitive Strategy)
 - Tüm Legacy stratejik dokümanlar taşındı ve güncellendi
 - Cross-references eklendi
@@ -176,14 +176,14 @@ TIER_MINUS_1_STRATEGIC:
 
 ### 🔥 TIER 0: CANONICAL SOURCES (Single Source of Truth)
 
-**Amaç:** Teknik bilginin TEK SAHİBİ. Architecture decisions, development history.  
-**Kitle:** Developers, Architects, Technical leads  
-**Güncelleme Sıklığı:** Her architecture decision, major task completion  
+**Amaç:** Teknik bilginin TEK SAHİBİ. Architecture decisions, development history.
+**Kitle:** Developers, Architects, Technical leads
+**Güncelleme Sıklığı:** Her architecture decision, major task completion
 **Kapsam:** Teknik, decision-focused, historical record
 
 ```yaml
 TIER_0_CANONICAL:
-  
+
   docs/YBIS_PROJE_ANAYASASI.md: ✅ GÜNCEL (v3.1.0)
     purpose: "Technical constitution - Port Architecture, quality gates, forbidden patterns"
     audience: "Developers, architects"
@@ -205,7 +205,7 @@ TIER_0_CANONICAL:
       - DEVELOPMENT_LOG.md (AD-XXX align with Anayasa)
       - Architecture_better.md (implementation details)
       - service-integration-strategy.md (port patterns)
-    
+
   docs/Güncel/DEVELOPMENT_LOG.md: ✅ GÜNCEL (AD-020)
     purpose: "Decision registry - Architecture Decisions (AD-XXX), timeline, issues"
     audience: "Developers, team"
@@ -230,7 +230,7 @@ TIER_0_CANONICAL:
       - README.md (progress %)
 ```
 
-**✅ TIER 0 DURUM:**  
+**✅ TIER 0 DURUM:**
 - 2/2 doküman GÜNCEL
 - YBIS_PROJE_ANAYASASI: Port Architecture netleşmiş (8 Tier 1 Port)
 - DEVELOPMENT_LOG: 20 Architecture Decision (AD-001 to AD-020)
@@ -239,14 +239,14 @@ TIER_0_CANONICAL:
 
 ### 📚 TIER 1: REFERENCE DOCUMENTS (Derived, Read-Mostly)
 
-**Amaç:** Tier 0'dan türetilmiş teknik referanslar. Implementation blueprints.  
-**Kitle:** Developers (daily reference)  
-**Güncelleme Sıklığı:** Her AD-XXX değişikliğinde auto-derive  
+**Amaç:** Tier 0'dan türetilmiş teknik referanslar. Implementation blueprints.
+**Kitle:** Developers (daily reference)
+**Güncelleme Sıklığı:** Her AD-XXX değişikliğinde auto-derive
 **Kapsam:** Teknik, detailed, implementation-focused
 
 ```yaml
 TIER_1_REFERENCE:
-  
+
   docs/Güncel/tech-stack.md: ✅ GÜNCEL (2025-10-12)
     purpose: "Technical reference - All package versions, migration paths"
     audience: "Developers"
@@ -263,7 +263,7 @@ TIER_1_REFERENCE:
       - Developers (daily reference)
       - package.json (version source)
       - README.md (tech stack display)
-    
+
   docs/Güncel/package-structure.md: ✅ GÜNCEL (2025-10-12)
     purpose: "Implementation blueprint - Package layout, code examples"
     audience: "Developers"
@@ -279,7 +279,7 @@ TIER_1_REFERENCE:
     used_by:
       - Developers (implementation guide)
       - Story writers (technical context)
-    
+
   docs/README.md: ✅ GÜNCEL (2025-10-12)
     purpose: "Project overview - Quick start, tech stack, status"
     audience: "New developers, stakeholders"
@@ -296,7 +296,7 @@ TIER_1_REFERENCE:
     used_by:
       - New team members (onboarding)
       - GitHub visitors (project intro)
-    
+
   docs/Güncel/Architecture_better.md: ✅ GÜNCEL (v2.0, 2025-10-12)
     purpose: "Architecture deep-dive - Detailed tech decisions, rationale"
     audience: "Architects, senior developers"
@@ -313,7 +313,7 @@ TIER_1_REFERENCE:
       - Architects (design reference)
       - Story writers (technical context)
     notes: "Recently updated (Firebase → Expo Auth, React 18.3 → 19.1)"
-    
+
   docs/prd/PRODUCT_REQUIREMENTS.md: ✅ GÜNCEL (v2.0, 2025-10-12)
     purpose: "Product requirements - Features, UX, technical decisions"
     audience: "Product Manager, Developers, QA"
@@ -336,7 +336,7 @@ TIER_1_REFERENCE:
     notes: "Marked UI/UX as DEPRECATED (bottom tab bar) and TBD (gestures)"
 ```
 
-**✅ TIER 1 DURUM:**  
+**✅ TIER 1 DURUM:**
 - 5/5 doküman GÜNCEL
 - Tüm dokümanlar son AD-XXX'lere align edildi
 - Cross-references mevcut
@@ -345,14 +345,14 @@ TIER_1_REFERENCE:
 
 ### ⚙️ TIER 2: EXECUTION DOCUMENTS (Hybrid - Derived + Dynamic)
 
-**Amaç:** Execution tracking, task management. Hem derived hem dynamic content.  
-**Kitle:** Developers (daily work)  
-**Güncelleme Sıklığı:** Daily (task checkboxes), Weekly (guidelines)  
+**Amaç:** Execution tracking, task management. Hem derived hem dynamic content.
+**Kitle:** Developers (daily work)
+**Güncelleme Sıklığı:** Daily (task checkboxes), Weekly (guidelines)
 **Kapsam:** Execution-focused, practical
 
 ```yaml
 TIER_2_EXECUTION:
-  
+
   docs/Güncel/tasks.md: ✅ GÜNCEL (2025-10-12)
     purpose: "Task list - 165 tasks, checkbox status, week breakdown"
     audience: "Developers"
@@ -373,7 +373,7 @@ TIER_2_EXECUTION:
       - DEVELOPMENT_LOG.md (completion logging)
       - README.md (progress %)
     notes: "24/30 tasks completed (Week 1: 80%)"
-    
+
   docs/Güncel/DEVELOPMENT_GUIDELINES.md: ✅ GÜNCEL (2025-10-12)
     purpose: "Developer rules - Code patterns, error solutions, best practices"
     audience: "Developers"
@@ -392,7 +392,7 @@ TIER_2_EXECUTION:
     used_by:
       - Developers (daily coding)
       - Code reviews (standards)
-    
+
   docs/stories/1.1.mobile-app-foundation.md: ✅ ACTIVE
     purpose: "Story execution - Foundation story, checkboxes, Dev Agent Record"
     audience: "Developers, QA"
@@ -410,12 +410,12 @@ TIER_2_EXECUTION:
     used_by:
       - Developers (implementation)
       - QA (testing context)
-    
+
   docs/stories/1.2.backend-api-foundation.md: ✅ ACTIVE
     purpose: "Story execution - Backend API foundation"
     status: "ACTIVE (PENDING)"
     notes: "Same pattern as 1.1"
-    
+
   docs/epics/tier-1-port-architecture.md: ✅ ACTIVE
     purpose: "Epic definition - Tier 1 Port Architecture scope"
     audience: "Product Manager, Developers"
@@ -432,7 +432,7 @@ TIER_2_EXECUTION:
       - PRODUCT_ROADMAP.md (epic tracking)
 ```
 
-**✅ TIER 2 DURUM:**  
+**✅ TIER 2 DURUM:**
 - 5/5 doküman ACTIVE
 - tasks.md: 24/165 tasks complete
 - Story 1.1: In Progress
@@ -442,14 +442,14 @@ TIER_2_EXECUTION:
 
 ### 📖 TIER 3: SUPPORT DOCUMENTS (Detailed, Specialized)
 
-**Amaç:** Specific domain deep-dives. Integration, QA, testing details.  
-**Kitle:** Specialized roles (QA, Integration engineer)  
-**Güncelleme Sıklığı:** Domain-specific  
+**Amaç:** Specific domain deep-dives. Integration, QA, testing details.
+**Kitle:** Specialized roles (QA, Integration engineer)
+**Güncelleme Sıklığı:** Domain-specific
 **Kapsam:** Narrow, deep, specialized
 
 ```yaml
 TIER_3_SUPPORT:
-  
+
   docs/Güncel/INTEGRATION_ROADMAP.md: ✅ GÜNCEL (2025-10-12)
     purpose: "Integration strategy - Third-party service integration phases"
     audience: "Backend developers, Integration engineers"
@@ -464,7 +464,7 @@ TIER_3_SUPPORT:
     used_by:
       - Integration engineers (implementation)
       - tasks.md (integration tasks)
-    
+
   docs/Güncel/service-integration-strategy.md: ✅ GÜNCEL (2025-10-12)
     purpose: "Integration patterns - Port Architecture implementation patterns"
     audience: "Backend developers"
@@ -479,7 +479,7 @@ TIER_3_SUPPORT:
     used_by:
       - Developers (port implementation)
       - Code reviews (pattern validation)
-    
+
   docs/Güncel/quality-standards.md: ✅ GÜNCEL (2025-10-12)
     purpose: "Quality standards - Testing, code quality, performance benchmarks"
     audience: "QA, Developers"
@@ -495,7 +495,7 @@ TIER_3_SUPPORT:
       - QA (test design)
       - Developers (code quality)
       - CI/CD (automated checks)
-    
+
   docs/TESTING_STRATEGY.md: ✅ GÜNCEL (2025-10-12)
     purpose: "Testing strategy - Test levels, frameworks, coverage targets"
     audience: "QA, Developers"
@@ -510,7 +510,7 @@ TIER_3_SUPPORT:
     used_by:
       - QA (test planning)
       - Developers (test implementation)
-    
+
   docs/qa/gates/1.1-mobile-app-foundation.yml: ✅ ACTIVE
     purpose: "Quality gate - Story 1.1 specific quality checks"
     audience: "QA, Developers"
@@ -525,7 +525,7 @@ TIER_3_SUPPORT:
     used_by:
       - QA (story validation)
       - Story completion (DOD check)
-    
+
   docs/Güncel/expo-sdk54-migration-plan.md: ✅ GÜNCEL (2025-10-12)
     purpose: "Migration plan - Expo SDK 54 upgrade details"
     audience: "Developers"
@@ -542,7 +542,7 @@ TIER_3_SUPPORT:
     notes: "Will be archived once migration completes"
 ```
 
-**✅ TIER 3 DURUM:**  
+**✅ TIER 3 DURUM:**
 - 6/6 doküman GÜNCEL/ACTIVE
 - Integration, QA, Testing domains covered
 - Expo migration plan active
@@ -551,14 +551,14 @@ TIER_3_SUPPORT:
 
 ### 🗺️ TIER 4: NAVIGATION & META (Auto-Generated, Guides)
 
-**Amaç:** Navigation, quick start, meta documentation.  
-**Kitle:** New team members, quick reference  
-**Güncelleme Sıklığı:** Weekly (auto-generate)  
+**Amaç:** Navigation, quick start, meta documentation.
+**Kitle:** New team members, quick reference
+**Güncelleme Sıklığı:** Weekly (auto-generate)
 **Kapsam:** Navigation, onboarding
 
 ```yaml
 TIER_4_META:
-  
+
   docs/DOCUMENTATION_INDEX.md: ✅ GÜNCEL (2025-10-12)
     purpose: "Navigation - All docs index, quick links"
     audience: "Everyone"
@@ -574,7 +574,7 @@ TIER_4_META:
     used_by:
       - New team members (navigation)
       - Documentation discovery
-    
+
   docs/QUICKSTART.md: ✅ GÜNCEL (2025-10-12)
     purpose: "Quick start - Setup steps, first tasks"
     audience: "New developers"
@@ -591,7 +591,7 @@ TIER_4_META:
       - README.md (overview)
     used_by:
       - New developers (onboarding)
-    
+
   docs/AI_Asistan_Gorev_Dagilimi.md: ✅ GÜNCEL (2025-10-12)
     purpose: "AI workflow - Agent roles, task distribution"
     audience: "AI agents, Team"
@@ -608,7 +608,7 @@ TIER_4_META:
       - Team (AI workflow reference)
 ```
 
-**✅ TIER 4 DURUM:**  
+**✅ TIER 4 DURUM:**
 - 3/3 doküman GÜNCEL
 - Navigation and onboarding covered
 
@@ -623,19 +623,19 @@ TIER_4_META:
   purpose: "AI system configuration and meta-documentation"
   audience: "AI agents, System"
   relationship_to_docs/: "Meta layer - Controls how docs/ is used"
-  
+
   AI_BASLANGIC_REHBERI.md:
     purpose: "Master AI workflow guide - Entry point for all AI agents"
     role: "META - How AI agents should work"
     points_to:
       - AI_GENEL_ANAYASA.md (universal AI rules)
       - YBIS_PROJE_ANAYASASI.md (project-specific rules)
-    
+
   AI_GENEL_ANAYASA.md:
     purpose: "Universal AI constitution - General AI behavior rules"
     role: "META - AI behavior standards"
     applies_to: "All AI agents (Claude, GitHub Copilot, etc.)"
-    
+
   core-config.yaml:
     purpose: "System configuration - Paths, commands, workflows"
     role: "META - System config"
@@ -643,10 +643,10 @@ TIER_4_META:
       - documentation_paths (docs/prd, docs/architecture, docs/qa)
       - command_locations (.YBIS_Dev/Veriler/Commands/)
       - workflow_locations (.YBIS_Dev/Veriler/workflows/)
-    
+
   Veriler/:
     purpose: "AI system data - Agents, commands, templates, workflows"
-    
+
     agents/:
       purpose: "AI agent definitions (11 agents)"
       files:
@@ -655,7 +655,7 @@ TIER_4_META:
         - ybis-master.md, ybis-orchestrator.md
       role: "META - Agent behavior definitions"
       used_by: "AI_Asistan_Gorev_Dagilimi.md (agent role distribution)"
-    
+
     commands/:
       purpose: "Slash commands (58 commands)"
       examples:
@@ -663,7 +663,7 @@ TIER_4_META:
         - /session-start, /health-check-docs, /update-docs
       role: "META - AI agent command library"
       execution: "BMad prefix commands"
-    
+
     checklists/:
       purpose: "Quality checklists (7 checklists)"
       files:
@@ -674,7 +674,7 @@ TIER_4_META:
       used_by:
         - AI agents (quality validation)
         - Developers (manual checks)
-    
+
     templates/:
       purpose: "Document templates (19 templates)"
       examples:
@@ -684,7 +684,7 @@ TIER_4_META:
       used_by:
         - AI agents (document creation)
         - /create-story, /create-doc commands
-    
+
     workflows/:
       purpose: "Workflow definitions (7 workflows)"
       examples:
@@ -693,17 +693,17 @@ TIER_4_META:
         - documentation-maintenance.yaml
       role: "META - Process workflows"
       used_by: "AI agents (workflow execution)"
-    
+
     documentation-architecture.md:
       purpose: "5-Tier documentation system definition"
       role: "META - Documentation structure (this document's foundation)"
       status: "ACTIVE"
-    
+
     session-todos.md:
       purpose: "Current session TODO tracking"
       role: "META - Session management"
       status: "ACTIVE (14/17 tasks complete)"
-    
+
     memory/session-context.md:
       purpose: "Session context memory"
       role: "META - AI memory persistence"
@@ -714,20 +714,20 @@ TIER_4_META:
 
 ```yaml
 information_flow:
-  
+
   .YBIS_Dev/ → docs/:
     - Templates → Document creation
     - Workflows → Document maintenance
     - Checklists → Quality validation
     - Commands → Document updates
-    
+
   docs/ → .YBIS_Dev/:
     - YBIS_PROJE_ANAYASASI.md → AI_BASLANGIC_REHBERI.md (project rules)
     - DEVELOPMENT_LOG.md → session-todos.md (task tracking)
     - All docs → YBIS_INDEX.md (documentation registry)
 
 coordination_points:
-  
+
   Document Creation:
     trigger: "/create-story" or "/create-doc"
     workflow:
@@ -735,7 +735,7 @@ coordination_points:
       2. AI agent reads context (docs/YBIS_PROJE_ANAYASASI.md, DEVELOPMENT_LOG.md)
       3. AI agent creates document (docs/stories/ or docs/prd/)
       4. AI agent validates (checklists/)
-  
+
   Documentation Update:
     trigger: "DEVELOPMENT_LOG.md AD-XXX added"
     workflow:
@@ -743,7 +743,7 @@ coordination_points:
       2. AI agent identifies affected docs (documentation-architecture.md)
       3. AI agent updates references (tech-stack.md, package-structure.md)
       4. AI agent validates (checklists/documentation-consistency-checklist.md)
-  
+
   Quality Gate:
     trigger: "Story completion"
     workflow:
@@ -786,7 +786,7 @@ LEGEND:
 
 ```yaml
 document_types:
-  
+
   STRATEGIC:
     files: [Vision, Roadmap, Market Research, Competitive Strategy]
     characteristics:
@@ -794,7 +794,7 @@ document_types:
       - Long-term (quarterly updates)
       - Business/product focused
       - Non-technical audience
-    
+
   CANONICAL:
     files: [YBIS_PROJE_ANAYASASI, DEVELOPMENT_LOG]
     characteristics:
@@ -802,7 +802,7 @@ document_types:
       - Technical decisions
       - Historical record
       - Authority over all derived docs
-    
+
   REFERENCE:
     files: [tech-stack, package-structure, Architecture_better, PRD, README]
     characteristics:
@@ -810,7 +810,7 @@ document_types:
       - Read-only (no manual edits to derived parts)
       - Technical details
       - Daily developer reference
-    
+
   EXECUTION:
     files: [tasks, DEVELOPMENT_GUIDELINES, stories, epics]
     characteristics:
@@ -818,7 +818,7 @@ document_types:
       - Task tracking, checkboxes
       - Daily updates
       - Practical, actionable
-    
+
   SUPPORT:
     files: [INTEGRATION_ROADMAP, service-integration, quality-standards, TESTING_STRATEGY, QA gates, expo-migration]
     characteristics:
@@ -826,7 +826,7 @@ document_types:
       - Deep, narrow focus
       - Domain expert audience
       - Detailed patterns/standards
-    
+
   META:
     files: [DOCUMENTATION_INDEX, QUICKSTART, AI_Asistan_Gorev_Dagilimi]
     characteristics:
@@ -946,4 +946,3 @@ status: PENDING
 - Load TIER 1 only (4 files)
 - Follow QUICK_INDEX.md for subsequent reads
 - Maintain dual-write discipline
-

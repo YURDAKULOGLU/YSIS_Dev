@@ -44,4 +44,3 @@ export function createRateLimiter(config: RateLimitConfig) {
 - Users can't spam AI requests
 - Clear message when rate limited
 - Token usage visible (nice to have)
-

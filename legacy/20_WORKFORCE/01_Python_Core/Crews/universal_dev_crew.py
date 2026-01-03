@@ -59,16 +59,16 @@ class UniversalDevCrew:
     def run(self, inputs: FileModification):
         print(f"--- 🚀 Starting UniversalDevCrew ---")
         print(f"Target: {inputs.file_path}")
-        
+
         # 1. Developer Task
         devel_task = Task(
             description=f"""
             CONTEXT:
             You need to modify the file: '{inputs.file_path}'.
-            
+
             INSTRUCTIONS:
             {inputs.instructions}
-            
+
             Start by reading the file if it exists (use FileReadTool).
             Then, rewrite the file with the changes using FileWriterTool.
             """,
@@ -106,18 +106,18 @@ if __name__ == "__main__":
     parser.add_argument("file_path", help="Path to the file to modify")
     parser.add_argument("instructions", help="Instructions for modification")
     parser.add_argument("--context", nargs="*", help="Context files", default=[])
-    
+
     args = parser.parse_args()
-    
+
     # Ensure absolute path
     abs_path = os.path.abspath(args.file_path)
-    
+
     input_data = FileModification(
         file_path=abs_path,
         instructions=args.instructions,
         context_files=args.context
     )
-    
+
     crew = UniversalDevCrew()
     try:
         result = crew.run(input_data)

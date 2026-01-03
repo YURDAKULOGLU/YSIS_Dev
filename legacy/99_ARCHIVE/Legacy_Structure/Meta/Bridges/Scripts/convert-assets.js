@@ -31,7 +31,7 @@ async function convert() {
                 console.error(`❌ Failed to convert ${file}:`, err);
             }
         } else {
-            // Maybe it's still named .png but has jpg content? 
+            // Maybe it's still named .png but has jpg content?
             // We generally expected them to be .jpg now because of my previous 'mv' command.
             // If not found, check if .png exists and convert it in-place?
             // Let's assume the previous 'mv' worked or check for .png with jpg signature?

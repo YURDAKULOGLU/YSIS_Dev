@@ -1,8 +1,8 @@
 # Task ID: T-054
 
-- **Source Document:** Closed Beta Sprint - Nexus Delegation  
+- **Source Document:** Closed Beta Sprint - Nexus Delegation
 - **Title:** Vitest Config Parsing Error Fix
-- **Description:** 
+- **Description:**
   Vitest configuration'da parsing hatası var. Test infrastructure düzeltilmeli.
 
   **Mevcut Hata:**
@@ -36,4 +36,3 @@
 - **Complexity:** Medium (Investigation required)
 - **Estimated Effort:** 1-2 hours
 - **Dependencies:** None
-

@@ -48,7 +48,7 @@ class PlanningCrew:
     def __init__(self):
         self.model = ollama_model
         self.rag_memory = RAGMemory()
-        
+
         self.product_owner = Agent(
             role='Technical Product Owner',
             goal='Analyze requirements and define clear acceptance criteria.',
@@ -57,7 +57,7 @@ class PlanningCrew:
             allow_delegation=False,
             llm=ollama_model
         )
-        
+
         self.architect = Agent(
             role='Senior Software Architect',
             goal='Design robust, scalable, and maintainable software solutions.',
@@ -69,29 +69,29 @@ class PlanningCrew:
 
     def run(self, requirement: str):
         print(f"--- Starting Planning Crew for: {requirement[:50]}... ---")
-        
+
         # RAGMemory'den bilgi al
         additional_info = self.rag_memory.retrieve_information(requirement)
         enriched_requirement = f"{requirement} {additional_info}"
-        
+
         task_analysis = Task(
             description=f"""
             Analyze the following requirement:
             "{requirement}"
-            
+
             Identify key technical challenges, necessary components, and potential risks.
             """,
             agent=self.product_owner,
             expected_output="A summary of technical requirements and risks."
         )
-        
+
         task_design = Task(
             description=f"""
             Based on the analysis, create a step-by-step implementation plan.
             The plan must be feasible for a single developer to execute.
-            
+
             Requirement: "{requirement}"
-            
+
             Output MUST be a JSON object with this structure:
             {{
                 "technical_requirements": ["req1", "req2"],
@@ -102,13 +102,13 @@ class PlanningCrew:
             agent=self.architect,
             expected_output="A JSON object containing the implementation plan."
         )
-        
+
         crew = Crew(
             agents=[self.product_owner, self.architect],
             tasks=[task_analysis, task_design],
             verbose=True,
             process=Process.sequential
         )
-        
+
         result = crew.kickoff()
         return result

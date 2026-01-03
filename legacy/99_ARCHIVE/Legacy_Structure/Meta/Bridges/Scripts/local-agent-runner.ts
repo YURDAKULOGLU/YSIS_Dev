@@ -2,10 +2,10 @@
 
 /**
  * Local LLM Agent Runner
- * 
+ *
  * This script connects to a local Ollama instance and enables it to function as an agent
  * with access to the local file system and shell.
- * 
+ *
  * Usage: npx tsx scripts/local-agent-runner.ts [model_name]
  */
 
@@ -189,8 +189,8 @@ async function main() {
     const messages: any[] = [
         {
             role: 'system',
-            content: `You are a helpful AI assistant running locally on the user's machine. 
-You have access to the local file system and shell via tools. 
+            content: `You are a helpful AI assistant running locally on the user's machine.
+You have access to the local file system and shell via tools.
 Use these tools to help the user with coding tasks, system administration, and file management.
 Always analyze the output of your tools before proceeding.
 If a command fails, try to understand why and fix it or ask the user for help.
@@ -233,10 +233,10 @@ Be concise and efficient.`,
                         if (answer.toLowerCase().startsWith('y')) approved = true;
                         if (answer.toLowerCase() === 'always') {
                             // This is a runtime 'always' for this session only, ideally we'd set a flag
-                            // but for now let's just approve. 
+                            // but for now let's just approve.
                             // To implement 'always' properly we'd need to update the global AUTO_APPROVE or similar.
-                            // For simplicity, treating 'always' as 'yes' for this turn, 
-                            // but user might expect it to persist. 
+                            // For simplicity, treating 'always' as 'yes' for this turn,
+                            // but user might expect it to persist.
                             // Let's keep it simple:
                             approved = true;
                         }

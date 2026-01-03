@@ -38,16 +38,16 @@ Claude Code başlangıçta her şeyi yapıyor. Ama her framework eklendikçe **i
 ZAMAN ──────────────────────────────────────────────────────────►
 
 Başlangıç:  [████████████████████████] Claude Code does everything
-                
+
 +Aider:     [████████████████        ] Claude Code
             [                ████████] Aider (kod yazıyor)
-            
-+LangGraph: [████████████            ] Claude Code  
+
++LangGraph: [████████████            ] Claude Code
             [            ████████████] Aider + LangGraph
-            
+
 +Mem0:      [████████                ] Claude Code
             [        ████████████████] Aider + LangGraph + Mem0
-            
+
 +MCP:       [████                    ] Claude Code
             [    ████████████████████] Full Worker Ecosystem
 
@@ -67,7 +67,7 @@ Sistem eksiklik fark ettiğinde otomatik olarak framework ekliyor:
 
 ```
 "Hafıza lazım" ──► Mem0 entegrasyonu
-"Workflow lazım" ──► LangGraph entegrasyonu  
+"Workflow lazım" ──► LangGraph entegrasyonu
 "Tool standard lazım" ──► MCP entegrasyonu
 ```
 
@@ -545,7 +545,7 @@ known_meta_needs:
     target_solution: "aider"
     priority: "P0"
     target_version: "0.2.0"
-    
+
   MEMORY:
     description: "Context across sessions, failure patterns"
     status: "NOT_INTEGRATED"
@@ -553,7 +553,7 @@ known_meta_needs:
     candidate_frameworks: ["mem0", "qdrant", "chroma"]
     priority: "P1"
     target_version: "0.3.0"
-    
+
   WORKFLOW_ORCHESTRATION:
     description: "Multi-step tasks, state, checkpoints"
     status: "NOT_INTEGRATED"
@@ -561,7 +561,7 @@ known_meta_needs:
     candidate_frameworks: ["langgraph", "temporal", "prefect"]
     priority: "P1"
     target_version: "0.4.0"
-    
+
   TOOL_STANDARDIZATION:
     description: "Unified tool calling protocol"
     status: "NOT_INTEGRATED"
@@ -569,7 +569,7 @@ known_meta_needs:
     candidate_frameworks: ["mcp"]
     priority: "P2"
     target_version: "0.5.0"
-    
+
   MULTI_MODEL:
     description: "Provider switching, cost optimization"
     status: "NOT_INTEGRATED"
@@ -690,7 +690,7 @@ ybis-vX.Y.Z/
 
 **P0 Documents Needed:**
 1. CONSTITUTION.md
-2. VERSION.md  
+2. VERSION.md
 3. CURRENT_STATE.md
 
 **P1 Documents Needed:**
@@ -834,13 +834,13 @@ constitutional_changes:
   voting_members: "tier_1_only"
   veto_allowed: true
   cooling_period: "24h"  # Acele karar yok
-  
+
 operational_decisions:
   # Günlük kararlar
   required_consensus: "simple_majority"
   voting_members: "tier_1_and_tier_2"
   veto_allowed: false
-  
+
 emergency_mode:
   # Kriz anında
   trigger: "system_critical_failure"

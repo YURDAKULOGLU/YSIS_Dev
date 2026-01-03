@@ -5,12 +5,12 @@ Bu betik 'Hello World' mesajını ekrana yazdırır.
 def main() -> None:
     """
     Ana fonksiyon.
-    
+
     'Hello World' mesajını ekrana yazdırır.
     """
     """
     Ana fonksiyon.
-    
+
     'Hello World' mesajını ekrana yazdırır.
     """
     print("Hello World")

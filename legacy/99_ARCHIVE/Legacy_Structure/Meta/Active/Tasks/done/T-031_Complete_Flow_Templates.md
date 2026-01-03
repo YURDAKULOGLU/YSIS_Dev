@@ -2,7 +2,7 @@
 
 - **Source Document:** `docs/epics/4.flows-workflow-automation.md`, `RELEASE_READINESS_ASSESSMENT.md`, `resources/proposals/FLOW_TEMPLATES_BASED_ON_SURVEY.md`
 - **Title:** (P0) Complete Flow Templates - Survey-Based Priority Templates
-- **Description:** 
+- **Description:**
   Based on user survey results (~30 respondents), implement high-priority flow templates that users actually need. Survey shows top needs: task reminders, daily planning, study support, email organization, budget tracking.
 
   **Survey-Based Priority Templates (P0):**
@@ -40,12 +40,12 @@
      - Add "Smart Daily Planning" template (requires queryRAG)
      - Add "Study Session Planner" template
      - Update "Weekly Review" template (Sunday 6 PM, enhanced with task summary)
-  
+
   2. **P1 Templates (Epic 4):**
      - Add "Morning Routine" template
      - Add "Project Kickoff" template
      - Add "Focus Mode" template
-  
+
   3. **Template Features:**
      - All templates must support variables (time, duration, boolean options)
      - Templates should be customizable before activation
@@ -77,12 +77,11 @@
 
 - **Priority:** P0 (Critical - Blocks Epic 4 completion)
 - **Assigned To:** @ClaudeCode
-- **Related Tasks:** 
+- **Related Tasks:**
   - Epic 4: Flows & Workflow Automation
   - Story 4.3: Flow Templates - Pre-built Workflows
 - **Estimated Effort:** 6-8 hours (7 templates total: 4 P0 + 3 P1)
-- **Dependencies:** 
+- **Dependencies:**
   - Flow Engine (✅ exists)
   - Step types: createTask, createNote, sendNotification, delay (✅ exist)
   - createCalendarEvent step type (⚠️ may need to be added to Flow Engine)
-

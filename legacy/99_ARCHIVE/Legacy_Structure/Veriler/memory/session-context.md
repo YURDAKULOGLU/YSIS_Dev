@@ -178,21 +178,21 @@
 - **Date:** 2025-10-24
 - **Decision:** Comprehensive analysis of critical mobile UI issues preventing app functionality completed. Identified 6 major issues requiring immediate attention.
 - **Rationale:** Mobile app is currently non-functional due to tab bar overflow and navigation system conflicts. Users cannot access tab navigation, app freezes occur, and multiple UI components have spacing/display issues.
-- **Implementation:** 
+- **Implementation:**
   - Created detailed bug report: `docs/reports/ui bug raporu 2025-10-24.md`
   - Identified 2 critical issues (tab bar overflow, navigation conflicts) and 4 medium/low priority issues
   - Developed 3-phase resolution strategy: Quick fixes (30 min), Stabilization (1 hour), Refactor (4 hours)
-- **Impact:** 
+- **Impact:**
   - **Critical:** Tab bar overflow prevents basic navigation - app unusable
   - **High:** DrawerMenu and Tabs navigation conflict causes layout breaks and touch issues
   - **Medium:** Chat input spacing, app freeze issues, widget display problems
-- **Next Steps:** 
+- **Next Steps:**
   - Phase 1: Fix SafeAreaView edges={['bottom']} usage across all screens (5 min fix)
   - Phase 2: Resolve navigation system conflicts and animation listener issues
   - Phase 3: Implement Expo Router standard structure for long-term stability
 - **Files Analyzed:**
   - `apps/mobile/app/(tabs)/tasks.tsx:40` - SafeAreaView edges conflict
-  - `apps/mobile/app/(tabs)/chat.tsx:62` - SafeAreaView edges conflict  
+  - `apps/mobile/app/(tabs)/chat.tsx:62` - SafeAreaView edges conflict
   - `apps/mobile/app/(tabs)/notes.tsx:22` - SafeAreaView edges conflict
   - `apps/mobile/app/(tabs)/plan.tsx:22` - SafeAreaView edges conflict
   - `apps/mobile/app/(tabs)/settings.tsx:55` - SafeAreaView edges conflict
@@ -335,12 +335,12 @@
    - Standart timeline'a göre development speed ölçülecek
    - Aynı gün içinde benchmark sonuçları değerlendirilecek
    - Gerçek hız belirlenecek
-   
+
 2. **Phase 2: Timeline Adjustment (Benchmark sonrası - Aynı gün veya ertesi gün)**
    - Benchmark sonuçlarına göre timeline ayarlanacak
    - "X% daha hızlı/yavaş ilerleniyor" belirlenecek
    - Gerçekçi timeline oluşturulacak
-   
+
 3. **Phase 3: Scope Reduction Decision (Timeline adjustment sonrası)**
    - Benchmark sonuçlarına ve timeline'a göre scope reduction kararı verilecek
    - Gerekirse kritik olmayan features deferred edilecek

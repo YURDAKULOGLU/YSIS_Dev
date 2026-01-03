@@ -16,7 +16,7 @@ if (fs.existsSync(npmLockPath)) {
   try {
     const lockData = JSON.parse(fs.readFileSync(npmLockPath, 'utf8'));
     const issues = [];
-    
+
     function checkNode(node, path = '') {
       if (node.version === '' || node.version === undefined || node.version === null) {
         issues.push({
@@ -25,22 +25,22 @@ if (fs.existsSync(npmLockPath)) {
           version: node.version,
         });
       }
-      
+
       if (node.dependencies) {
         Object.entries(node.dependencies).forEach(([name, dep]) => {
           checkNode(dep, `${path}/${name}`);
         });
       }
-      
+
       if (node.packages) {
         Object.entries(node.packages).forEach(([pkgPath, pkg]) => {
           checkNode(pkg, pkgPath);
         });
       }
     }
-    
+
     checkNode(lockData);
-    
+
     if (issues.length > 0) {
       console.warn(`❌ Found ${issues.length} packages with invalid versions:\n`);
       issues.forEach(issue => {
@@ -66,7 +66,7 @@ if (fs.existsSync(pnpmLockPath)) {
     const lockContent = fs.readFileSync(pnpmLockPath, 'utf8');
     const emptyVersions = [];
     const lines = lockContent.split('\n');
-    
+
     lines.forEach((line, index) => {
       // Check for empty version patterns
       if (line.match(/version:\s*$/)) {
@@ -82,7 +82,7 @@ if (fs.existsSync(pnpmLockPath)) {
         });
       }
     });
-    
+
     if (emptyVersions.length > 0) {
       console.warn(`❌ Found ${emptyVersions.length} empty versions:\n`);
       emptyVersions.forEach(issue => {
@@ -112,10 +112,10 @@ const packageJsonFiles = [
 const packageIssues = [];
 packageJsonFiles.forEach(filePath => {
   if (!fs.existsSync(filePath)) return;
-  
+
   try {
     const pkg = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    
+
     // Check version field
     if (!pkg.version || pkg.version === '') {
       packageIssues.push({
@@ -124,7 +124,7 @@ packageJsonFiles.forEach(filePath => {
         version: pkg.version,
       });
     }
-    
+
     // Check dependencies for invalid versions
     ['dependencies', 'devDependencies', 'peerDependencies'].forEach(depType => {
       if (pkg[depType]) {
@@ -161,4 +161,3 @@ if (packageIssues.length > 0) {
 }
 
 console.warn('✅ Check complete!');
-

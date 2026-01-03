@@ -43,4 +43,3 @@ npx source-map-explorer bundle.js
 - Bundle size documented
 - At least 20% size reduction
 - No runtime regressions
-

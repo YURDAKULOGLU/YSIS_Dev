@@ -1,7 +1,7 @@
 # Tutarsızlık Raporu - Mobile App
 
-**Agent:** @Cursor (IDE Coder)  
-**Date:** 2025-01-25  
+**Agent:** @Cursor (IDE Coder)
+**Date:** 2025-01-25
 **Status:** 🔍 Analysis Complete
 
 ---
@@ -321,6 +321,5 @@ theme['property']?.val ?? defaultValue
 
 ---
 
-**Report Generated:** 2025-01-25  
+**Report Generated:** 2025-01-25
 **Agent:** @Cursor (IDE Coder)
-

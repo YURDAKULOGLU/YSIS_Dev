@@ -1,7 +1,7 @@
 # Lint Hataları Düzeltme Raporu
 
-**Date:** 2025-01-25  
-**Agent:** @Cursor (Coding)  
+**Date:** 2025-01-25
+**Agent:** @Cursor (Coding)
 **Status:** ✅ Completed
 
 ---
@@ -24,7 +24,7 @@
   ```typescript
   // Before:
   const offset = offsetOverride !== undefined ? offsetOverride : (append ? currentOffset : 0);
-  
+
   // After:
   const offset = offsetOverride ?? (append ? currentOffset : 0);
   ```
@@ -34,7 +34,7 @@
   ```typescript
   // Before:
   toast.error(error?.message || t('common.error'));
-  
+
   // After:
   toast.error(error?.message ?? t('common.error'));
   ```
@@ -44,7 +44,7 @@
   ```typescript
   // Before:
   toast.error(error?.message || 'Failed to update task');
-  
+
   // After:
   toast.error(error?.message ?? 'Failed to update task');
   ```
@@ -156,5 +156,3 @@ useEffect(() => {
 - Build production için hazır
 - TypeScript compilation: ✅ Success
 - ESLint: ✅ 0 errors
-
-

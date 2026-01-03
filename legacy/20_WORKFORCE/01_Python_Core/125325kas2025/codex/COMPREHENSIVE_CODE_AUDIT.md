@@ -1,8 +1,8 @@
 # YBIS Kapsamlı Kod İncelemesi ve Eleştirel Analiz
 
-**Tarih:** 2025-11-27  
-**Agent:** @Codex  
-**Kapsam:** Tüm proje - Mimari, Kod Kalitesi, Standartlara Uyum, Test Coverage, Dokümantasyon, UX/UI, Vizyon, PM, Raporlar  
+**Tarih:** 2025-11-27
+**Agent:** @Codex
+**Kapsam:** Tüm proje - Mimari, Kod Kalitesi, Standartlara Uyum, Test Coverage, Dokümantasyon, UX/UI, Vizyon, PM, Raporlar
 **Durum:** 🔴 Kritik Bulgular Mevcut
 
 ---
@@ -27,8 +27,8 @@ Bu doküman, YBIS projesinin kapsamlı bir kod incelemesi ve eleştirel analizin
 
 ### 1. UI İzolasyonu İhlali - `@ybis/ui` Wildcard Export
 
-**Severity:** 🔴 CRITICAL  
-**Anayasa İhlali:** `1_Anayasa/README.md` §2.2 - UI İzolasyonu  
+**Severity:** 🔴 CRITICAL
+**Anayasa İhlali:** `1_Anayasa/README.md` §2.2 - UI İzolasyonu
 **Dosya:** `packages/ui/src/index.ts`
 
 **Sorun:**
@@ -63,8 +63,8 @@ export { AppInfoCard } from './settings/AppInfoCard';
 
 ### 2. Backend'de `console.error` Kullanımı
 
-**Severity:** 🔴 CRITICAL  
-**Anayasa İhlali:** `2_Kalite_Ve_Standartlar/README.md` §1.2 - ESLint Kuralları  
+**Severity:** 🔴 CRITICAL
+**Anayasa İhlali:** `2_Kalite_Ve_Standartlar/README.md` §1.2 - ESLint Kuralları
 **Dosya:** `apps/backend/src/index.ts:111`
 
 **Sorun:**
@@ -103,8 +103,8 @@ app.onError((err, c) => {
 
 ### 3. TypeScript `any` Kullanımı (Potansiyel)
 
-**Severity:** 🔴 CRITICAL  
-**Anayasa İhlali:** `2_Kalite_Ve_Standartlar/README.md` §1.1  
+**Severity:** 🔴 CRITICAL
+**Anayasa İhlali:** `2_Kalite_Ve_Standartlar/README.md` §1.1
 **Dosya:** `apps/mobile/src/services/api.ts:33`
 
 **Sorun:**
@@ -135,9 +135,9 @@ const err = isSupabaseError(error) ? error : { message: 'Unknown error' };
 
 ### 4. Test Coverage Kritik Eksikliği
 
-**Severity:** 🔴 CRITICAL  
-**Anayasa İhlali:** `4_Test_Stratejisi/README.md` §5 - Test Kapsamı Hedefleri  
-**Hedef:** %80  
+**Severity:** 🔴 CRITICAL
+**Anayasa İhlali:** `4_Test_Stratejisi/README.md` §5 - Test Kapsamı Hedefleri
+**Hedef:** %80
 **Mevcut:** ~15% (tahmini)
 
 **Sorun:**
@@ -183,8 +183,8 @@ const err = isSupabaseError(error) ? error : { message: 'Unknown error' };
 
 ### 5. ESLint Uyarıları - 84+ Uyarı
 
-**Severity:** 🔴 CRITICAL  
-**Anayasa İhlali:** `2_Kalite_Ve_Standartlar/README.md` §1.2 - Sıfır Uyarı Politikası  
+**Severity:** 🔴 CRITICAL
+**Anayasa İhlali:** `2_Kalite_Ve_Standartlar/README.md` §1.2 - Sıfır Uyarı Politikası
 **Mevcut:** 84+ uyarı
 
 **Anayasa Kuralı:**
@@ -208,8 +208,8 @@ const err = isSupabaseError(error) ? error : { message: 'Unknown error' };
 
 ### 6. Vitest Parsing Error (T-002)
 
-**Severity:** 🔴 CRITICAL  
-**Task:** T-002 (Antigravity'ye atanmış)  
+**Severity:** 🔴 CRITICAL
+**Task:** T-002 (Antigravity'ye atanmış)
 **Durum:** 🔴 BLOCKED
 
 **Sorun:**
@@ -235,7 +235,7 @@ Error: Expected 'from', got 'typeOf'
 
 ### 7. Logging Sink'lerde `console.warn` Kullanımı
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosyalar:**
 - `apps/mobile/src/logging/supabase-sink.ts:30`
 - `apps/mobile/src/logging/file-sink.ts:84`
@@ -256,7 +256,7 @@ console.warn('[SupabaseSink] Failed to send log', error);
 
 ### 8. Type Assertion Güvenliği
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosya:** `packages/database/src/adapters/SupabaseAdapter.ts:489`
 
 **Sorun:**
@@ -279,7 +279,7 @@ function isSupabaseError(error: unknown): error is { code?: string; message?: st
 
 ### 9. API Response Type Safety
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosyalar:**
 - `apps/mobile/src/services/chatApi.ts:58, 66, 74, 89`
 
@@ -321,7 +321,7 @@ export async function createConversation(...): Promise<Conversation> {
 
 ### 10. Backend Error Handling Eksiklikleri
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosya:** `apps/backend/src/index.ts:110-118`
 
 **Sorun:**
@@ -342,7 +342,7 @@ app.onError((err, c) => {
 ```typescript
 app.onError((err, c) => {
   const requestId = c.req.header('x-request-id') || crypto.randomUUID();
-  
+
   Logger.error('Request error', err as Error, {
     type: 'HTTP',
     path: c.req.path,
@@ -354,7 +354,7 @@ app.onError((err, c) => {
   const isInternalError = !(err instanceof ValidationError || err instanceof AuthError);
   const message = isInternalError ? 'Internal Server Error' : err.message;
 
-  return c.json({ 
+  return c.json({
     error: message,
     requestId, // For client to report
   }, err.statusCode || 500);
@@ -365,7 +365,7 @@ app.onError((err, c) => {
 
 ### 11. Missing Return Type Annotations
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Anayasa Gereksinimi:** `2_Kalite_Ve_Standartlar/README.md` §1.1
 
 **Sorun:**
@@ -384,7 +384,7 @@ app.onError((err, c) => {
 
 ### 12. Missing Package README Files
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Anayasa Gereksinimi:** `2_Kalite_Ve_Standartlar/README.md` §2.3
 
 **Kural:**
@@ -412,7 +412,7 @@ app.onError((err, c) => {
 
 ### 13. Commented Code
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosya:** `apps/mobile/src/features/widgets/components/WidgetItemsList.tsx:195`
 
 **Sorun:**
@@ -432,7 +432,7 @@ app.onError((err, c) => {
 
 ### 14. Missing Error Boundaries
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Best Practice:** React Error Boundaries
 
 **Sorun:**
@@ -470,7 +470,7 @@ export function ErrorBoundary({ children }: { children: React.ReactNode }) {
 
 ### 15. Type Import Consistency
 
-**Severity:** 🟢 LOW  
+**Severity:** 🟢 LOW
 **ESLint Uyarısı:** `@typescript-eslint/consistent-type-imports`
 
 **Sorun:**
@@ -484,7 +484,7 @@ export function ErrorBoundary({ children }: { children: React.ReactNode }) {
 
 ### 16. Missing JSDoc Comments
 
-**Severity:** 🟢 LOW  
+**Severity:** 🟢 LOW
 **Best Practice:** Public API'ler için JSDoc
 
 **Sorun:**
@@ -507,7 +507,7 @@ query<T>(tableName: string, options?: QueryOptions): Promise<T[]>;
 
 ### 17. Environment Variable Validation
 
-**Severity:** 🟢 LOW  
+**Severity:** 🟢 LOW
 **Dosya:** `apps/backend/src/index.ts:35-47`
 
 **Sorun:**
@@ -544,7 +544,7 @@ const env = envSchema.parse(process.env);
 
 ### 18. Missing Performance Monitoring
 
-**Severity:** 🟢 LOW  
+**Severity:** 🟢 LOW
 **Anayasa Gereksinimi:** `1_Anayasa/README.md` §5.1 - Performans Bütçeleri
 
 **Sorun:**
@@ -561,7 +561,7 @@ const env = envSchema.parse(process.env);
 
 ### 19. Missing API Rate Limiting
 
-**Severity:** 🟢 LOW  
+**Severity:** 🟢 LOW
 **Dosya:** `apps/backend/src/index.ts`
 
 **Sorun:**
@@ -645,7 +645,7 @@ app.use('*', rateLimiter({
 
 ### 20. UX Prensipleri vs Implementasyon Uyumsuzluğu
 
-**Severity:** 🔴 CRITICAL  
+**Severity:** 🔴 CRITICAL
 **Anayasa İhlali:** `1_Anayasa/README.md` §3 - Ürün ve Kullanıcı Deneyimi Prensipleri
 
 **Sorun:**
@@ -671,7 +671,7 @@ Anayasa'da belirtilen UX prensipleri ile mevcut implementasyon arasında ciddi u
 
 ### 21. Chat İlk İzlenim Eksiklikleri
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosya:** `apps/mobile/src/features/chat/components/SuggestionPrompts.tsx`
 
 **Sorun:**
@@ -693,7 +693,7 @@ Anayasa'da belirtilen UX prensipleri ile mevcut implementasyon arasında ciddi u
 
 ### 22. Widget Overlay vs Flex Layout Uyumsuzluğu
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosya:** `apps/mobile/app/(tabs)/index.tsx`
 
 **Sorun:**
@@ -713,7 +713,7 @@ Anayasa'da belirtilen UX prensipleri ile mevcut implementasyon arasında ciddi u
 
 ### 23. Navigasyon Karmaşası
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosyalar:** `apps/mobile/app/(tabs)/_layout.tsx`, `apps/mobile/src/layouts/UniversalLayout.tsx`
 
 **Sorun:**
@@ -734,7 +734,7 @@ Anayasa'da belirtilen UX prensipleri ile mevcut implementasyon arasında ciddi u
 
 ### 24. Demo vs Prod Ayrımı Eksik
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosya:** `apps/mobile/src/stores/useMockAuth.ts`
 
 **Sorun:**
@@ -756,7 +756,7 @@ Anayasa'da belirtilen UX prensipleri ile mevcut implementasyon arasında ciddi u
 
 ### 25. Status/UI Primitives Eksik
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosyalar:** `apps/mobile/src/components/common/`
 
 **Sorun:**
@@ -777,7 +777,7 @@ Anayasa'da belirtilen UX prensipleri ile mevcut implementasyon arasında ciddi u
 
 ### 26. Chat State Persistence Eksik
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosya:** `apps/mobile/src/features/chat/hooks/useChat.ts`
 
 **Sorun:**
@@ -802,7 +802,7 @@ Anayasa'da belirtilen UX prensipleri ile mevcut implementasyon arasında ciddi u
 
 ### 27. Vizyon Dokümanı vs Mevcut Scope Uyumsuzluğu
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosya:** `docs/vision/PROJECT_VISION.md` vs `docs/CLOSED_BETA_FINAL_SCOPE.md`
 
 **Sorun:**
@@ -835,7 +835,7 @@ Vizyon dokümanında Google Workspace integration vurgulanıyor, ancak Closed Be
 
 ### 28. PRD vs Roadmap Timeline Uyumsuzluğu
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosyalar:** `docs/prd/PRODUCT_REQUIREMENTS.md` vs `docs/roadmap/PRODUCT_ROADMAP.md`
 
 **Sorun:**
@@ -865,7 +865,7 @@ PRD'de belirtilen timeline ile roadmap'teki timeline uyumsuz:
 
 ### 29. Epic/Story Alignment Eksikliği
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosyalar:** `docs/epics/`, `docs/stories/`
 
 **Sorun:**
@@ -919,7 +919,7 @@ PRD'de belirtilen timeline ile roadmap'teki timeline uyumsuz:
 
 ### 31. Competitive Analysis Eksikliği ve Stratejik Tutarsızlıklar
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosya:** `docs/prd/PRODUCT_REQUIREMENTS.md:629-635`, `docs/strategy/COMPETITIVE_STRATEGY.md`
 
 **Sorun:**
@@ -961,7 +961,7 @@ PRD'de belirtildiği üzere competitive analysis yapılmamış, ancak strateji d
 
 ### 32. TryMartin (Martin AI) - Doğrudan Rakip Analizi
 
-**Severity:** 🟡 MEDIUM (Stratejik)  
+**Severity:** 🟡 MEDIUM (Stratejik)
 **Kaynak:** `docs/strategy/TRYMARTIN_COMPETITOR_ANALYSIS.md`, `docs/AntiGravity/018_Competitor_Analysis_Martin.md`, `İncelenecekler/martin competitor fikir.md`
 
 **TryMartin Profili:**
@@ -1026,7 +1026,7 @@ PRD'de belirtildiği üzere competitive analysis yapılmamış, ancak strateji d
 
 ### 33. Motion, Akiflow, Reclaim - AI-Powered Scheduling Rakipleri
 
-**Severity:** 🟡 MEDIUM (Stratejik)  
+**Severity:** 🟡 MEDIUM (Stratejik)
 **Kaynak:** `docs/strategy/COMPETITIVE_STRATEGY.md:178-204`
 
 **Motion:**
@@ -1061,7 +1061,7 @@ PRD'de belirtildiği üzere competitive analysis yapılmamış, ancak strateji d
 
 ### 34. Notion, Todoist - All-in-One & Task Management Rakipleri
 
-**Severity:** 🟡 MEDIUM (Stratejik)  
+**Severity:** 🟡 MEDIUM (Stratejik)
 **Kaynak:** `docs/strategy/COMPETITIVE_STRATEGY.md:123-172`
 
 **Notion:**
@@ -1096,7 +1096,7 @@ PRD'de belirtildiği üzere competitive analysis yapılmamış, ancak strateji d
 
 ### 35. Market Research & Positioning Analizi
 
-**Severity:** 🟡 MEDIUM (Stratejik)  
+**Severity:** 🟡 MEDIUM (Stratejik)
 **Kaynak:** `docs/strategy/MARKET_RESEARCH.md`, `docs/strategy/COMPETITIVE_STRATEGY.md`
 
 **Pazar Büyüklüğü:**
@@ -1151,7 +1151,7 @@ PRD'de belirtildiği üzere competitive analysis yapılmamış, ancak strateji d
 
 ### 36. Dokümantasyon Dağınıklığı - Competitor Analizi
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Dosyalar:** Multiple strategy documents
 
 **Sorun:**
@@ -1179,7 +1179,7 @@ Competitor analizi birden fazla yerde:
 
 ### 37. Pricing Strategy Belirsizliği
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Kaynak:** `docs/strategy/MARKET_RESEARCH.md:1108-1163`
 
 **Sorun:**
@@ -1211,7 +1211,7 @@ Pricing strategy "TBD" (To Be Determined):
 
 ### 38. Market Positioning Tutarsızlıkları
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Kaynak:** Multiple strategy documents
 
 **Sorun:**
@@ -1236,7 +1236,7 @@ Farklı dokümanlarda farklı positioning mesajları:
 
 ### 39. Competitive Intelligence Monitoring Eksikliği
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Kaynak:** `docs/strategy/TRYMARTIN_COMPETITOR_ANALYSIS.md:276-306`
 
 **Sorun:**
@@ -1262,7 +1262,7 @@ Competitive monitoring framework tanımlanmış ama implement edilmemiş:
 
 ### 40. Go-to-Market Strategy Detay Eksikliği
 
-**Severity:** 🟡 MEDIUM  
+**Severity:** 🟡 MEDIUM
 **Kaynak:** `docs/strategy/COMPETITIVE_STRATEGY.md:852-937`
 
 **Sorun:**
@@ -1353,6 +1353,5 @@ Bu sorunlar çözülmeden production'a geçilmemeli. Öncelikle P0 ve P1 task'la
 
 ---
 
-**Son Güncelleme:** 2025-11-27  
+**Son Güncelleme:** 2025-11-27
 **Sonraki İnceleme:** Test coverage %80'e ulaştığında ve UX prensipleri implement edildiğinde
-

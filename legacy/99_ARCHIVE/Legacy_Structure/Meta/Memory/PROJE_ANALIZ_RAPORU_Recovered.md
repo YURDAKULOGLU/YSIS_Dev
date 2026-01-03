@@ -1,7 +1,7 @@
 # 🔍 YBIS Projesi - Kapsamlı Analiz Raporu
 
-**Tarih:** 2025-12-02  
-**Analiz Kapsamı:** Tüm proje yapısı, mimari, kod kalitesi, bağımlılıklar, test durumu  
+**Tarih:** 2025-12-02
+**Analiz Kapsamı:** Tüm proje yapısı, mimari, kod kalitesi, bağımlılıklar, test durumu
 **Durum:** 🟡 **KAPALI BETA - GELİŞTİRME AŞAMASINDA**
 
 ---
@@ -154,8 +154,8 @@ YBIS/
 
 ### Test Coverage
 
-**Hedef:** 80%  
-**Mevcut:** ~15%  
+**Hedef:** 80%
+**Mevcut:** ~15%
 **Gap:** 65% eksik
 
 **Sorun:**
@@ -187,44 +187,44 @@ export default defineConfig({
 ### P0 - Kritik Sorunlar
 
 #### 1. T-002: Vitest Parsing Sorunu
-**Durum:** 🔴 Aktif  
-**Etki:** 5 pakette testler devre dışı  
-**Neden:** Supabase SDK'nın modern TypeScript syntax'ı  
+**Durum:** 🔴 Aktif
+**Etki:** 5 pakette testler devre dışı
+**Neden:** Supabase SDK'nın modern TypeScript syntax'ı
 **Çözüm:** İnceleniyor (Antigravity agent'e atanmış)
 
 #### 2. TypeScript Tip Hataları
-**Durum:** ✅ Çözüldü (2025-12-02)  
-**Sorun:** FlowEngine.test.ts'de `null` vs `undefined` tip uyumsuzluğu  
+**Durum:** ✅ Çözüldü (2025-12-02)
+**Sorun:** FlowEngine.test.ts'de `null` vs `undefined` tip uyumsuzluğu
 **Çözüm:** Optional property'ler için `null` değerleri kaldırıldı
 
 ### P1 - Yüksek Öncelik
 
 #### 3. Test Coverage Düşük
-**Durum:** 🟡 Aktif  
-**Mevcut:** ~15%  
-**Hedef:** 80%  
+**Durum:** 🟡 Aktif
+**Mevcut:** ~15%
+**Hedef:** 80%
 **Etki:** Production readiness riski
 
 #### 4. Event Creation - AI Tool Missing
-**Durum:** 🟡 Kısmi  
-**Sorun:** AI event oluşturamıyor (tool eksik veya bozuk)  
+**Durum:** 🟡 Kısmi
+**Sorun:** AI event oluşturamıyor (tool eksik veya bozuk)
 **Etki:** Kullanıcı deneyimi
 
 #### 5. i18n Translation Keys Eksik
-**Durum:** 🟡 Kısmi  
-**Sorun:** Bazı UI elementleri translation key gösteriyor  
+**Durum:** 🟡 Kısmi
+**Sorun:** Bazı UI elementleri translation key gösteriyor
 **Etki:** Kullanıcı deneyimi
 
 ### P2 - Orta Öncelik
 
 #### 6. Chat Markdown Rendering
-**Durum:** 🟡 Eksik özellik  
-**Sorun:** AI mesajlarındaki markdown render edilmiyor  
+**Durum:** 🟡 Eksik özellik
+**Sorun:** AI mesajlarındaki markdown render edilmiyor
 **Çözüm:** MarkdownRenderer component'i eklenmeli
 
 #### 7. Menu Big Button - Intermittent Bug
-**Durum:** 🟡 Kararsız  
-**Sorun:** Ana menü büyük butonu bazen çalışmıyor  
+**Durum:** 🟡 Kararsız
+**Sorun:** Ana menü büyük butonu bazen çalışmıyor
 **Neden:** Event handler timing, z-index, touch event çakışması
 
 ---
@@ -437,7 +437,6 @@ YBIS projesi **sağlam bir mimari temel** üzerine kurulmuş, **modern teknoloji
 
 ---
 
-**Rapor Hazırlayan:** Auto (Cursor AI Agent)  
-**Tarih:** 2025-12-02  
+**Rapor Hazırlayan:** Auto (Cursor AI Agent)
+**Tarih:** 2025-12-02
 **Versiyon:** 1.0
-

@@ -9,8 +9,8 @@ from pydantic import ValidationError # Import for explicit ValidationError handl
 class DeveloperAgent(YBISAgent):
     def __init__(self, router: IntelligentRouter):
         super().__init__(
-            agent_id="developer", 
-            router=router, 
+            agent_id="developer",
+            router=router,
             task_type=TaskType.CODE_GENERATION,
             output_model=CodeOutput # Enforce Pydantic output
         )
@@ -20,16 +20,16 @@ class DeveloperAgent(YBISAgent):
         temp_dir = os.path.join(os.path.dirname(__file__), "../../.temp")
         os.makedirs(temp_dir, exist_ok=True)
         temp_path = os.path.join(temp_dir, os.path.basename(file_path))
-        
+
         try:
             with open(temp_path, 'w', encoding='utf-8') as f:
                 f.write(code)
-                
+
             result = "Skipped verification (unsupported type)"
-            
+
             if file_path.endswith(".py"):
                 result = code_exec.run_python(code)
-            
+
             return result
         except Exception as e:
             return f"Error during code verification: {e}"
@@ -43,7 +43,7 @@ class DeveloperAgent(YBISAgent):
     async def implement(self, spec: str) -> CodeOutput: # Changed return type
         # Extract task from spec
         task_line = spec.split('\n')[0] if '\n' in spec else spec
-        
+
         # Get schema
         output_schema = CodeOutput.model_json_schema()
 
@@ -71,7 +71,7 @@ Rules for code generation:
 2. Output MUST be a valid JSON object matching the CodeOutput schema.
 3. No additional text, explanations, or markdown outside the JSON object.
 """
-        
+
         try:
             raw_result = await self.run(prompt)
             print(f"[DEBUG] Raw LLM output from Developer: {raw_result}") # DEBUG PRINT
@@ -85,9 +85,9 @@ Rules for code generation:
                 verification_result = await self.verify_code(code_obj.file_path, code_obj.code)
                 if "Error" in verification_result:
                     print(f"[WARNING] [Developer] Self-Verification Warning: {verification_result}")
-            
+
             return code_obj
-            
+
         except ValidationError as ve:
             print(f"[ERROR] [Developer] Pydantic Validation Error: LLM output did not conform to schema: {ve}")
             # The LLM output did not conform to the CodeOutput schema.

@@ -58,4 +58,3 @@ Configure deep linking for all app routes to enable:
 - `ybis://` scheme registered
 - All main screens accessible via deep link
 - Notifications can open specific screens
-

@@ -10,21 +10,21 @@ class YBISConfig(BaseModel):
     langsmith_api_key: str = os.getenv("LANGSMITH_API_KEY", "")
     langsmith_project: str = "ybis-agentic"
     langsmith_tracing: bool = True
-    
+
     # Anthropic (Cloud)
     anthropic_api_key: str = os.getenv("ANTHROPIC_API_KEY", "")
     cloud_model: str = "claude-3-5-sonnet-20240620"
-    
+
     # Ollama (Local)
     ollama_host: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
     local_primary_model: str = "llama3.2:latest" # Changed to tool-compatible model
     local_fast_model: str = "llama3.2:3b"
     local_fallback_model: str = "qwen2.5-coder:14b" # Updated to match available model
-    
+
     # Routing
     prefer_local: bool = True
     cloud_tasks: List[str] = ["architecture", "critical_decision", "complex_debug"]
-    
+
     class Config:
         env_file = os.path.join(os.path.dirname(__file__), "../../../.env")
         extra = "allow"
@@ -62,7 +62,7 @@ import requests # Import requests for checking Ollama models
 class IntelligentRouter:
     def __init__(self, config: YBISConfig):
         self.config = config
-    
+
     def _get_ollama_models(self) -> List[str]:
         """Fetches a list of available models from the Ollama server."""
         try:
@@ -74,7 +74,7 @@ class IntelligentRouter:
             return []
 
     def route(
-        self, 
+        self,
         task_type: TaskType,
         complexity: TaskComplexity = TaskComplexity.MEDIUM,
         force_cloud: bool = False,
@@ -84,10 +84,10 @@ class IntelligentRouter:
         Returns (model_name_string, decision).
         Format: 'ollama:model_name' or 'anthropic:model_name'
         """
-        
+
         # 1. Cloud forced or Critical
         use_cloud = force_cloud or (
-            not force_local and 
+            not force_local and
             (complexity == TaskComplexity.CRITICAL or task_type in [TaskType.ARCHITECTURE, TaskType.CRITICAL_DECISION]) and
             self.config.anthropic_api_key
         )
@@ -103,7 +103,7 @@ class IntelligentRouter:
         if self.config.prefer_local and self.config.local_primary_model in available_ollama_models:
             model_name = f"ollama:{self.config.local_primary_model}"
             return model_name, RoutingDecision(model=self.config.local_primary_model, runtime="local", reason="Primary local model")
-        
+
         # Try local fast model
         if self.config.prefer_local and self.config.local_fast_model in available_ollama_models and task_type in [TaskType.QUICK_FIX, TaskType.CODE_REVIEW, TaskType.TESTING]:
             model_name = f"ollama:{self.config.local_fast_model}"
@@ -118,5 +118,5 @@ class IntelligentRouter:
         if self.config.anthropic_api_key:
             model_name = f"anthropic:{self.config.cloud_model}"
             return model_name, RoutingDecision(model=self.config.cloud_model, runtime="cloud", reason="Local models unavailable, falling back to cloud")
-            
+
         raise Exception("No available LLM model to route to (local models not found and no cloud API key).")

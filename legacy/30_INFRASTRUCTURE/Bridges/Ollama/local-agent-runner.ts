@@ -2,10 +2,10 @@
 
 /**
  * Local LLM Agent Runner (Async Worker Mode)
- * 
+ *
  * This script runs as a background worker, watching the 'Inbox' folder for JSON tasks.
  * When a task is found, it processes it using the local Ollama instance and writes the result to 'Outbox'.
- * 
+ *
  * Usage: npx tsx .YBIS_Dev/30_INFRASTRUCTURE/Bridges/Ollama/local-agent-runner.ts [model_name]
  */
 
@@ -136,7 +136,7 @@ function log(message: string, level = 'INFO') {
     const timestamp = new Date().toISOString();
     const logEntry = `[${timestamp}] [${level}] ${message}`;
     console.log(logEntry);
-    
+
     // Ensure logs dir exists
     if (!fs.existsSync(LOGS_DIR)) fs.mkdirSync(LOGS_DIR, { recursive: true });
     fs.appendFileSync(path.join(LOGS_DIR, 'agent_node.log'), logEntry + '\n');
@@ -155,10 +155,10 @@ async function processTask(taskPath: string) {
         ];
 
         log(`Sending instruction to Ollama: ${task.instruction}`);
-        
+
         // Decide whether to enable tools based on task type or instruction content
         const requiresTools = task.instruction.includes('read_file') || task.instruction.includes('write_file') || task.instruction.includes('list_dir') || task.instruction.includes('run_command');
-        
+
         let responseMessage = await chatCompletion(messages, requiresTools); // Pass requiresTools flag
         let finalResult = '';
 
@@ -173,7 +173,7 @@ async function processTask(taskPath: string) {
                 const contentText = responseMessage.content;
                 const jsonStartIndex = contentText.indexOf('{');
                 const jsonEndIndex = contentText.lastIndexOf('}');
-                
+
                 if (jsonStartIndex !== -1 && jsonEndIndex !== -1 && jsonEndIndex > jsonStartIndex) {
                     const jsonString = contentText.substring(jsonStartIndex, jsonEndIndex + 1);
                     try {
@@ -181,7 +181,7 @@ async function processTask(taskPath: string) {
                         if (toolCallInContent.name && toolCallInContent.parameters) {
                             log(`Executing tool from content (parsed JSON): ${toolCallInContent.name} with args: ${JSON.stringify(toolCallInContent.parameters)}`);
                             const result = await executeTool(toolCallInContent.name, toolCallInContent.parameters);
-                            
+
                             messages.push({
                                 role: 'tool',
                                 name: toolCallInContent.name,
@@ -212,7 +212,7 @@ async function processTask(taskPath: string) {
         }, null, 2));
 
         log(`Task completed. Result: ${path.basename(resultFile)}`);
-        
+
         // Rename task to .done
         fs.renameSync(taskPath, taskPath + '.done');
 
@@ -226,7 +226,7 @@ async function processTask(taskPath: string) {
 async function main() {
     log(`Starting with model: ${DEFAULT_MODEL}`);
     log(`🚀 Node Agent Worker ONLINE. Watching: ${INBOX_DIR} (RunOnce: ${RUN_ONCE})`);
-    
+
     // Ensure dirs exist
     if (!fs.existsSync(INBOX_DIR)) fs.mkdirSync(INBOX_DIR, { recursive: true });
     if (!fs.existsSync(OUTBOX_DIR)) fs.mkdirSync(OUTBOX_DIR, { recursive: true });
@@ -235,16 +235,16 @@ async function main() {
         try {
             // Filter: Must end with .json AND NOT start with 'trigger_'
             const files = fs.readdirSync(INBOX_DIR).filter(f => f.endsWith('.json') && !f.startsWith('trigger_'));
-            
+
             for (const file of files) {
                 await processTask(path.join(INBOX_DIR, file));
             }
-            
+
             if (RUN_ONCE) {
                 log('Run once completed. Exiting.');
                 break;
             }
-            
+
             // Sleep 2 seconds
             await new Promise(resolve => setTimeout(resolve, 2000));
         } catch (e) {

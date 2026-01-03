@@ -1,7 +1,7 @@
 # T-015: Auth Onboarding - Implementation Report
 
-**Agent:** @Cursor (IDE Coder)  
-**Date:** 2025-01-25  
+**Agent:** @Cursor (IDE Coder)
+**Date:** 2025-01-25
 **Status:** ✅ Completed
 
 ---
@@ -194,6 +194,5 @@ T-015 Auth Onboarding görevi tamamlandı. Login ve Signup ekranları zaten mevc
 
 ---
 
-**Report Generated:** 2025-01-25  
+**Report Generated:** 2025-01-25
 **Agent:** @Cursor (IDE Coder)
-

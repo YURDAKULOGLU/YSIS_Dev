@@ -37,7 +37,7 @@ def verify_chain():
     print(f"🔗 YBIS Global Integrity Checker")
     print(f"📂 Project Root: {PROJECT_ROOT}")
     print("---------------------------------------------")
-    
+
     config = load_lock_file()
     if not config:
         return False
@@ -53,10 +53,10 @@ def verify_chain():
 
         # Resolve full path pattern
         source_full_pattern = str(PROJECT_ROOT / source_pattern)
-        
+
         # Handle glob patterns
         sources = glob.glob(source_full_pattern, recursive=True)
-        
+
         if not sources:
             print(f"⚠️  Source not found: {source_pattern} (Skipping)")
             continue
@@ -64,7 +64,7 @@ def verify_chain():
         for source in sources:
             source_path = Path(source)
             current_hash = calculate_hash(source_path)
-            
+
             # Display relative to project root
             try:
                 display_source = source_path.relative_to(PROJECT_ROOT)

@@ -1,7 +1,7 @@
 # Çekirdek Flows Implementasyonu - Tamamlandı
 
-**Agent:** @ClaudeCode (Copilot CLI)  
-**Date:** 2025-11-30  
+**Agent:** @ClaudeCode (Copilot CLI)
+**Date:** 2025-11-30
 **Task:** Çekirdek Flows (Manuel/Schedule + 3-4 Template)
 
 ---
@@ -257,4 +257,3 @@ Tüm kabul kriterleri karşılandı:
 **Süre:** ~2.5 saat (plan 3-4 saat)
 
 **Not:** Schedule execution stub olarak bırakıldı (cron alan DB'ye kaydediliyor ama otomatik run yok). Bu, sonraki iterasyonda Supabase Edge Function ile implement edilebilir.
-

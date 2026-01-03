@@ -12,13 +12,13 @@ class WebSearchTool:
         # TODO: Implement real search integration
         # Example using Tavily if key exists
         tavily_key = os.getenv("TAVILY_API_KEY")
-        
+
         if tavily_key:
             # from tavily import TavilyClient
             # client = TavilyClient(api_key=tavily_key)
             # return client.search(query)
             return f"[Real Search Disabled] Would search for: {query}"
-        
+
         # Fallback Mock response for now
         return f"""
         [Mock Search Result for: {query}]

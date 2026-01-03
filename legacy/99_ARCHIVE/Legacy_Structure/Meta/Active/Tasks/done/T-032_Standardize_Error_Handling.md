@@ -2,7 +2,7 @@
 
 - **Source Document:** `RELEASE_READINESS_ASSESSMENT.md`, `PRODUCTION_CHECKLIST.md`
 - **Title:** (P1) Standardize Error Handling - Replace console.error/warn with Logger
-- **Description:** 
+- **Description:**
   Some code still uses `console.error`, `console.warn`, or `console.log` instead of the standardized `Logger` from `@ybis/logging`. This creates inconsistent logging and makes it harder to track errors in production.
 
   **Current Status:**
@@ -36,11 +36,9 @@
 
 - **Priority:** P1 (High - Code quality, but not blocking)
 - **Assigned To:** @ClaudeCode
-- **Related Tasks:** 
+- **Related Tasks:**
   - Production Checklist: Error Handling standardization
 - **Estimated Effort:** 1-2 hours
-- **Dependencies:** 
+- **Dependencies:**
   - Logger infrastructure (✅ exists)
   - Understanding of logging sink architecture
-
-

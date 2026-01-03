@@ -70,16 +70,16 @@ import json
 def generate_unit_tests(code_file):
     with open(code_file, 'r') as f:
         code = f.read()
-    
+
     prompt = f"Generate comprehensive Jest unit tests for this TypeScript code:\n\n{code}"
-    
-    response = requests.post('http://localhost:11434/api/generate', 
+
+    response = requests.post('http://localhost:11434/api/generate',
         json={
             'model': 'deepseek-r1:32b',
             'prompt': prompt,
             'stream': False
         })
-    
+
     return response.json()['response']
 
 # Kullanım
@@ -94,12 +94,12 @@ import ollama from 'ollama';
 
 async function generateDocs(filePath) {
   const code = await fs.readFile(filePath, 'utf-8');
-  
+
   const response = await ollama.generate({
     model: 'qwen2.5:14b',
     prompt: `Generate comprehensive JSDoc comments for this TypeScript code:\n\n${code}`,
   });
-  
+
   return response.response;
 }
 
@@ -139,17 +139,17 @@ CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep ".tsx\|.ts")
 
 for FILE in $CHANGED_FILES; do
     echo "📝 Generating tests for: $FILE"
-    
+
     # 2. Dosya içeriğini oku
     CODE=$(cat $FILE)
-    
+
     # 3. DeepSeek ile test üret
     TESTS=$(ollama run deepseek-r1:32b "Generate Jest unit tests for this TypeScript code. Only output the test code:\n\n$CODE")
-    
+
     # 4. Test dosyası oluştur
     TEST_FILE="${FILE%.tsx}.test.tsx"
     echo "$TESTS" > "$TEST_FILE"
-    
+
     echo "✅ Created: $TEST_FILE"
 done
 
@@ -171,13 +171,13 @@ SERVICE_FILES=$(find src/services -name "*.ts" -not -name "*.test.ts")
 
 for FILE in $SERVICE_FILES; do
     echo "📖 Updating docs for: $FILE"
-    
+
     # 2. Qwen ile dokümantasyon üret
     DOCS=$(ollama run qwen2.5:14b "Add comprehensive JSDoc comments to this code. Return the full code with comments:\n\n$(cat $FILE)")
-    
+
     # 3. Dosyayı güncelle
     echo "$DOCS" > "$FILE"
-    
+
     echo "✅ Updated: $FILE"
 done
 
@@ -353,25 +353,25 @@ const ollama = require('ollama');
 
 async function checkTaskBoard() {
     const taskBoard = fs.readFileSync('shared/TASK_BOARD.md', 'utf-8');
-    
+
     // "P2: Generate unit tests" gibi bir task bul
     const match = taskBoard.match(/\[ \] \*\*P2: Generate unit tests for `(.+)`\*\*/);
-    
+
     if (match) {
         const file = match[1];
         console.log(`📝 Found task: Generate tests for ${file}`);
-        
+
         // DeepSeek ile test üret
         const code = fs.readFileSync(file, 'utf-8');
         const response = await ollama.generate({
             model: 'deepseek-r1:32b',
             prompt: `Generate Jest unit tests:\n\n${code}`
         });
-        
+
         // Test dosyası oluştur
         const testFile = file.replace('.tsx', '.test.tsx');
         fs.writeFileSync(testFile, response.response);
-        
+
         // Communication log'a yaz
         const log = `\n### [AGENT: DeepSeek-R1] [TIME: ${new Date().toISOString()}]
 **Status:** ✅ COMPLETED
@@ -379,9 +379,9 @@ async function checkTaskBoard() {
 **Output:** ${testFile}
 **Lines Generated:** ${response.response.split('\n').length}
 **Duration:** ${response.total_duration / 1e9}s\n`;
-        
+
         fs.appendFileSync('communication_log.md', log);
-        
+
         console.log(`✅ Completed: ${testFile}`);
     }
 }

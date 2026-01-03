@@ -31,7 +31,7 @@ class CodeOutput(BaseModel):
         if re.search(r':\s*any\b', v) or re.search(r'<any>', v):
             raise ValueError("Quality Standard Violation: 'any' type is not allowed. Use unknown or a specific type.")
         return v
-    
+
     @field_validator('code')
     @classmethod
     def check_no_ts_ignore(cls, v: str) -> str:
@@ -39,7 +39,7 @@ class CodeOutput(BaseModel):
         if '@ts-ignore' in v or '@ts-nocheck' in v:
             raise ValueError("Quality Standard Violation: @ts-ignore/@ts-nocheck is not allowed. Fix the root cause.")
         return v
-    
+
     @field_validator('code')
     @classmethod
     def check_no_console_log(cls, v: str) -> str:
@@ -48,7 +48,7 @@ class CodeOutput(BaseModel):
         if 'console.log' in v and not ('logger' in v.lower()) and not ('test' in v.lower()):
              pass # Temporarily allow, as proper logger integration is a separate task.
         return v
-    
+
 # ==================== BASE AGENT ====================
 
 class YBISAgent:
@@ -56,19 +56,19 @@ class YBISAgent:
     Base agent wrapper for PydanticAI, integrated with IntelligentRouter.
     Reads governance documents dynamically and enforces structured output.
     """
-    
+
     def __init__(self, agent_id: str, router: IntelligentRouter, task_type: TaskType, output_model: Optional[Type[BaseModel]] = None):
         self.agent_id = agent_id
         self.router = router
         self.task_type = task_type
         self.persona = self._load_persona()
         self.output_model = output_model
-        
+
         # Load Governance Docs
         self.agentic_constitution = self._read_governance_doc("AGENTIC_CONSTITUTION.md")
         self.quality_standards = self._read_governance_doc("QUALITY_STANDARDS.md")
         self.project_constitution = self._read_governance_doc("Constitution.md")
-        
+
         # Create PydanticAI agent
         self.agent = Agent(
             model=None, # Model set dynamically by router
@@ -76,14 +76,14 @@ class YBISAgent:
             output_type=self.output_model, # Enforce structured output
             retries=3 # Allow up to 3 retries for validation errors
         )
-    
+
     def _read_governance_doc(self, filename: str) -> str:
         """Reads a markdown file from Meta/Governance"""
         try:
             # Resolve path relative to this file
             base_path = os.path.dirname(os.path.abspath(__file__)) # Agentic/Agents/
             gov_path = os.path.abspath(os.path.join(base_path, "../../Meta/Governance", filename))
-            
+
             if os.path.exists(gov_path):
                 with open(gov_path, 'r', encoding='utf-8') as f:
                     return f.read()
@@ -100,7 +100,7 @@ class YBISAgent:
         match = re.search(r'```yaml\n(.*?)\n```', content, re.DOTALL)
         if match: return yaml.safe_load(match.group(1)).get('persona', {})
         return {"role": "Assistant", "style": "Helpful"}
-    
+
     def _build_system_prompt(self) -> str:
         return f"""You are {self.agent_id.upper()}.
 Role: {self.persona.get('role', 'Assistant')}
@@ -136,4 +136,3 @@ Style: {self.persona.get('style', 'Professional')}
         except Exception as e:
             print(f"[ERROR] [{self.agent_id.upper()}] Error during run: {str(e)}")
             raise e
-

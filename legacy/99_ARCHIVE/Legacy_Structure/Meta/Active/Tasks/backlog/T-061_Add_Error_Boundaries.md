@@ -47,4 +47,3 @@ export class ErrorBoundary extends Component<Props, State> {
 - User sees friendly error message
 - Retry option available
 - Errors logged to backend
-

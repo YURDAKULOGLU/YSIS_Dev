@@ -57,4 +57,3 @@ CREATE INDEX idx_push_tokens_user_id ON public.push_tokens(user_id);
 - No "table not found" errors
 - Push tokens saved to database
 - Tokens can be used for push notifications
-

@@ -1,13 +1,13 @@
 # Plan: Chat (Supabase) İyileştirme + Notification Hook + Çekirdek Flows (ClaudeCode)
 
 ## Hedef (bugün)
-1) Chat iyileştirme: Supabase `useChat.ts` içinde deterministik conversation create/select/delete akışı.  
-2) Notification hook: Asgari lokal push/hook; izin/uyarı UX.  
+1) Chat iyileştirme: Supabase `useChat.ts` içinde deterministik conversation create/select/delete akışı.
+2) Notification hook: Asgari lokal push/hook; izin/uyarı UX.
 3) Çekirdek Flows: Manual/schedule tetik + 3–4 basit template; CRUD + manual run çalışır.
 
 ## Detay Adımlar
 ### 1) Chat (Supabase) İyileştirme (≈2h)
-- `apps/mobile/src/features/chat/hooks/useChat.ts`: “Yeni sohbet” deterministik; butonda veya ilk mesajda Supabase’e insert, ID ile `/ (tabs)?conversationId=...` push; `loadConversation` bu ID’yi kullanır. 
+- `apps/mobile/src/features/chat/hooks/useChat.ts`: “Yeni sohbet” deterministik; butonda veya ilk mesajda Supabase’e insert, ID ile `/ (tabs)?conversationId=...` push; `loadConversation` bu ID’yi kullanır.
 - Mevcut sohbeti yükleme/seçme/silme akışı tutarlı; boş sohbet oluşumundan kaçınmak için guard + insert politikası netleştir.
 - Auto-title/rename (ilk mesajdan) opsiyonel ama destekleniyorsa kırma.
 - Smoke: Yeni sohbet → mesaj → app kapan-aç → doğru thread yükleniyor.

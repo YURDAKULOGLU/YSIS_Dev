@@ -971,4 +971,3 @@ AI: ✓ Flow oluşturuldu
 **Last Updated:** 2025-11-25 21:00 by Claude Code
 
 **Next:** User clarifications + Agent task assignment
-

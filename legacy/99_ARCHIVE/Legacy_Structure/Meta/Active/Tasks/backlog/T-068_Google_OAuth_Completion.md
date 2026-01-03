@@ -69,4 +69,3 @@ const { data, error } = await supabase.auth.signInWithOAuth({
 - Works on both iOS and Android
 - Proper error handling
 - Session persists correctly
-

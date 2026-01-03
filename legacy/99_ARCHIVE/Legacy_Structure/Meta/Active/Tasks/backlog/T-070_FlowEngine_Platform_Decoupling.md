@@ -30,7 +30,7 @@ export interface FlowEngineConfig {
 
 export class FlowEngine {
   private generateId: () => string;
-  
+
   constructor(config?: FlowEngineConfig) {
     this.generateId = config?.generateId ?? (() => crypto.randomUUID());
   }
@@ -49,4 +49,3 @@ export class FlowEngine {
 - `@ybis/core` has no expo-* dependencies
 - FlowEngine works with injected dependencies
 - No breaking changes to API
-

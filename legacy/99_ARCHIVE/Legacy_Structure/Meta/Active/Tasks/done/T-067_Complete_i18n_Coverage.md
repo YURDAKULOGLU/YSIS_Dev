@@ -51,4 +51,3 @@ format(date, 'PPP', { locale: locales[currentLanguage] });
 - No hardcoded user-visible strings
 - All strings in en.json and tr.json
 - Dates/times formatted per locale
-

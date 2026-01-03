@@ -17,15 +17,15 @@ Amaç	“Maximum profit, minimum effort”	Hızlı MVP → gelir üretimi
 🧩 YBIS’in Mevcut Stack’iyle Karşılaştırma
 Belgelere göre senin projenin çekirdek yapısı şöyle:
 
-Frontend/Mobile: React Native + Zustand + React Hook Form 
+Frontend/Mobile: React Native + Zustand + React Hook Form
 
-Backend: Node.js (Hono framework) + PostgreSQL (Drizzle ORM) + Redis 
+Backend: Node.js (Hono framework) + PostgreSQL (Drizzle ORM) + Redis
 
-Auth: Google OAuth2 (tam entegre) 
+Auth: Google OAuth2 (tam entegre)
 
-Deployment: Vercel + Docker (Nginx proxy, SSL) 
+Deployment: Vercel + Docker (Nginx proxy, SSL)
 
-AI: OpenAI / Anthropic / Groq entegrasyonu 
+AI: OpenAI / Anthropic / Groq entegrasyonu
 
 Yani senin sistemin geleneksel backend-first mimaride (DB, API, mobil istemci) çalışıyor; videodaki model ise backend-as-a-service (Convex/Clerk) kullanarak “server’ı atlamayı” hedefliyor.
 

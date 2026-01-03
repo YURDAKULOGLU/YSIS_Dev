@@ -21,7 +21,7 @@
    - Seçilen hook’ta conversation yaratma ve `conversationId` param yüklemeyi destekle (Opsiyon B yapılırsa).
 
 4) **i18n tamamlama**
-   - `packages/i18n/src/locales/tr/mobile.json` ve `en/mobile.json` içine aşağıdaki anahtarları ekle (boş değerler şimdilik İngilizce/Türkçe):  
+   - `packages/i18n/src/locales/tr/mobile.json` ve `en/mobile.json` içine aşağıdaki anahtarları ekle (boş değerler şimdilik İngilizce/Türkçe):
      - `chat.conversations`, `chat.no_conversations`, `chat.start_conversation`, `chat.new_conversation`, `chat.delete_conversation`, `chat.delete_confirmation`, `chat.edit_name`, `chat.enter_new_name`, `chat.calling_tool`, `chat.tool_executed`.
    - Kodda fallback string’leri temizle (doğrudan `t(...)` kullan; gerekiyorsa defaultOptions ile).
 

@@ -67,7 +67,7 @@ def verify_environment():
 
 if __name__ == "__main__":
     print("🐶 DOG SCALES DOG - SYSTEM DIAGNOSTIC 🐶")
-    
+
     imports = verify_imports()
     red = verify_redis()
     chroma = verify_chroma()

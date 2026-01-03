@@ -2,10 +2,10 @@
 
 /**
  * Local LLM Agent Runner (Async Worker Mode - ES Module)
- * 
+ *
  * This script runs as a background worker, watching the 'Inbox' folder for JSON tasks.
  * When a task is found, it processes it using the local Ollama instance and writes the result to 'Outbox'.
- * 
+ *
  * Usage: node .YBIS_Dev/30_INFRASTRUCTURE/Bridges/Ollama/local-agent-runner.mjs [--model <model_name>] [--once]
  */
 
@@ -146,7 +146,7 @@ function log(message, level = 'INFO') {
     const timestamp = new Date().toISOString();
     const logEntry = `[${timestamp}] [${level}] ${message}`;
     console.log(logEntry);
-    
+
     // Ensure logs dir exists
     if (!fs.existsSync(LOGS_DIR)) fs.mkdirSync(LOGS_DIR, { recursive: true });
     fs.appendFileSync(path.join(LOGS_DIR, 'agent_node.log'), logEntry + '\n');
@@ -165,9 +165,9 @@ async function processTask(taskPath) {
         ];
 
         log(`Sending instruction to Ollama: ${task.instruction}`);
-        
+
         const requiresTools = task.instruction.includes('read_file') || task.instruction.includes('write_file') || task.instruction.includes('list_dir') || task.instruction.includes('run_command');
-        
+
         let responseMessage = await chatCompletion(messages, requiresTools);
         let finalResult = '';
 
@@ -178,10 +178,10 @@ async function processTask(taskPath) {
                 for (const toolCall of responseMessage.tool_calls) {
                     const functionName = toolCall.function.name;
                     const args = JSON.parse(toolCall.function.arguments);
-                    
+
                     log(`Executing tool: ${functionName} with args: ${JSON.stringify(args)}`);
                     const result = await executeTool(functionName, args);
-                    
+
                     messages.push({
                         role: 'tool',
                         tool_call_id: toolCall.id,
@@ -194,18 +194,18 @@ async function processTask(taskPath) {
                 finalResult = followUp ? followUp.content : 'Tool execution completed.';
             } else if (responseMessage.content) { // If no native tool_calls, check content for JSON tool call
                 let contentText = responseMessage.content;
-                
+
                 // Strip Markdown code blocks if present
                 contentText = contentText.replace(/```json/g, '').replace(/```/g, '').trim();
 
                 const jsonStartIndex = contentText.indexOf('{');
                 const jsonEndIndex = contentText.lastIndexOf('}');
-                
+
                 if (jsonStartIndex !== -1 && jsonEndIndex !== -1 && jsonEndIndex > jsonStartIndex) {
                     const jsonString = contentText.substring(jsonStartIndex, jsonEndIndex + 1);
                     try {
                         let toolCallInContent = JSON.parse(jsonString);
-                        
+
                         // Handle array format (e.g. Qwen returns [ {name: ...} ])
                         if (Array.isArray(toolCallInContent) && toolCallInContent.length > 0) {
                             toolCallInContent = toolCallInContent[0];
@@ -214,10 +214,10 @@ async function processTask(taskPath) {
                         if (toolCallInContent.name && toolCallInContent.arguments) { // Qwen uses 'arguments', OpenAI 'parameters'
                              // Normalize arguments/parameters
                              const args = toolCallInContent.arguments || toolCallInContent.parameters;
-                             
+
                             log(`Executing tool from content (parsed JSON): ${toolCallInContent.name} with args: ${JSON.stringify(args)}`);
                             const result = await executeTool(toolCallInContent.name, args);
-                            
+
                             messages.push({
                                 role: 'tool',
                                 name: toolCallInContent.name,
@@ -249,7 +249,7 @@ async function processTask(taskPath) {
         }, null, 2));
 
         log(`Task completed. Result: ${path.basename(resultFile)}`);
-        
+
         fs.renameSync(taskPath, taskPath + '.done');
 
     } catch (error) {
@@ -262,7 +262,7 @@ async function processTask(taskPath) {
 async function main() {
     log(`Starting with model: ${DEFAULT_MODEL}`);
     log(`🚀 Node Agent Worker ONLINE. Watching: ${INBOX_DIR} (RunOnce: ${RUN_ONCE})`);
-    
+
     // Ensure dirs exist
     if (!fs.existsSync(INBOX_DIR)) fs.mkdirSync(INBOX_DIR, { recursive: true });
     if (!fs.existsSync(OUTBOX_DIR)) fs.mkdirSync(OUTBOX_DIR, { recursive: true });
@@ -271,16 +271,16 @@ async function main() {
     while (true) {
         try {
             const files = fs.readdirSync(INBOX_DIR).filter(f => f.endsWith('.json') && !f.startsWith('trigger_'));
-            
+
             for (const file of files) {
                 await processTask(path.join(INBOX_DIR, file));
             }
-            
+
             if (RUN_ONCE) {
                 log('Run once completed. Exiting.');
                 break;
             }
-            
+
             await new Promise(resolve => setTimeout(resolve, 2000));
         } catch (e) {
             log(`Main loop error: ${e.message}`, 'ERROR');

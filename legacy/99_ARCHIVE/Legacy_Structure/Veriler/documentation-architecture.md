@@ -1,7 +1,7 @@
 # YBIS Documentation Architecture
 
-**Purpose:** Doküman hiyerarşisi, ownership modeli ve bağımlılık yapısı  
-**Created:** 2025-10-12  
+**Purpose:** Doküman hiyerarşisi, ownership modeli ve bağımlılık yapısı
+**Created:** 2025-10-12
 **Status:** 🎯 TASARIM AŞAMASI
 
 ---
@@ -31,7 +31,7 @@
 
 ```yaml
 TIER_MINUS_1_STRATEGIC:
-  
+
   Product_Requirements_Document:
     file: "docs/prd/PRODUCT_REQUIREMENTS.md"  # Legacy'den taşınacak
     role: "Product Vision"
@@ -43,7 +43,7 @@ TIER_MINUS_1_STRATEGIC:
       - success_metrics
     derived_from: NONE
     status: "NEEDS_UPDATE (from legacy/prd.md)"
-  
+
   Project_Vision:
     file: "docs/vision/PROJECT_VISION.md"  # Legacy'den taşınacak
     role: "Why We Build"
@@ -55,7 +55,7 @@ TIER_MINUS_1_STRATEGIC:
       - solution_approach
     derived_from: NONE
     status: "NEEDS_UPDATE (from legacy/project-vision.md)"
-  
+
   Market_Research:
     file: "docs/strategy/MARKET_RESEARCH.md"  # Legacy'den taşınacak
     role: "Market Analysis"
@@ -67,7 +67,7 @@ TIER_MINUS_1_STRATEGIC:
       - market_opportunities
     derived_from: NONE
     status: "NEEDS_UPDATE (from legacy/market-research.md)"
-  
+
   Competitive_Strategy:
     file: "docs/strategy/COMPETITIVE_STRATEGY.md"  # Legacy'den taşınacak
     role: "Market Positioning"
@@ -79,7 +79,7 @@ TIER_MINUS_1_STRATEGIC:
       - competitive_advantages
     derived_from: NONE
     status: "NEEDS_UPDATE (from legacy/competitive-strategy.md)"
-  
+
   Product_Roadmap:
     file: "docs/roadmap/PRODUCT_ROADMAP.md"  # Legacy + Archive'den birleştir
     role: "Timeline & Phases"
@@ -105,7 +105,7 @@ TIER_MINUS_1_STRATEGIC:
 
 ```yaml
 TIER_0_CANONICAL:
-  
+
   YBIS_PROJE_ANAYASASI:
     role: "Constitution"
     authority: "TECHNICAL_CANONICAL"
@@ -117,7 +117,7 @@ TIER_0_CANONICAL:
     derived_from:
       - Product_Requirements_Document (feature priorities inform architecture)
       - Competitive_Strategy (performance targets, differentiation)
-    
+
   DEVELOPMENT_LOG:
     role: "Decision Registry"
     authority: "TECHNICAL_CANONICAL"
@@ -137,7 +137,7 @@ TIER_0_CANONICAL:
 
 ```yaml
 TIER_1_REFERENCE:
-  
+
   tech-stack.md:
     role: "Technical Reference"
     authority: "DERIVED"
@@ -145,7 +145,7 @@ TIER_1_REFERENCE:
     derived_from:
       - DEVELOPMENT_LOG (AD-002, AD-015, etc.)
       - YBIS_PROJE_ANAYASASI (tech constraints)
-    
+
   package-structure.md:
     role: "Implementation Blueprint"
     authority: "DERIVED"
@@ -153,7 +153,7 @@ TIER_1_REFERENCE:
     derived_from:
       - DEVELOPMENT_LOG (AD-001, AD-002, AD-003, AD-015)
       - YBIS_PROJE_ANAYASASI (port architecture)
-    
+
   README.md:
     role: "Project Overview"
     authority: "DERIVED"
@@ -169,7 +169,7 @@ TIER_1_REFERENCE:
 
 ```yaml
 TIER_2_EXECUTION:
-  
+
   tasks.md:
     role: "Task List"
     authority: "HYBRID"
@@ -182,7 +182,7 @@ TIER_2_EXECUTION:
     dynamic_content:
       - checkbox_status
       - completion_dates
-    
+
   DEVELOPMENT_GUIDELINES.md:
     role: "Developer Rules"
     authority: "HYBRID"
@@ -200,7 +200,7 @@ TIER_2_EXECUTION:
 
 ```yaml
 TIER_3_META:
-  
+
   DOCUMENTATION_INDEX.md:
     role: "Navigation"
     authority: "AUTO_GENERATED"
@@ -208,7 +208,7 @@ TIER_3_META:
     generated_from:
       - all_document_frontmatter
       - file_structure
-    
+
   QUICKSTART.md:
     role: "Getting Started"
     authority: "HYBRID"
@@ -252,28 +252,28 @@ Market Research (Tier -1)
 
 ```yaml
 react_version:
-  
+
   CANONICAL_SOURCE:
     file: "DEVELOPMENT_LOG.md"
     section: "AD-002"
     value: "19.1.0"
     last_updated: "2025-10-06"
-  
+
   REFERENCES:
     - file: "tech-stack.md"
       locations:
         - line: 15 (Core Framework section)
         - line: 282 (Migration section)
         - line: 338 (Package versions)
-    
+
     - file: "package-structure.md"
       locations:
         - line: 411 (mobile dependencies)
-    
+
     - file: "README.md"
       locations:
         - line: 5 (Tech Stack header)
-  
+
   UPDATE_RULE: |
     IF DEVELOPMENT_LOG.md#AD-002 changes:
       THEN update ALL references automatically
@@ -284,34 +284,34 @@ react_version:
 
 ```yaml
 auth_strategy:
-  
+
   CANONICAL_SOURCE:
     file: "DEVELOPMENT_LOG.md"
     section: "AD-015"
     value: "Expo Auth Session (OAuth 2.0 + PKCE)"
     last_updated: "2025-10-11"
-  
+
   REFERENCES:
     - file: "tech-stack.md"
       locations:
         - line: 281 (Auth section)
         - Auth Dependencies section
-    
+
     - file: "package-structure.md"
       locations:
         - line: 22 (Key Decisions)
         - line: 1054 (Auth package structure)
         - line: 1091-1188 (ExpoAuthAdapter code)
         - line: 1674 (Port migration table)
-    
+
     - file: "tasks.md"
       locations:
         - T020-T026 (Auth tasks section)
-    
+
     - file: "YBIS_PROJE_ANAYASASI.md"
       locations:
         - AuthPort definition
-  
+
   UPDATE_RULE: |
     IF DEVELOPMENT_LOG.md#AD-015 changes:
       THEN update ALL references
@@ -327,13 +327,13 @@ auth_strategy:
 
 ```yaml
 ownership_map:
-  
+
   # Architecture Decisions
   architecture_decisions:
     owner: "DEVELOPMENT_LOG.md"
     format: "AD-XXX sections"
     update_frequency: "on_decision"
-  
+
   # Tech Stack Versions
   package_versions:
     owner: "DEVELOPMENT_LOG.md"
@@ -341,7 +341,7 @@ ownership_map:
     references:
       - "tech-stack.md" (display)
       - "package-structure.md" (implementation)
-  
+
   # Port Architecture
   port_definitions:
     owner: "YBIS_PROJE_ANAYASASI.md"
@@ -349,7 +349,7 @@ ownership_map:
     references:
       - "service-integration-strategy.md" (details)
       - "package-structure.md" (implementation)
-  
+
   # Task Status
   task_completion:
     owner: "tasks.md"
@@ -357,7 +357,7 @@ ownership_map:
     synced_to:
       - "DEVELOPMENT_LOG.md" (completion notes)
       - "README.md" (progress %)
-  
+
   # Quality Standards
   quality_gates:
     owner: "YBIS_PROJE_ANAYASASI.md"
@@ -365,7 +365,7 @@ ownership_map:
     references:
       - "quality-standards.md" (detailed specs)
       - "DEVELOPMENT_GUIDELINES.md" (how to achieve)
-  
+
   # Integration Strategy
   integration_roadmap:
     owner: "INTEGRATION_ROADMAP.md"
@@ -389,7 +389,7 @@ cascade:
   - check: "package-structure.md references"
   - check: "tasks.md affected tasks"
   - check: "YBIS_PROJE_ANAYASASI.md alignment"
-  
+
 notification:
   - agents: ["DevAgent", "ArchAgent", "DocAgent"]
   - checklist: "documentation-consistency-checklist.md"
@@ -404,7 +404,7 @@ cascade:
   - check: "ALL derived documents"
   - check: "service-integration-strategy.md"
   - check: "quality-standards.md"
-  
+
 notification:
   - severity: "CRITICAL"
   - agents: ["ALL"]
@@ -419,7 +419,7 @@ trigger: "tasks.md checkbox checked"
 cascade:
   - update: "DEVELOPMENT_LOG.md (add completion note)"
   - update: "README.md (update progress %)"
-  
+
 notification:
   - agents: ["DevAgent"]
   - checklist: "story-dod-checklist.md"
@@ -516,7 +516,7 @@ TIER 3 (META)
 
 ```yaml
 migration_tasks:
-  
+
   TASK_1_PRD_UPDATE:
     source: "docs/Archive/Legacy/prd.md"
     target: "docs/prd/PRODUCT_REQUIREMENTS.md"
@@ -529,7 +529,7 @@ migration_tasks:
       - Add: Current tech stack alignment
       - Add: Tier 1 Port Architecture impact
     estimated_time: "2 hours"
-  
+
   TASK_2_VISION_UPDATE:
     source: "docs/Archive/Legacy/project-vision.md"
     target: "docs/vision/PROJECT_VISION.md"
@@ -540,7 +540,7 @@ migration_tasks:
       - Update: Problem statement (current market)
       - Update: Solution approach (Expo + Port Architecture)
     estimated_time: "1 hour"
-  
+
   TASK_3_ROADMAP_CONSOLIDATION:
     sources:
       - "docs/Archive/Legacy/development-plan.md"
@@ -557,7 +557,7 @@ migration_tasks:
       - Add: Week-by-week breakdown
       - Cross-reference: tasks.md checkboxes
     estimated_time: "3 hours"
-  
+
   TASK_4_MARKET_RESEARCH_UPDATE:
     source: "docs/Archive/Legacy/market-research.md"
     target: "docs/strategy/MARKET_RESEARCH.md"
@@ -568,7 +568,7 @@ migration_tasks:
       - Add: Recent market trends
       - Update: ADHD app market insights
     estimated_time: "2 hours"
-  
+
   TASK_5_COMPETITIVE_STRATEGY_UPDATE:
     source: "docs/Archive/Legacy/competitive-strategy.md"
     target: "docs/strategy/COMPETITIVE_STRATEGY.md"
@@ -591,20 +591,20 @@ migration_tasks:
 
 ```yaml
 cross_linking:
-  
+
   PRD_to_ANAYASA:
     - PRD'deki feature priorities → Anayasa'da architecture principles
     - Örnek: "Fast onboarding" → "Progressive disclosure pattern"
-  
+
   VISION_to_DEVELOPMENT_LOG:
     - Vision'daki target users → AD-XXX decisions
     - Örnek: "ADHD users" → AD-015 (simple auth flow = Expo Auth)
-  
+
   ROADMAP_to_TASKS:
     - Roadmap phases → tasks.md weeks
     - Closed Beta scope → Phase 0.1-0.4 tasks
     - Open Beta scope → Phase 1.0 tasks (future)
-  
+
   COMPETITIVE_to_TECH_STACK:
     - Performance targets → tech choices
     - Örnek: "Faster than Notion" → React 19.1 + Tamagui
@@ -618,13 +618,13 @@ cross_linking:
 
 ```yaml
 legacy_file_disposition:
-  
+
   KEEP_AS_ARCHIVE:
     - architecture.md (historical tech decisions)
     - Chat ürün architecture.md (initial product design)
     - modernization-session-22-sep-2025.md (transformation journey)
     reason: "Historical reference, shows evolution"
-  
+
   MERGE_AND_DELETE:
     - prd.md → docs/prd/PRODUCT_REQUIREMENTS.md
     - project-vision.md → docs/vision/PROJECT_VISION.md
@@ -632,7 +632,7 @@ legacy_file_disposition:
     - market-research.md → docs/strategy/MARKET_RESEARCH.md
     - competitive-strategy.md → docs/strategy/COMPETITIVE_STRATEGY.md
     reason: "Güncellendi, aktif hale getirildi"
-  
+
   DELETE_OBSOLETE:
     - tech-stack-decisions.md (tech-stack.md'de var)
     - nodejs-version-analysis-report.md (irrelevant)
@@ -669,4 +669,3 @@ Ben **Seçenek A**'yı öneriyorum çünkü:
 - Strategy → Tech bağlantısı kurulmalı → Sonra map anlamlı olur
 
 **Hangisiyle başlayalım? 🚀**
-
