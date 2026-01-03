@@ -204,7 +204,7 @@ class OrchestratorGraph:
 
     async def _chainer_node(self, s: TaskState) -> dict[str, Any]:
         if not s.proposed_tasks:
-            return {}
+            return {"phase": "done", "final_status": "SUCCESS"}
 
         log_event(f"Processing {len(s.proposed_tasks)} proposed tasks...", component="orchestrator_graph")
 
@@ -217,7 +217,7 @@ class OrchestratorGraph:
             except Exception as e:
                 log_event(f"[!] Failed to add task: {e}", component="orchestrator_graph", level="warning")
 
-        return {"proposed_tasks": []} # Clear list after processing
+        return {"proposed_tasks": [], "phase": "done", "final_status": "SUCCESS"} # Clear list after processing and mark as done
 
     def _build_graph(self):
         # Use Pydantic TaskState directly as the state schema
