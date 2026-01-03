@@ -126,12 +126,10 @@ class FrameworkInstaller:
         except Exception as e:
             print(f"  [WARN] Failed to scrape docs: {e}")
             # Fallback to GitHub
-            self._download_github_docs(f"https://github.com/{self.framework_name}")
+            self._download_github_docs(None)  # Will use repo_mappings
     
-    def _download_github_docs(self, repo_url: str):
+    def _download_github_docs(self, repo_url: str = None):
         """Download documentation from GitHub repo."""
-        print(f"  Downloading from GitHub: {repo_url}...")
-        
         # Framework-specific repo mappings
         repo_mappings = {
             "prefect": ("prefecthq", "prefect"),
@@ -139,13 +137,23 @@ class FrameworkInstaller:
             "celery": ("celery", "celery"),
             "temporalio": ("temporalio", "python-sdk"),
             "ray": ("ray-project", "ray"),
+            "pyautogen": ("microsoft", "autogen"),
+            "autogen": ("microsoft", "autogen"),
+            "swarm": ("swarm-ai", "swarm"),  # Example, verify actual repo
+            "autogpt": ("Significant-Gravitas", "AutoGPT"),
+            "langgraph": ("langchain-ai", "langgraph"),
+            "litellm": ("BerriAI", "litellm"),
+            "instructor": ("jxnl", "instructor"),
+            "ollama": ("ollama", "ollama"),
         }
         
         try:
             # Try framework-specific mapping first
             if self.framework_name in repo_mappings:
                 owner, repo = repo_mappings[self.framework_name]
-            elif "github.com" in repo_url:
+                print(f"  Downloading from GitHub: https://github.com/{owner}/{repo}...")
+            elif repo_url and "github.com" in repo_url:
+                print(f"  Downloading from GitHub: {repo_url}...")
                 # Extract owner/repo from URL
                 parts = repo_url.replace("https://github.com/", "").split("/")
                 if len(parts) >= 2:
@@ -253,18 +261,27 @@ class FrameworkInstaller:
                 print("  [SKIP] RAG not available (is_available() returned False)")
                 return
             
-            # Ingest all markdown files
-            md_files = list(self.docs_dir.glob("*.md"))
+            # Ingest all markdown files (recursive)
+            md_files = list(self.docs_dir.rglob("*.md"))
             for md_file in md_files:
                 try:
                     content = md_file.read_text(encoding='utf-8')
+                    # Generate doc_id from relative path
+                    try:
+                        rel_path = md_file.relative_to(self.docs_dir)
+                        doc_id = f"framework:{self.framework_name}:{str(rel_path).replace('\\', '/')}"
+                    except:
+                        doc_id = f"framework:{self.framework_name}:{md_file.name}"
+                    
                     # Add to RAG with framework name as metadata
                     rag.add_document(
+                        doc_id=doc_id,
                         content=content,
                         metadata={
                             "source": f"framework:{self.framework_name}",
                             "file": md_file.name,
-                            "type": "framework_docs"
+                            "type": "framework_docs",
+                            "framework": self.framework_name
                         }
                     )
                     print(f"    [OK] Ingested {md_file.name}")

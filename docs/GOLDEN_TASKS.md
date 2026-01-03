@@ -158,6 +158,32 @@ Her golden run artifacts üretir:
 
 ---
 
+### G) Framework Documentation Quality
+
+#### GT-G1: Framework Documentation Verification
+* TaskSpec: "Tüm kurulu framework'lerin dokümanlarını kontrol et"
+* Command: `python scripts/verify_framework_installation.py --all`
+* Beklenen: PASS (tüm framework'ler dokümanlara sahip ve RAG'de)
+* Success Criteria:
+  - Tüm kurulu framework'lerin package'ı yüklü
+  - Her framework için en az 1 doküman dosyası var
+  - Tüm dokümanlar RAG'e ingest edilmiş
+* Signature: `FRAMEWORK_DOCS_OK` veya `FRAMEWORK_DOCS_MISSING`
+* Artifacts: Verification report (JSON)
+* Risk: Low (sadece doküman kontrolü)
+
+#### GT-G2: Framework Installation Includes Docs
+* TaskSpec: "Yeni framework kur (örn: test_framework)"
+* Beklenen: PASS (kurulum + doküman indirme + RAG ingestion)
+* Success Criteria:
+  - Package kuruldu
+  - Dokümanlar indirildi (Knowledge/Frameworks/{name}/docs/)
+  - Dokümanlar RAG'e eklendi
+* Signature: `FRAMEWORK_INSTALL_COMPLETE`
+* Risk: Low
+
+---
+
 ## 3) Minimal "Core Subset" (her commit)
 En az şu 8 task:
 * GT-A1, A2, A4, A5
