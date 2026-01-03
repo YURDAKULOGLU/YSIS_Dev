@@ -5,6 +5,7 @@ from typing import List, Dict, Any, Optional
 from sentence_transformers import SentenceTransformer
 import chromadb
 from chromadb.config import Settings
+from src.agentic.core.utils.logging_utils import log_event
 
 class RAGMemory:
     """
@@ -15,19 +16,19 @@ class RAGMemory:
         from src.agentic.core.config import CHROMA_DB_PATH
 
         self.persist_path = CHROMA_DB_PATH
-        
+
         # Ensure parent dir exists
         os.makedirs(os.path.dirname(self.persist_path), exist_ok=True)
-        
-        print(f"[RAGMemory] Initializing at: {self.persist_path}")
-        
+
+        log_event(f"Initializing at: {self.persist_path}", component="rag_memory")
+
         # Load lightweight embedding model
         # On RTX 5090 this is instant.
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-        
+
         # Initialize ChromaDB client (Persistent)
         self.client = chromadb.PersistentClient(path=self.persist_path)
-        
+
         # Collections
         self.general_coll = self.client.get_or_create_collection(name="general_memory")
         self.failure_coll = self.client.get_or_create_collection(name="failure_memory")
@@ -37,9 +38,9 @@ class RAGMemory:
         Store a failure event to prevent recurrence.
         """
         text_content = f"FAILURE: {signature}\nERROR: {error_msg}\nCONTEXT: {plan_context}"
-        
+
         embedding = self.embedding_model.encode(text_content).tolist()
-        
+
         self.failure_coll.add(
             ids=[str(uuid.uuid4())],
             documents=[text_content],
@@ -53,7 +54,7 @@ class RAGMemory:
                 }
             ]
         )
-        print(f"[RAGMemory] 🧠 Stored failure pattern: {signature}")
+        log_event(f"Stored failure pattern: {signature}", component="rag_memory")
 
     def retrieve_relevant_failures(self, current_task: str, n_results: int = 3) -> List[str]:
         """
@@ -62,14 +63,14 @@ class RAGMemory:
         """
         if self.failure_coll.count() == 0:
             return []
-            
+
         embedding = self.embedding_model.encode(current_task).tolist()
-        
+
         results = self.failure_coll.query(
             query_embeddings=[embedding],
             n_results=n_results
         )
-        
+
         # Flatten results
         return results['documents'][0] if results['documents'] else []
 
@@ -78,7 +79,7 @@ class RAGMemory:
         embedding = self.embedding_model.encode(text).tolist()
         meta = metadata or {}
         meta["timestamp"] = datetime.datetime.now().isoformat()
-        
+
         self.general_coll.add(
             ids=[str(uuid.uuid4())],
             documents=[text],
@@ -90,7 +91,7 @@ class RAGMemory:
         """Query general memory."""
         if self.general_coll.count() == 0:
             return []
-            
+
         embedding = self.embedding_model.encode(query).tolist()
         results = self.general_coll.query(
             query_embeddings=[embedding],

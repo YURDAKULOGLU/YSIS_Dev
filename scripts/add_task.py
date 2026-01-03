@@ -14,16 +14,16 @@ async def main():
     parser.add_argument("goal", help="The high-level goal of the task")
     parser.add_argument("details", help="Detailed description/instructions", nargs='?', default="")
     parser.add_argument("--priority", help="Task priority (LOW, MEDIUM, HIGH)", default="MEDIUM")
-    
+
     args = parser.parse_args()
-    
+
     board = TaskBoardManager()
-    
-    print(f"📝 Adding task: {args.goal}")
+
+    print(f"[INFO] Adding task: {args.goal}")
     task_id = await board.create_task(args.goal, args.details, args.priority)
-    
-    print(f"✅ Created {task_id}")
-    print(f"🚀 Worker will pick it up shortly.")
+
+    print(f"[SUCCESS] Created {task_id}")
+    print(f"[INFO] Worker will pick it up shortly.")
 
 if __name__ == "__main__":
     asyncio.run(main())

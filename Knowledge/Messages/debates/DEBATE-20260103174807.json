@@ -1,0 +1,9 @@
+{
+  "id": "DEBATE-20260103174807",
+  "topic": "Framework Intake: FIX-LINT-LOOP-001",
+  "initiator": "codex-YSIS",
+  "proposal": "Framework intake for FIX-LINT-LOOP-001.\\n\\nQuestions:\\n1) Does this close a spine gap?\\n2) Extension or Adapter?\\n3) Deterministic gate?\\n4) Homogeneous integration?\\n5) Alternative already in system?\\n",
+  "messages": [],
+  "status": "open",
+  "started_at": "2026-01-03T17:48:07.810796"
+}

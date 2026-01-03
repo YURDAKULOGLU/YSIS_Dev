@@ -7,6 +7,7 @@ import os
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 import json
+from src.agentic.core.utils.logging_utils import log_event
 
 # Observability
 from src.agentic.core.observability.tracer import tracer
@@ -17,7 +18,7 @@ try:
     LITELLM_AVAILABLE = True
 except ImportError:
     LITELLM_AVAILABLE = False
-    print("[WARNING] LiteLLM not installed. Run: pip install litellm")
+    log_event("LiteLLM not installed. Run: pip install litellm", component="litellm_provider", level="warning")
 
 from pydantic import BaseModel
 
@@ -42,7 +43,7 @@ class UniversalLLMProvider:
 
     Supports:
     - 100+ AI providers (Claude, GPT, Gemini, DeepSeek, etc.)
-    - Automatic fallbacks (API → Ollama)
+    - Automatic fallbacks (API -> Ollama)
     - Prompt caching (90% cost savings on Claude)
     - Feature detection (use best available features)
     - Cost tracking
@@ -304,13 +305,13 @@ class UniversalLLMProvider:
                     "provider": result["provider"]
                 }
             )
-            
+
             return result
 
         except Exception as e:
             # Fallback to local if all fails
-            print(f"[ERROR] LiteLLM failed: {e}")
-            
+            log_event(f"LiteLLM failed: {e}", component="litellm_provider", level="error")
+
             # Trace failure
             tracer.trace_generation(
                 name="llm-generation-failed",
@@ -320,7 +321,7 @@ class UniversalLLMProvider:
                 metadata={"error": str(e)}
             )
 
-            print(f"[INFO] Falling back to local Ollama")
+            log_event("Falling back to local Ollama", component="litellm_provider", level="warning")
 
             kwargs["model"] = "ollama/qwen2.5-coder:32b"
             kwargs["fallbacks"] = []

@@ -65,28 +65,28 @@ Sohbet geçmişi
    * Tier 2 için: E2B'nin SDK'sını kullanıp sandbox'ı güçlendirebiliriz.
    * Tier 4 için: OpenDevin'in "Browser" yeteneğini alıp, ajanların dökümantasyon okumasını (Web Search yerine) sağlayabiliriz.
 
-  Yani yolumuz doğru, ama tekerlekleri (araçları) dışarıdan alıp arabayı (orkestratörü) kendimiz yapmaya devam etmeliyiz. buna bi baksana ne diyosun 
+  Yani yolumuz doğru, ama tekerlekleri (araçları) dışarıdan alıp arabayı (orkestratörü) kendimiz yapmaya devam etmeliyiz. buna bi baksana ne diyosun
 ChatGPT:
 
 22s boyunca düşündüm
 Genel çerçeve çok iyi; “arabayı biz yapalım, tekerlekleri dışarıdan alalım” yaklaşımı Tier 4/5’te en sürdürülebilir yol. Ama birkaç kritik güncelleme + boşluk var.
 
 1) Hızlı doğrulama / düzeltme
-MetaGPT anlatımın tam isabet: “Software Company as Multi-Agent System” ve SOP odaklı rol seti (PM/Architect/PM/Engineer/QA) gerçekten core tasarım. 
+MetaGPT anlatımın tam isabet: “Software Company as Multi-Agent System” ve SOP odaklı rol seti (PM/Architect/PM/Engineer/QA) gerçekten core tasarım.
 GitHub
 +2
 arXiv
 +2
 
-OpenDevin tarafı: proje bugün pratikte OpenHands (formerly OpenDevin) diye geçiyor. Yani dokümantasyon/entegrasyon ararken “OpenHands” ismiyle ilerlemek daha doğru. 
+OpenDevin tarafı: proje bugün pratikte OpenHands (formerly OpenDevin) diye geçiyor. Yani dokümantasyon/entegrasyon ararken “OpenHands” ismiyle ilerlemek daha doğru.
 GitHub
 +1
 
-AutoGen: “GroupChatManager benzeri” benzetmen yerinde; AutoGen zaten “agent chat ile orkestrasyon” üzerine kurulu. 
+AutoGen: “GroupChatManager benzeri” benzetmen yerinde; AutoGen zaten “agent chat ile orkestrasyon” üzerine kurulu.
 microsoft.github.io
 +1
 
-Devin fiyatı: “$500/ay” hâlâ resmi pricing sayfasında Team plan olarak görünüyor; ayrıca pazarda “daha düşük giriş planı” iddiaları dolaşıyor ama resmi taraf net olan: pricing sayfası. 
+Devin fiyatı: “$500/ay” hâlâ resmi pricing sayfasında Team plan olarak görünüyor; ayrıca pazarda “daha düşük giriş planı” iddiaları dolaşıyor ama resmi taraf net olan: pricing sayfası.
 devin.ai
 +2
 Medium
@@ -96,59 +96,59 @@ Medium
 Bunlar tam sizin “otonom bakım/iyileştirme + issue→PR” ekseninize oturuyor:
 
 A) “Issue → PR” ajanları (Tier 4’e cuk)
-SWE-agent: gerçek GitHub repolarında issue fix etmeye odaklı, tool-using agent yaklaşımı. 
+SWE-agent: gerçek GitHub repolarında issue fix etmeye odaklı, tool-using agent yaklaşımı.
 GitHub
 +1
 
-LangChain Open SWE: direkt LangGraph ile repo genelinde planla→değiştir→PR aç akışı; sizin stack ile doğal uyumlu. 
+LangChain Open SWE: direkt LangGraph ile repo genelinde planla→değiştir→PR aç akışı; sizin stack ile doğal uyumlu.
 GitHub
 
-Sweep AI: issue’dan otomatik PR açma “bekçi” rolüne çok yakın (ürün + GH entegrasyonu). 
+Sweep AI: issue’dan otomatik PR açma “bekçi” rolüne çok yakın (ürün + GH entegrasyonu).
 skywork.ai
 +1
 
 B) “Kod dönüşümü / refactor motoru” (Tier 4’te autopilot refactor)
-Grit / GritQL: bunu “agent” gibi değil, devasa ölçekte deterministik refactor/migration motoru gibi düşünmek daha doğru (pattern-based dönüşüm, CI entegrasyonu). 
+Grit / GritQL: bunu “agent” gibi değil, devasa ölçekte deterministik refactor/migration motoru gibi düşünmek daha doğru (pattern-based dönüşüm, CI entegrasyonu).
 grit.io
 +2
 GitHub
 +2
 
 C) “Sandbox / bilgisayar altyapısı” (Tier 2’yi Tier 4’e taşır)
-E2B: hızlı açılan izole sandbox VM mantığı + SDK; “ajanın bilgisayarı” katmanı olarak çok direkt. 
+E2B: hızlı açılan izole sandbox VM mantığı + SDK; “ajanın bilgisayarı” katmanı olarak çok direkt.
 e2b.dev
 +1
 
 3) Senin Tier tablosunu “daha keskin” hale getirecek yorum
-MetaGPT = Tier 3→5 arasında “şirket simülasyonu” (çok SOP/rol odaklı). Gücü: uçtan uca paket. Zayıf yanı: YBIS Anayasa + determinism + local-first kısıtlarına uyarlamak zor. 
+MetaGPT = Tier 3→5 arasında “şirket simülasyonu” (çok SOP/rol odaklı). Gücü: uçtan uca paket. Zayıf yanı: YBIS Anayasa + determinism + local-first kısıtlarına uyarlamak zor.
 GitHub
 +1
 
-OpenHands = Tier 4/5 için “çalışan” (terminal+browser+tooling). Siz headless istiyorsunuz; buradan “browser+computer interface” parçasını almak mantıklı. 
+OpenHands = Tier 4/5 için “çalışan” (terminal+browser+tooling). Siz headless istiyorsunuz; buradan “browser+computer interface” parçasını almak mantıklı.
 GitHub
 
-AutoGen = esnek orkestrasyon ama sizin “determinism/state machine” ihtiyacınızda LangGraph avantajlı kalabiliyor. 
+AutoGen = esnek orkestrasyon ama sizin “determinism/state machine” ihtiyacınızda LangGraph avantajlı kalabiliyor.
 microsoft.github.io
 
-Grit = Sentinel’ın “deterministic refactor kolu”: LLM’i her refactor’a sokmak yerine, LLM’in hangi pattern uygulanacak kararını verip asıl rewrite’ı GritQL’ye yaptırmak Tier 4’te kaliteyi uçurur. 
+Grit = Sentinel’ın “deterministic refactor kolu”: LLM’i her refactor’a sokmak yerine, LLM’in hangi pattern uygulanacak kararını verip asıl rewrite’ı GritQL’ye yaptırmak Tier 4’te kaliteyi uçurur.
 GitHub
 +1
 
 4) Ben olsam “çalınacak parçalar”ı şöyle netleştirirdim
-Sandbox: Lokal sandbox_manager.py → kısa vadede kalsın; orta vadede E2B sınıfı izolasyon + hız ile güçlendir. 
+Sandbox: Lokal sandbox_manager.py → kısa vadede kalsın; orta vadede E2B sınıfı izolasyon + hız ile güçlendir.
 e2b.dev
 
 Tier 4 Bekçi:
 
-“Issue→PR” hattı için Open SWE (LangGraph) veya SWE-agent mantığını referans al (özellikle plan→patch→test→PR döngüsü). 
+“Issue→PR” hattı için Open SWE (LangGraph) veya SWE-agent mantığını referans al (özellikle plan→patch→test→PR döngüsü).
 GitHub
 +1
 
-Refactor/Upgrade işleri: “LLM her şeyi yazsın” yerine GritQL pattern library + sizin Constitution kuralları = daha güvenilir autopilot. 
+Refactor/Upgrade işleri: “LLM her şeyi yazsın” yerine GritQL pattern library + sizin Constitution kuralları = daha güvenilir autopilot.
 GitHub
 +1
 
-Web/Docs okuma: OpenHands’in “computer+browser” yaklaşımını modül gibi düşün (headless browser sürücüsü + loggable actions). 
+Web/Docs okuma: OpenHands’in “computer+browser” yaklaşımını modül gibi düşün (headless browser sürücüsü + loggable actions).
 GitHub
 
 Son söz: Yazdığın metin “yön doğru” diye bağırıyor. Sadece iki güncelleme şart:
@@ -264,83 +264,83 @@ Tabii—internette şu anda hazır framework’ler, araçlar ve projeler bu “A
 🧠 1) MetaGPT
 Tam bir multi-agent yazılım geliştirme framework’ü: ürün yöneticisi, mimar, kodlayıcı vb. rolleri LLM’lerle simüle eder.
 
-Tek satırdan uçtan uca ürün süreci oluşturabilir. 
+Tek satırdan uçtan uca ürün süreci oluşturabilir.
 GitHub
 
 🐙 2) OpenHands (eski OpenDevin)
 Açık kaynaklı, model-agnostik “cloud coding agent” platformu.
 
-CLI ve SDK ile birden çok ajanı otomatik çalıştırabilir, kendi sandbox’ını yönetebilir. 
+CLI ve SDK ile birden çok ajanı otomatik çalıştırabilir, kendi sandbox’ını yönetebilir.
 openhands.dev
 
 🤖 3) Open SWE
 Asenkron, GitHub ile entegre çalışan açık kaynak kodlama ajanı.
 
-Kod araştırır, plan yapar, test eder, fixler ve PR açabilir. 
+Kod araştırır, plan yapar, test eder, fixler ve PR açabilir.
 LangChain Blog
 
 🤝 4) AutoGPT
 Tamamen açık kaynaklı özerk AI agent, hedefi parçalarına ayırıp alt görevleri kendi başına çalıştırabilir.
 
-Basit task automations ve prototipler için hızlı bir başlangıç. 
+Basit task automations ve prototipler için hızlı bir başlangıç.
 Vikipedi
 
 📊 5) LangGraph
 Agent ve workflow orchestration için güçlü ve hızlı bir graph tabanlı framework.
 
-Multi-agent sistemlerde state & plan yönetimine odaklanır. 
+Multi-agent sistemlerde state & plan yönetimine odaklanır.
 langfuse.com
 
 📦 6) CrewAI
 Çok ajanlı orchestration çözümleri sunan bir framework, agent’lar arası message passing/scheduling destekler.
 
-Özellikle ekip-rol senaryolarında işe yarar. 
+Özellikle ekip-rol senaryolarında işe yarar.
 langfuse.com
 
 🧱 7) OpenAI Agents SDK / AGENTS.md
 Standart agent komut ve workflow tanımları için protokol (open standard hale geliyor).
 
-Çeşitli agent framework’leri arasında uyumluluk sağlar. 
+Çeşitli agent framework’leri arasında uyumluluk sağlar.
 IT Pro
 
 ✨ 8) Langflow
 Düşük kod / görsel agent workflow yaratma aracı.
 
-Hem RAG hem agent choreography iş akışları için uygun. 
+Hem RAG hem agent choreography iş akışları için uygun.
 shakudo.io
 
 🧠 9) ModelScope-Agent (Araştırma)
-Özelleştirilebilir agent sistemi için açık kaynak SDK; birçok LLM ve API ile çalışabilir. 
+Özelleştirilebilir agent sistemi için açık kaynak SDK; birçok LLM ve API ile çalışabilir.
 arXiv
 
 🏗️ 10) AutoDev (Araştırma)
 Geliştirme planı → kod → test → git operasyonu gibi tam döngü otomasyonu hedefleyen agent framework araştırması.
 
-Docker sandbox gibi kontroller ile güvenli otomasyon sağlar. 
+Docker sandbox gibi kontroller ile güvenli otomasyon sağlar.
 arXiv
 
 🏭 11) Confucius Code Agent (Araştırma)
 Endüstriyel ölçekli açık kaynak AI yazılım mühendisi.
 
-Persistent memory ve hierarchical orchestrator ile büyük kod tabanlarında daha dayanıklı performans hedefler. 
+Persistent memory ve hierarchical orchestrator ile büyük kod tabanlarında daha dayanıklı performans hedefler.
 arXiv
 
 🧠 Ekosistem & Üretim Standartları
 🧩 Agentic AI Foundation
-OpenAI, Anthropic ve Block gibi büyük isimler, AI agent’ları için ortak açık standartlar (MCP, AGENTS.md vb) geliştiriyor. Bu, framework’ler arasında uyumluluk ve birlikte çalışma açısından önemli bir altyapı adımı. 
+OpenAI, Anthropic ve Block gibi büyük isimler, AI agent’ları için ortak açık standartlar (MCP, AGENTS.md vb) geliştiriyor. Bu, framework’ler arasında uyumluluk ve birlikte çalışma açısından önemli bir altyapı adımı.
 WIRED
 
 📌 Diğer Notlar / Araçlar (Geliştirici Ötesi)
 🛠️ Awesome AI Software Development Agents
-Toplu listeler / GitHub repoları var; çok sayıda niche ajan ve araç içeriyor (örneğin Aider, Enzzo vb.). 
+Toplu listeler / GitHub repoları var; çok sayıda niche ajan ve araç içeriyor (örneğin Aider, Enzzo vb.).
 Reddit
 
 🧠 Manus AI
-Tamamen bağımsız akıllı agent; yazılım değil ama gelişmiş plan/execute yetenekleriyle dikkate değer. 
+Tamamen bağımsız akıllı agent; yazılım değil ama gelişmiş plan/execute yetenekleriyle dikkate değer.
 Vikipedi
 
 🧰 IDE / Kodlama Ortamları
-Eclipse Theia + AI: VSCode alternatifi açık kaynak IDE + AI kod asistanı destekli. 
+Eclipse Theia + AI: VSCode alternatifi açık kaynak IDE + AI kod asistanı destekli.
 Vikipedi
 
 🧠 Kısa Özet: Ne Varsa Nerede?
@@ -353,19 +353,19 @@ Agent Orchestration	LangGraph, CrewAI	Plan/scheduling
 Low-Code Workflows	Langflow	Görsel agent iş akışları
 Industry Research	Confucius, AutoDev, ModelScope	Büyük ölçek ve ileri mimariler
 ✨ Öneriler (Hızlı entegrasyon için)
-MetaGPT — hazır “software company as system” ana omurga. 
+MetaGPT — hazır “software company as system” ana omurga.
 GitHub
 
-OpenHands — sandbox + multi-agent çalıştırıcı. 
+OpenHands — sandbox + multi-agent çalıştırıcı.
 openhands.dev
 
-Open SWE — repo-based autonomous coding. 
+Open SWE — repo-based autonomous coding.
 LangChain Blog
 
-LangGraph — kendi orchestration’unla plug-in olarak. 
+LangGraph — kendi orchestration’unla plug-in olarak.
 langfuse.com
 
-MCP/Agents.md — standartlaştırma ve framework entegrasyon altyapısı. 
+MCP/Agents.md — standartlaştırma ve framework entegrasyon altyapısı.
 IT Pro
 
 İstersen bu listedeki her bir framework için olası entegre plan adımlarını (örneğin “MetaGPT kurulumu → OpenHands ile parallel sandbox → Open SWE ile GitHub job aç”) sıralayabilirim. Hangi framework’leri önce denemek istediğini söyle yeter!

@@ -23,7 +23,7 @@ steps:
     template: "templates/story-tmpl.yaml"
     output: "docs/stories/{{epic_num}}.{{story_num}}.{{story_title_short}}.md"
     instruction: |
-      <!-- 
+      <!--
       AI TALİMATI: Kullanıcıdan veya roadmap'ten gelen ihtiyacı analiz et.
       `story-tmpl.yaml` şablonunu kullanarak yeni bir story dosyası oluştur.
       Story'nin 'Acceptance Criteria' ve 'Tasks/Subtasks' bölümlerini doldur.
@@ -43,7 +43,7 @@ steps:
       - "docs/Güncel/DEVELOPMENT_GUIDELINES.md"
     output: "Kod değişiklikleri ve güncellenmiş story dosyası (tamamlanan görevler işaretlenir)."
     instruction: |
-      <!-- 
+      <!--
       AI TALİMATI: Sadece sana verilen story dosyasını oku.
       İlk olarak 'Anayasa Uyum Kontrolü' bölümünü dikkatlice incele ve planını bu kurallara göre yap.
       Story'deki teknik görevleri sırasıyla tamamla.
@@ -62,7 +62,7 @@ steps:
     checklist: "checklists/story-dod-checklist.md"
     output: "Onay, revizyon talebi veya hata raporu."
     instruction: |
-      <!-- 
+      <!--
       AI TALİMATI: Geliştirici tarafından 'Review' olarak işaretlenen story'yi aç.
       `story-dod-checklist.md` kontrol listesindeki her bir maddeyi, yapılan işe göre kontrol et.
       Story'nin kabul kriterlerinin karşılanıp karşılanmadığını doğrula.

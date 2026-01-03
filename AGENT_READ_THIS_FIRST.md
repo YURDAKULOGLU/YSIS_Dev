@@ -7,12 +7,13 @@ Bu repo “agentic software factory”dir. Sen (CLI agent) bu fabrikanın operat
 
 ## 0) Mutlak Kurallar (ihlal = fail)
 
-1. **Forbidden dirs’e yazma yok:** `legacy/`, `.venv/`, `.git/`, `.sandbox*`, `archive/`, `site-packages/`
+1. **Forbidden dirs'e yazma yok:** `legacy/`, `.venv/`, `.git/`, `.sandbox*`, `archive/`, `site-packages/`
 2. **Path hardcode yok:** `.YBIS_Dev`, `../` (normalize edilmemiş), `C:\`, `~`
 3. **Artifacts zorunlu:** Her run sonunda `PLAN.md`, `RUNBOOK.md`, `EVIDENCE/*`, `CHANGES/*`, `META.json`
-4. **Sentinel fail ise “done” deme.**
-5. **Framework core’a sızamaz:** her entegrasyon `adapter + contracts + tests_contract + runbook + policy` ile olur.
+4. **Sentinel fail ise "done" deme.**
+5. **Framework core'a sızamaz:** her entegrasyon `adapter + contracts + tests_contract + runbook + policy` ile olur.
 6. **Tek modele bağlı kalma:** Router/Provider abstraction kullan; gerekirse API/provider switch.
+7. **EMOJI YASAK:** Kod dosyalarında emoji/unicode dekorasyon kullanma. Detay: `docs/governance/00_GENESIS/CODE_STANDARDS.md`
 
 ---
 

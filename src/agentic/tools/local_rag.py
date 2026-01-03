@@ -3,8 +3,13 @@ LocalRAG - Local Retrieval Augmented Generation using ChromaDB + Ollama.
 
 Restored from legacy/20_WORKFORCE/01_Python_Core/Tools/local_rag.py
 Provides context enrichment for planning and execution.
+
+Features:
+- Whitelist/Blacklist pattern filtering
+- Relevance threshold gating (blocks low-signal snippets)
 """
 
+import fnmatch
 import os
 from pathlib import Path
 
@@ -16,10 +21,41 @@ try:
 except ImportError:
     CHROMADB_AVAILABLE = False
 
-from src.agentic.core.config import PROJECT_ROOT
+from src.agentic.core.config import (
+    PROJECT_ROOT,
+    RAG_RELEVANCE_THRESHOLD,
+    RAG_MAX_RESULTS,
+    RAG_WHITELIST_PATTERNS,
+    RAG_BLACKLIST_PATTERNS
+)
 
 # Constants
 DOC_PREVIEW_MAX_LENGTH = 500
+
+
+def _matches_pattern(path: str, patterns: list[str]) -> bool:
+    """Check if path matches any of the glob patterns."""
+    for pattern in patterns:
+        if fnmatch.fnmatch(path, pattern):
+            return True
+        # Also check with forward slashes for consistency
+        if fnmatch.fnmatch(path.replace('\\', '/'), pattern):
+            return True
+    return False
+
+
+def _is_whitelisted(source_path: str) -> bool:
+    """Check if source path passes whitelist/blacklist filters."""
+    # If in blacklist, reject immediately
+    if _matches_pattern(source_path, RAG_BLACKLIST_PATTERNS):
+        return False
+
+    # If whitelist is empty, allow all non-blacklisted
+    if not RAG_WHITELIST_PATTERNS:
+        return True
+
+    # Must match at least one whitelist pattern
+    return _matches_pattern(source_path, RAG_WHITELIST_PATTERNS)
 
 
 class LocalRAG:
@@ -175,80 +211,145 @@ class LocalRAG:
     def search(
         self,
         query: str,
-        limit: int = 5,
-        filter_type: str = None
+        limit: int = None,
+        filter_type: str = None,
+        relevance_threshold: float = None
     ) -> str:
         """
-        Search for relevant context.
+        Search for relevant context with whitelist/threshold filtering.
 
         Args:
             query (str): Search query.
-            limit (int, optional): Maximum results. Defaults to 5.
-            filter_type (str, optional): Optional filter by document type. Defaults to None.
+            limit (int, optional): Maximum results. Defaults to RAG_MAX_RESULTS.
+            filter_type (str, optional): Optional filter by document type.
+            relevance_threshold (float, optional): Minimum relevance score. Defaults to RAG_RELEVANCE_THRESHOLD.
 
         Returns:
-            str: Formatted context string.
+            str: Formatted context string (only high-signal, whitelisted results).
         """
         if not self.is_available():
             return "[LocalRAG] Not available - proceeding without knowledge base context."
+
+        # Use config defaults if not specified
+        limit = limit or RAG_MAX_RESULTS
+        relevance_threshold = relevance_threshold if relevance_threshold is not None else RAG_RELEVANCE_THRESHOLD
 
         try:
             # Build where filter
             where = {"type": filter_type} if filter_type else None
 
+            # Query more than needed to allow for filtering
+            fetch_limit = limit * 3
+
             results = self.collection.query(
                 query_texts=[query],
-                n_results=limit,
+                n_results=fetch_limit,
                 where=where
             )
 
             if not results['documents'] or not results['documents'][0]:
                 return "[LocalRAG] No relevant context found."
 
-            # Format results
-            formatted = "=== RELEVANT CODE CONTEXT ===\n"
+            # Filter results by whitelist and relevance threshold
+            filtered_results = []
+            blocked_count = 0
+            low_relevance_count = 0
+
             for i, doc in enumerate(results['documents'][0]):
                 meta = results['metadatas'][0][i] if results['metadatas'] else {}
                 source = meta.get('source', 'unknown')
                 distance = results['distances'][0][i] if results.get('distances') else 0
+                relevance = 1 - distance
 
+                # Check whitelist
+                if not _is_whitelisted(source):
+                    blocked_count += 1
+                    continue
+
+                # Check relevance threshold
+                if relevance < relevance_threshold:
+                    low_relevance_count += 1
+                    continue
+
+                filtered_results.append((doc, source, relevance))
+
+                # Stop if we have enough results
+                if len(filtered_results) >= limit:
+                    break
+
+            if not filtered_results:
+                return f"[LocalRAG] No relevant context passed filters (blocked: {blocked_count}, low-relevance: {low_relevance_count})."
+
+            # Format results
+            formatted = f"=== RELEVANT CODE CONTEXT (threshold: {relevance_threshold:.2f}) ===\n"
+            for doc, source, relevance in filtered_results:
                 # Truncate long documents
                 doc_preview = doc[:DOC_PREVIEW_MAX_LENGTH] + "..." if len(doc) > DOC_PREVIEW_MAX_LENGTH else doc
 
-                formatted += f"\n--- [{source}] (relevance: {1-distance:.2f}) ---\n"
+                formatted += f"\n--- [{source}] (relevance: {relevance:.2f}) ---\n"
                 formatted += doc_preview
                 formatted += "\n"
+
+            if blocked_count > 0 or low_relevance_count > 0:
+                formatted += f"\n[Filtered: {blocked_count} blacklisted, {low_relevance_count} low-relevance]\n"
 
             return formatted
 
         except Exception as e:
             return f"[LocalRAG] Search error: {e}"
 
-    def search_files(self, query: str, limit: int = 5) -> list[str]:
+    def search_files(
+        self,
+        query: str,
+        limit: int = None,
+        relevance_threshold: float = None
+    ) -> list[str]:
         """
-        Search and return list of relevant file paths.
+        Search and return list of relevant file paths (filtered by whitelist/threshold).
 
         Args:
             query: Search query
-            limit: Maximum results
+            limit: Maximum results (defaults to RAG_MAX_RESULTS)
+            relevance_threshold: Minimum relevance (defaults to RAG_RELEVANCE_THRESHOLD)
 
         Returns:
-            List of file paths
+            List of whitelisted, high-relevance file paths
         """
         if not self.is_available():
             return []
 
+        limit = limit or RAG_MAX_RESULTS
+        relevance_threshold = relevance_threshold if relevance_threshold is not None else RAG_RELEVANCE_THRESHOLD
+
         try:
+            # Fetch more to allow for filtering
+            fetch_limit = limit * 3
+
             results = self.collection.query(
                 query_texts=[query],
-                n_results=limit
+                n_results=fetch_limit
             )
 
             files = []
             if results['metadatas']:
-                for meta in results['metadatas'][0]:
-                    if meta.get('source'):
-                        files.append(meta['source'])
+                for i, meta in enumerate(results['metadatas'][0]):
+                    source = meta.get('source')
+                    if not source:
+                        continue
+
+                    # Check whitelist
+                    if not _is_whitelisted(source):
+                        continue
+
+                    # Check relevance threshold
+                    distance = results['distances'][0][i] if results.get('distances') else 0
+                    relevance = 1 - distance
+                    if relevance < relevance_threshold:
+                        continue
+
+                    files.append(source)
+                    if len(files) >= limit:
+                        break
 
             return files
 

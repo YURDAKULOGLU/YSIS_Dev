@@ -1,4 +1,4 @@
-# 🧠 Core Architecture
+# Core Architecture
 
 > **Zone:** System Logic & Configuration
 > **Access:** Critical / Read-Heavy
@@ -7,7 +7,8 @@
 
 | File | Purpose |
 |------|---------|
-| `config.py` | **The Source of Truth** for paths. Never hardcode paths; import from here. |
+| `config.py` | **The Source of Truth** for runtime config and paths (env overrides live here). |
+| `constants.py` | Default values only (do not read env here). |
 | `protocols.py` | **The Law.** Pydantic models defining data structures (`TaskState`, `Plan`). |
 | `logger.py` | **The Voice.** Loguru-based smart logging (Console=Clean, File=Verbose). |
 | `smart_logger.py`| *Legacy wrapper*, prefer `logger.py`. |

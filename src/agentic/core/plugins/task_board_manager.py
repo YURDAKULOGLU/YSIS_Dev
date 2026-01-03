@@ -6,13 +6,14 @@ Can sync TASK_BOARD.md for visibility.
 
 from typing import Optional, Dict, Any, List
 from src.agentic.infrastructure.db import TaskDatabase
+from src.agentic.core.utils.logging_utils import log_event
 
 class TaskBoardManager:
     """Manages Task Board Persistence via SQLite."""
 
     def __init__(self, db_path: str = None):
         from src.agentic.core.config import DATA_DIR, PROJECT_ROOT
-        
+
         # Determine paths
         self.db_path = db_path or str(DATA_DIR / "tasks.db")
         self.db = TaskDatabase(self.db_path)
@@ -92,7 +93,7 @@ class TaskBoardManager:
         await self._ensure_db()
         import random
         task_id = f"TASK-New-{random.randint(100,999)}"
-        
+
         new_task = {
             "id": task_id,
             "goal": title,
@@ -109,7 +110,7 @@ class TaskBoardManager:
         await self._ensure_db()
         status = status.upper()
         final_status = "UNKNOWN"
-        
+
         if status in ["DONE", "COMPLETED"]:
             final_status = "SUCCESS"
             status = "DONE"
@@ -118,8 +119,73 @@ class TaskBoardManager:
             status = "DONE"
         elif status == "IN_PROGRESS":
             status = "IN_PROGRESS"
-        
+
         await self.db.update_task_status(task_id, status, final_status)
+
+    async def release_task(self, task_id: str, reason: str = "manual") -> bool:
+        """
+        Release a stuck task back to BACKLOG.
+        Self-healing: prevents tasks from being stuck forever.
+        """
+        await self._ensure_db()
+        import aiosqlite
+
+        async with aiosqlite.connect(self.db_path) as conn:
+            async with conn.execute(
+                """
+                UPDATE tasks
+                SET status='BACKLOG', assignee=NULL
+                WHERE id=? AND status='IN_PROGRESS'
+                """,
+                (task_id,)
+            ) as cursor:
+                pass
+            await conn.commit()
+
+        log_event(f"Released task {task_id} back to BACKLOG (reason: {reason})", component="task_board")
+        return True
+
+    async def release_stale_tasks(self, max_age_minutes: int = 30) -> List[str]:
+        """
+        Auto-release tasks stuck IN_PROGRESS for too long.
+        Self-healing: called by health monitor or orchestrator startup.
+        """
+        await self._ensure_db()
+        import aiosqlite
+        from datetime import datetime, timedelta
+
+        cutoff = datetime.now() - timedelta(minutes=max_age_minutes)
+        cutoff_str = cutoff.isoformat()
+        released = []
+
+        async with aiosqlite.connect(self.db_path) as conn:
+            conn.row_factory = aiosqlite.Row
+
+            # Find stale tasks
+            async with conn.execute(
+                """
+                SELECT id FROM tasks
+                WHERE status='IN_PROGRESS' AND updated_at < ?
+                """,
+                (cutoff_str,)
+            ) as cursor:
+                rows = await cursor.fetchall()
+                released = [row['id'] for row in rows]
+
+            if released:
+                # Release them
+                await conn.execute(
+                    """
+                    UPDATE tasks
+                    SET status='BACKLOG', assignee=NULL
+                    WHERE status='IN_PROGRESS' AND updated_at < ?
+                    """,
+                    (cutoff_str,)
+                )
+                await conn.commit()
+                log_event(f"Auto-released {len(released)} stale tasks: {released}", component="task_board")
+
+        return released
 
     async def _read_db(self) -> Dict[str, Any]:
         """Backward compatibility for worker.py loop."""
@@ -144,18 +210,18 @@ class TaskBoardManager:
             "## [NEW] (Backlog)",
             ""
         ]
-        
+
         # Backlog
         for task in data.get("backlog", []):
             lines.append(f"- [ ] **{task['id']}:** {task['goal']}")
             lines.append(f"  - **Goal:** {task.get('details', '')}")
             lines.append(f"  - **Assignee:** {task.get('assignee', 'Unassigned')}")
             lines.append(f"  - **Priority:** {task.get('priority', 'MEDIUM')}")
-            
+
         lines.append("")
         lines.append("## [IN PROGRESS]")
         lines.append("")
-        
+
         # In Progress
         for task in data.get("in_progress", []):
             lines.append(f"- [ ] **{task['id']}:** {task['goal']}")
@@ -169,19 +235,19 @@ class TaskBoardManager:
         lines.append("")
         lines.append("## [DONE]")
         lines.append("")
-        
+
         # Done
         for task in data.get("done", []):
              lines.append(f"- [x] **{task['id']}:** {task['goal']}")
-        
+
         lines.append("")
         lines.append("---")
-        
+
         try:
             with open(self.md_path, 'w', encoding='utf-8') as f:
                 f.write("\n".join(lines))
         except Exception as e:
-            print(f"[TaskBoard] Error syncing MD: {e}")
+            log_event(f"Error syncing MD: {e}", component="task_board", level="warning")
 
     def _get_timestamp(self):
         from datetime import datetime
@@ -191,10 +257,10 @@ class TaskBoardManager:
         """Get first task from in_progress."""
         data = await self._read_db()
         in_progress = data.get("in_progress", [])
-        
+
         if not in_progress:
             return None
-            
+
         task = in_progress[0]
         return {
             "id": task["id"],
@@ -205,11 +271,11 @@ class TaskBoardManager:
     async def create_task(self, title: str, description: str, priority: str = "MEDIUM") -> str:
         """Create new task in Backlog."""
         data = await self._read_db()
-        
+
         # Generate ID (Simple increment or random)
         import random
         task_id = f"TASK-New-{random.randint(100,999)}"
-        
+
         new_task = {
             "id": task_id,
             "goal": title,
@@ -226,12 +292,12 @@ class TaskBoardManager:
         await self._ensure_db()
         status = status.upper()
         final_status = "UNKNOWN"
-        
+
         if status in ["DONE", "COMPLETED"]:
             final_status = "SUCCESS"
             status = "DONE"
         elif status == "FAILED":
             final_status = "FAILED"
             status = "DONE"
-        
+
         await self.db.update_task_status(task_id, status, final_status)

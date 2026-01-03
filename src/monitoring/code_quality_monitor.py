@@ -9,12 +9,12 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - [%(name)s] - %(lev
 def check_for_regressions(file, code_complexity, previous_complexity) -> dict:
     """
     Kod karmaşıklık metriklerinde gerilemeleri kontrol eder.
-    
+
     Args:
         file (str): Dosya adı
         code_complexity (dict): Mevcut kod karmaşıklığı bilgileri
         previous_complexity (dict): Önceki kod karmaşıklığı bilgileri
-    
+
     Returns:
         dict: Gerileme varsa detayları içeren bir sözlük, yoksa boş bir sözlük döndürür.
     """
@@ -90,4 +90,3 @@ def monitor_code_quality(directory_path):
             json.dump(history_data, f, indent=4)
     except Exception as e:
         logging.error(f"Failed to write history file {history_file}: {str(e)}", exc_info=True)
-

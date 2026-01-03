@@ -3,7 +3,7 @@ Execute TASK-New-206: Project Structure Cleanup & Standardization
 
 DOGFOODING DEMONSTRATION:
 - System cleans itself using its own tools
-- OrchestratorGraph → SimplePlanner → AiderExecutor → SentinelVerifier
+- OrchestratorGraph -> SimplePlanner -> AiderExecutor -> SentinelVerifier
 """
 
 import asyncio

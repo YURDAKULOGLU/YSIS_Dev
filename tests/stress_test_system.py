@@ -45,13 +45,13 @@ async def inject_tasks(board: TaskBoardManager):
         ("STRESS-B", "Create a file named src/stress_b.py with a function calculate_sum(a,b)"),
         ("STRESS-C", "Modify src/stress_b.py to add a docstring to calculate_sum")
     ]
-    
+
     # Read current DB
     data = await board._read_db()
-    
+
     for tid, goal in tasks:
         logger.info(f"Injecting Task: {tid} - {goal}")
-        
+
         # Check if already exists
         exists = False
         for lst in data.values():
@@ -59,7 +59,7 @@ async def inject_tasks(board: TaskBoardManager):
                 if t["id"] == tid:
                     exists = True
                     break
-        
+
         if not exists:
             new_task = {
                 "id": tid,
@@ -78,43 +78,43 @@ async def inject_tasks(board: TaskBoardManager):
 
 async def run_stress_test():
     logger.info("Starting GRAND SYSTEM STRESS TEST")
-    
+
     # 1. Clear State (Optional, but good for stress test)
     # For now we append to existing state to simulate real usage
-    
+
     board = TaskBoardManager()
-    
+
     # 2. Start Worker in Background
     logger.info("Launching Background Worker...")
     worker_task = asyncio.create_task(worker_loop())
-    
+
     # 3. Inject Tasks
     await inject_tasks(board)
-    
+
     # 4. Monitor Loop
     # Wait for all injected tasks to become 'DONE'
     start_time = time.time()
     max_wait = 300 # 5 minutes max
-    
+
     while time.time() - start_time < max_wait:
         data = await board._read_db()
-        
+
         # Check if our specific tasks are done
         target_ids = ["STRESS-A", "STRESS-B", "STRESS-C"]
         completed = [t["id"] for t in data.get("done", [])]
-        
+
         pending = [tid for tid in target_ids if tid not in completed]
-        
+
         if not pending:
             logger.info("SUCCESS: All stress tasks completed!")
             break
-            
+
         logger.info(f"Waiting for tasks: {pending}")
         await asyncio.sleep(10)
-    
+
     if pending:
         logger.error(f"TIMEOUT: Tasks {pending} did not finish in time.")
-    
+
     # Stop Worker
     worker_task.cancel()
     try:

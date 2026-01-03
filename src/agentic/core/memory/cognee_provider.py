@@ -8,6 +8,7 @@ import os
 import asyncio
 import cognee
 from typing import List, Any, Dict, Optional
+from src.agentic.core.utils.logging_utils import log_event
 
 class CogneeProvider:
     def __init__(self):
@@ -16,7 +17,7 @@ class CogneeProvider:
         os.environ['GRAPH_DATABASE_URL'] = os.getenv("NEO4J_URI", "bolt://localhost:7687")
         os.environ['GRAPH_DATABASE_USERNAME'] = os.getenv("NEO4J_USER", "neo4j")
         os.environ['GRAPH_DATABASE_PASSWORD'] = os.getenv("NEO4J_PASSWORD", "ybis-graph-2025")
-        
+
         # Disable access control for local dev
         os.environ['ENABLE_BACKEND_ACCESS_CONTROL'] = 'false'
 
@@ -27,7 +28,7 @@ class CogneeProvider:
             await cognee.cognify()
             return True
         except Exception as e:
-            print(f"[Cognee] Add failed: {e}")
+            log_event(f"Add failed: {e}", component="cognee_provider", level="warning")
             return False
 
     async def search(self, query: str, limit: int = 5) -> List[Any]:
@@ -36,5 +37,5 @@ class CogneeProvider:
             results = await cognee.search(query, limit=limit)
             return results
         except Exception as e:
-            print(f"[Cognee] Search failed: {e}")
+            log_event(f"Search failed: {e}", component="cognee_provider", level="warning")
             return []

@@ -14,7 +14,7 @@ workflow:
       agent: analyst
       action: Identify what documentation needs updating
       creates: documentation-update-plan.md
-      requires: 
+      requires:
         - Code changes completed
         - Architecture decisions made
         - Tech stack updates
@@ -83,7 +83,7 @@ workflow:
       agent: qa
       action: Check all documentation for consistency
       creates: documentation-consistency-report.md
-      requires: 
+      requires:
         - Updated tech-stack.md
         - Updated DEVELOPMENT_LOG.md
         - Updated tasks.md
@@ -141,7 +141,3 @@ workflow:
     pm_to_architect: "Task updates complete. Review if constitution needs updates for new principles."
     architect_to_qa: "All documentation updated. Please validate consistency across all files."
     qa_to_pm: "Consistency validated. Update the documentation index with new status."
-
-
-
-

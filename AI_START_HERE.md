@@ -59,7 +59,7 @@ You are not a generic bot. Identify your role based on your capabilities:
 
 ## 🛠️ The Unified Execution Model (The Only Way)
 
-We have unified all execution paths into a single, MCP-first entry point. 
+We have unified all execution paths into a single, MCP-first entry point.
 
 ### 🚀 The Master Runner: `scripts/run_orchestrator.py`
 This is now the **ONLY** supported way to run tasks. It handles the entire lifecycle:

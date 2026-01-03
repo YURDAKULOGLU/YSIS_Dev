@@ -30,9 +30,9 @@ async def test_tracing():
     # Setup - suppress external logs
     import logging
     logging.getLogger("litellm").setLevel(logging.CRITICAL)
-    
+
     provider = get_provider()
-    
+
     # Execution
     try:
         response = await provider.generate(
@@ -40,16 +40,16 @@ async def test_tracing():
             model="ollama/qwen2.5-coder:32b",
             use_caching=False
         )
-        
+
         if "4" in response['content']:
             print(f"[OK] LLM Integration Validated.")
             print(f"[OK] Provider: {response['provider']}")
         else:
             print(f"[FAIL] Unexpected LLM response.")
-            
+
     except Exception as e:
         print(f"[FAIL] Generation error: {e}")
-    
+
     # Cleanup
     tracer.flush()
 

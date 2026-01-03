@@ -28,12 +28,12 @@ class SmartPlanner(PlannerProtocol):
         # Simple heuristic: find words ending in .py, .md, .js
         words = task_description.split()
         potential_files = [w for w in words if w.endswith(('.py', '.md', '.ts', '.js', '.json'))]
-        
+
         impact_report = []
         if self.mcp:
             for f in potential_files:
                 # Assuming mcp_client has a method to call 'check_dependency_impact'
-                # For now, we simulate or use a direct import if possible, 
+                # For now, we simulate or use a direct import if possible,
                 # but ideally this should be an MCP call.
                 try:
                     # Direct import fallback for now (Frankenstein style)
@@ -42,7 +42,7 @@ class SmartPlanner(PlannerProtocol):
                     impact_report.append(f" Impact of changing {f}:\n{report}")
                 except Exception as e:
                     log.warning(f"Failed to check graph impact for {f}: {e}")
-        
+
         return impact_report
 
     async def plan(self, task: str, context: Dict[str, Any]) -> Plan:
@@ -50,35 +50,35 @@ class SmartPlanner(PlannerProtocol):
 
         # 1. Gather Intelligence (Graph & Memory)
         graph_insights = await self._consult_graph(task)
-        
+
         # 2. Construct Prompt for LLM
         prompt = f"""
         You are the Chief Architect of YBIS.
-        
+
         TASK:
         {task}
-        
+
         CONTEXT:
         {json.dumps(context, indent=2)}
-        
+
         GRAPH INSIGHTS (Dependency Risks):
         {chr(10).join(graph_insights)}
-        
+
         OBJECTIVE:
         Create a detailed execution plan.
-        
+
         REQUIREMENTS:
         - List specific files to create or modify.
         - Define a verification strategy (how to test).
         - If graph insights show high risk, add extra testing steps.
-        
+
         Output must be valid JSON matching the 'Plan' schema.
         """
 
         # 3. Call LLM (Ollama via bridge or direct)
         # For this prototype, we will use a mock/simple logic or call existing router
         # In a real implementation, this calls self.llm.generate(prompt)
-        
+
         log.info(f"[{self.name()}] Generated smart plan based on graph insights.")
 
         # returning a skeleton plan for now to integrate into the graph

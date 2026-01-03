@@ -1,3 +1,9 @@
+## Architecture Overview
+
+YBIS architecture is defined by a central spine and supporting subsystems.
+
+- **Spine Definition:** `docs/architecture/SPINE_DEFINITION.md`
+- **System Overview:** `docs/system_overview.md`
 
 ## Redis Integration
 

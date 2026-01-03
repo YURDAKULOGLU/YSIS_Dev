@@ -11,7 +11,7 @@ class InvestigatorBridge:
         # FORCE LOCAL MODE
         os.environ["OPENAI_API_BASE"] = "http://localhost:11434/v1"
         os.environ["OPENAI_API_KEY"] = "NA"
-        
+
         # CrewAI native LLM (via LiteLLM)
         # Must prefix with 'ollama/' for local models
         self.llm = LLM(
@@ -23,11 +23,11 @@ class InvestigatorBridge:
         """
         Conducts a full self-audit of the YBIS system.
         """
-        
+
         # 1. Gather Context (What do we have?)
         req_path = os.path.join(project_root, "requirements.txt")
         tree_context = self._get_tree_structure(project_root)
-        
+
         with open(req_path, "r", encoding="utf-8") as f:
             installed_libs = f.read()
 
@@ -39,7 +39,7 @@ class InvestigatorBridge:
             llm=self.llm,
             verbose=True
         )
-        
+
         scout = Agent(
             role='Tech Futurist',
             goal='Recommend cutting-edge frameworks to reach AGI level.',
@@ -51,21 +51,21 @@ class InvestigatorBridge:
         # 3. Define Tasks
         task_audit = Task(
             description=f"""
-            Analyze the current system state based on this context: 
-            
+            Analyze the current system state based on this context:
+
             INSTALLED LIBRARIES:
             {installed_libs}
-            
+
             FILE STRUCTURE:
             {tree_context}
-            
+
             Identify what kind of system this is (Agentic Factory?).
             List the core capabilities we currently have (e.g., Memory, Orchestration).
             """,
             expected_output='A summary of Current Capabilities and Architecture.',
             agent=auditor
         )
-        
+
         task_recommend = Task(
             description="""
             Based on the Auditor's analysis, recommend 3-5 CRITICAL frameworks or tools we are missing.
@@ -74,7 +74,7 @@ class InvestigatorBridge:
             2. Web Interface (Do we have a UI? FastUI/Streamlit?).
             3. Advanced Reasoning (Do we need specialized math/logic solvers?).
             4. Robustness (Testing frameworks?).
-            
+
             Explain WHY we need them.
             """,
             expected_output='A strategic "MISSING TECHNOLOGIES" report with installation commands.',

@@ -22,7 +22,7 @@ except ImportError:
 
 class YBISTracer:
     """Singleton Tracer for YBIS"""
-    
+
     _instance = None
 
     def __new__(cls):
@@ -34,11 +34,11 @@ class YBISTracer:
     def _init_tracer(self):
         self.enabled = False
         self.client = None
-        
+
         # Check config
         public_key = os.getenv("LANGFUSE_PUBLIC_KEY")
         secret_key = os.getenv("LANGFUSE_SECRET_KEY")
-        
+
         if LANGFUSE_AVAILABLE and public_key and secret_key:
             try:
                 self.client = Langfuse()
@@ -76,7 +76,7 @@ def trace_span(name: Optional[str] = None):
         def wrapper(*args, **kwargs):
             if not LANGFUSE_AVAILABLE:
                 return func(*args, **kwargs)
-            
+
             # If enabled, use the native decorator logic manually or via SDK
             # For simplicity, we delegate to native @observe if available
             try:

@@ -11,6 +11,7 @@ from typing import Dict, Any
 from pathlib import Path
 import asyncio
 import httpx
+from src.agentic.core.utils.logging_utils import log_event
 
 from src.agentic.core.protocols import Plan
 from src.agentic.core.config import CONSTITUTION_PATH
@@ -29,12 +30,13 @@ class SimplePlanner:
         self.router = router or default_router
         # Get the planning model config from router
         self.model_config = self.router.get_model("PLANNING")
-        
+
         # Support Docker -> Host connection via environment variable
         self.base_url = base_url or os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
     async def plan(self, task: str, context: Dict[str, Any]) -> Plan:
         """Generate execution plan using Ollama with dependency awareness"""
+        log_event(f"Planning task: {task}", component="simple_planner")
 
         # NEW: Check dependency impact BEFORE planning (GAP 2 FIX)
         impact_analysis = self._check_dependency_impact(context)
@@ -104,7 +106,7 @@ class SimplePlanner:
 
         except Exception as e:
             # Don't fail planning if impact check fails - just log it
-            print(f"[SimplePlanner] Impact check failed: {e}")
+            log_event(f"Impact check failed: {e}", component="simple_planner", level="warning")
             return {
                 'checked': False,
                 'error': str(e),
@@ -112,19 +114,27 @@ class SimplePlanner:
             }
 
     def _read_constitution(self) -> str:
-        """Read YBIS Constitution from project root."""
+        """Read YBIS Constitution and Auto-generated rules."""
+        context = ""
         try:
             if CONSTITUTION_PATH.exists():
                 with open(CONSTITUTION_PATH, "r", encoding="utf-8") as f:
-                    return f.read()
-            return "Constitution not found. Follow standard best practices."
+                    context += f"### CONSTITUTION:\n{f.read()}\n\n"
+            
+            # Add Auto Rules if they exist
+            auto_rules_path = CONSTITUTION_PATH.parent.parent / "AUTO_RULES.md"
+            if auto_rules_path.exists():
+                with open(auto_rules_path, "r", encoding="utf-8") as f:
+                    context += f"### AUTOMATED LESSONS & RULES:\n{f.read()}\n\n"
+            
+            return context if context else "Constitution not found. Follow standard best practices."
         except Exception:
-            return "Error reading constitution."
+            return "Error reading constitution or rules."
 
     def _build_prompt(self, task: str, context: Dict[str, Any]) -> str:
         """Build planning prompt with Constitution injection"""
         constitution = self._read_constitution()
-        
+
         return f"""You are a software architect. Analyze this task and create a detailed execution plan.
 
 ### SYSTEM CONSTITUTION (MUST FOLLOW):
@@ -198,8 +208,8 @@ Respond ONLY with the JSON object, no additional text."""
 
         except json.JSONDecodeError as e:
             # Fallback: create basic plan from task description
-            print(f"[SimplePlanner] Failed to parse JSON: {e}")
-            print(f"[SimplePlanner] Response was: {response[:200]}")
+            log_event(f"Failed to parse JSON: {e}", component="simple_planner", level="warning")
+            log_event(f"Response was: {response[:200]}", component="simple_planner", level="warning")
 
             return Plan(
                 objective=task,
@@ -225,11 +235,11 @@ async def test_simple_planner():
         context={"repo": "YBIS", "current_branch": "main"}
     )
 
-    print(f"Objective: {plan.objective}")
-    print(f"Steps ({len(plan.steps)}):")
+    log_event(f"Objective: {plan.objective}", component="simple_planner_test")
+    log_event(f"Steps ({len(plan.steps)}):", component="simple_planner_test")
     for i, step in enumerate(plan.steps, 1):
-        print(f"  {i}. {step}")
-    print(f"Files to modify: {plan.files_to_modify}")
+        log_event(f"  {i}. {step}", component="simple_planner_test")
+    log_event(f"Files to modify: {plan.files_to_modify}", component="simple_planner_test")
 
 
 if __name__ == "__main__":

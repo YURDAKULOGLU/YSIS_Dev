@@ -1,15 +1,15 @@
 def count_vowels(input_string: str) -> int:
     """
-    Counts the number of vowels in the given string.
+    Counts the number of vowels in the provided text.
 
     Args:
-        input_string (str): The string to count vowels in.
+        input_string (str): The string in which to count vowels.
 
     Returns:
-        int: The number of vowels in the input string.
+        int: The total number of vowels found in the input string.
     """
     if not isinstance(input_string, str):
-        raise TypeError("input_string must be a string")
+        raise TypeError("Input must be a string")
 
     vowels = "aeiou"
     leet_map = {
@@ -18,10 +18,12 @@ def count_vowels(input_string: str) -> int:
         "4": "a",
         "@": "a",
     }
-    normalized = "".join(leet_map.get(ch, ch) for ch in input_string.lower())
-    return sum(1 for char in normalized if char in vowels)
+    normalized_text = "".join(leet_map.get(char, char) for char in input_string.lower())
+    return sum(1 for character in normalized_text if character in vowels)
+
 # Unit tests for count_vowels function
 import unittest
+
 
 class TestTextProcessor(unittest.TestCase):
     def test_count_vowels(self):

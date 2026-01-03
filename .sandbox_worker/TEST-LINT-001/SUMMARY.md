@@ -22,4 +22,3 @@ E501 Line too long (135 > 120)
   |
 
 Found 1 error.
-

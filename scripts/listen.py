@@ -23,7 +23,7 @@ async def process_message(channel: str, message: str):
         # Try to parse JSON
         data = json.loads(message)
         logger.info(f"Received on {channel}: {json.dumps(data, indent=2)}")
-        
+
         # TODO: Add logic here to react to events
         # e.g., if channel == 'tasks' and data['status'] == 'NEW', trigger something.
 
@@ -35,7 +35,7 @@ async def process_message(channel: str, message: str):
 async def listen():
     """Main listener loop."""
     logger.info(f"Connecting to Redis at {REDIS_HOST}:{REDIS_PORT}...")
-    
+
     try:
         r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
         await r.ping()

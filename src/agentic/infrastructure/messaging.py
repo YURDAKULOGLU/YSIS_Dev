@@ -149,7 +149,7 @@ class AgentMessaging:
         if not self.allow_legacy_writes:
             raise RuntimeError("Legacy debate writes are disabled. Use MCP tools via scripts/ybis.py debate reply.")
         debate_file = self.debates / f"{debate_id}.json"
-        
+
         if not debate_file.exists():
             return False
 
@@ -174,7 +174,7 @@ class AgentMessaging:
             content=f"New reply from {self.agent_id} in debate {debate_id}.",
             msg_type="debate_reply"
         )
-        
+
         return True
 
     def _validate_message(self, message: Dict[str, Any]) -> Dict[str, Any]:

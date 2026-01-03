@@ -3,6 +3,7 @@ import inspect
 import re
 from src.agentic.core.plugin_system.registry import ToolRegistry
 from src.agentic.core.plugin_system.protocol import ToolProtocol
+from src.agentic.core.utils.logging_utils import log_event
 
 def camel_to_snake(name):
     """Convert CamelCase to snake_case"""
@@ -33,5 +34,5 @@ class PluginLoader:
                                 self.registry.register(tool_name, tool_class())
                 except (ImportError, ModuleNotFoundError) as e:
                     # Skip plugins with missing dependencies
-                    print(f"[PluginLoader] Skipping {filename}: {e}")
+                    log_event(f"Skipping {filename}: {e}", component="plugin_loader", level="warning")
                     continue

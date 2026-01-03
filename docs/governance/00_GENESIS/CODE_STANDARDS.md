@@ -99,6 +99,35 @@ if not verification.tests_passed:
 
 ---
 
+## 5. Adapter-First Integrations (CRITICAL)
+
+**Problem:** Frameworks added directly into runtime create brittle coupling, hidden behaviors, and irreversible vendor lock-in.
+
+**Rule:** **ANY EXTERNAL FRAMEWORK MUST ENTER THROUGH A SPINE ADAPTER, WITH A NATIVE REPLACEMENT TASK DEFINED.**
+
+### Requirements:
+- Add a spine adapter that exposes a stable, minimal interface.
+- Schedule a native replacement task with explicit deprecation criteria for the adapter.
+- Document the adapter contract and the migration path.
+
+### FORBIDDEN:
+```python
+# Direct framework calls inside core runtime
+from external_framework import Runtime
+Runtime().run_pipeline(...)
+```
+
+### ALLOWED:
+```python
+# Adapter-mediated usage
+from src.agentic.core.adapters.framework_x import FrameworkXAdapter
+
+adapter = FrameworkXAdapter()
+adapter.run(...)
+```
+
+---
+
 ## 6. Clean Output - No Editing Artifacts (CRITICAL)
 
 **Problem:** AI code editors (Aider, Cursor, etc.) sometimes leave editing artifacts in the final output (markdown syntax, search/replace markers, merge conflict markers).
@@ -351,7 +380,26 @@ print(f"[Process] === END === (elapsed: {elapsed:.1f}s, exit: {process.returncod
 
 ---
 
-## 12. PARSE TOOL OUTPUT FOR SUCCESS DETECTION
+## 12. OBSERVABILITY LOGGING STANDARD
+
+**Rule:** **ALL CORE MODULES MUST LOG TO BOTH TERMINAL AND FILE.**
+
+### Requirements:
+- Use the shared logger (`src/agentic/core/utils/logging_utils.py`).
+- Logs must include component prefix and be written under `Knowledge/Logs/`.
+- Include `task_id` when available.
+- Avoid raw `print()` in core runtime modules (except user-facing CLI banners).
+
+### Allowed:
+```python
+from src.agentic.core.utils.logging_utils import log_event
+
+log_event("Starting execution", component="orchestrator")
+```
+
+---
+
+## 13. PARSE TOOL OUTPUT FOR SUCCESS DETECTION
 
 **Problem:** Exit code alone is not sufficient to determine if a tool succeeded.
 
@@ -397,7 +445,103 @@ if task.status == "COMPLETED":
 
 ---
 
+## 14. OBSERVABILITY STANDARDS (Constitution Article 7)
+
+**Problem:** Unobservable systems cannot self-heal.
+
+**Rule:** **ALL CORE COMPONENTS MUST BE OBSERVABLE**
+
+### 14.1 Structured Logging (MANDATORY)
+
+```python
+# GOOD - Structured, context-aware
+log_event(
+    "Task completed",
+    component="orchestrator",
+    level="info",
+    task_id="TASK-123",
+    duration_ms=1500
+)
+
+# BAD - Unstructured, no context
+print("Task done")
+```
+
+### 14.2 Metrics Collection (MANDATORY for Core)
+
+Every core component must expose:
+- **Success Rate:** `component_success_total / component_attempts_total`
+- **Latency:** `component_duration_seconds`
+- **Error Count:** `component_errors_total` with error type label
+
+### 14.3 Event Bus Publishing (for significant events)
+
+```python
+# Significant events MUST be published
+event_bus.publish("task.completed", {
+    "task_id": task_id,
+    "status": "SUCCESS",
+    "duration_ms": elapsed
+})
+```
+
+### 14.4 Health Endpoint (MANDATORY for services)
+
+```python
+class MyComponent:
+    def health_check(self) -> dict:
+        return {
+            "status": "healthy",  # or "degraded", "unhealthy"
+            "last_success": self.last_success_time,
+            "error_count": self.error_count
+        }
+```
+
+---
+
+## 15. FRAMEWORK INTEGRATION RULES (Constitution Article 7.3)
+
+**Problem:** Direct framework modifications create maintenance hell.
+
+**Rule:** **ADAPTER PATTERN MANDATORY FOR ALL FRAMEWORKS**
+
+### 15.1 Adapter Structure
+
+```
+src/agentic/adapters/
+  ├── crewai_adapter.py      # CrewAI -> Protocol
+  ├── langgraph_adapter.py   # LangGraph -> Protocol
+  └── contracts/
+      └── test_adapters.py   # Contract tests
+```
+
+### 15.2 Contract Tests (MANDATORY)
+
+```python
+def test_adapter_contract():
+    """Adapter must implement PlannerProtocol."""
+    adapter = CrewAIAdapter()
+    assert isinstance(adapter, PlannerProtocol)
+
+    # Test expected behavior
+    plan = adapter.plan("test task")
+    assert plan.files_to_modify is not None
+```
+
+### 15.3 Fallback Requirement
+
+```python
+class CrewAIAdapter(PlannerProtocol):
+    def plan(self, task: str) -> Plan:
+        try:
+            return self._crewai_plan(task)
+        except Exception:
+            return self._fallback_plan(task)  # MANDATORY
+```
+
+---
+
 **Created:** 2025-12-20
-**Updated:** 2025-12-31 (V1.3 - Pipeline Stabilization Rules)
+**Updated:** 2026-01-03 (V1.4 - Observability & Self-Healing Standards)
 **Status:** IMMUTABLE
 **Enforcement:** STRICT

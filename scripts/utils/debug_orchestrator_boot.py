@@ -14,7 +14,7 @@ try:
     from src.agentic.core.plugins.task_board_manager import TaskBoardManager
 
     print("Imports successful!")
-    
+
     print("Initializing Orchestrator...")
     orchestrator = OrchestratorV3(
         planner=SimplePlanner(),

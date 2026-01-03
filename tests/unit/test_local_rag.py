@@ -25,6 +25,10 @@ from src.agentic.tools.local_rag import (
 # Test constants
 EXPECTED_DOC_COUNT = 42
 EXPECTED_RESULT_COUNT = 2
+WHITELISTED_SOURCES = [
+    "src/agentic/core/config.py",
+    "src/agentic/core/protocols.py",
+]
 
 
 class TestLocalRAGWithoutChromaDB:
@@ -157,13 +161,13 @@ class TestLocalRAGSearch:
         with patch.object(mock_rag, 'is_available', return_value=True):
             mock_rag.collection.query.return_value = {
                 'documents': [["doc content"]],
-                'metadatas': [[{"source": "test.py"}]],
+                'metadatas': [[{"source": WHITELISTED_SOURCES[0]}]],
                 'distances': [[0.1]]
             }
             result = mock_rag.search("query")
 
-            assert "=== RELEVANT CODE CONTEXT ===" in result
-            assert "[test.py]" in result
+            assert "=== RELEVANT CODE CONTEXT" in result
+            assert f"[{WHITELISTED_SOURCES[0]}]" in result
             assert "doc content" in result
 
     def test_search_truncates_long_documents(self, mock_rag):
@@ -172,7 +176,7 @@ class TestLocalRAGSearch:
             long_doc = "x" * (DOC_PREVIEW_MAX_LENGTH + 100)
             mock_rag.collection.query.return_value = {
                 'documents': [[long_doc]],
-                'metadatas': [[{"source": "test.py"}]],
+                'metadatas': [[{"source": WHITELISTED_SOURCES[0]}]],
                 'distances': [[0.1]]
             }
             result = mock_rag.search("query")
@@ -193,7 +197,7 @@ class TestLocalRAGSearch:
 
             mock_rag.collection.query.assert_called_with(
                 query_texts=["query"],
-                n_results=5,
+                n_results=15,
                 where={"type": "code"}
             )
 
@@ -209,16 +213,16 @@ class TestLocalRAGSearch:
             mock_rag.collection.query.return_value = {
                 'documents': [["doc1", "doc2"]],
                 'metadatas': [[
-                    {"source": "/path/to/file1.py"},
-                    {"source": "/path/to/file2.py"}
+                    {"source": WHITELISTED_SOURCES[0]},
+                    {"source": WHITELISTED_SOURCES[1]},
                 ]],
                 'distances': [[0.1, 0.2]]
             }
             result = mock_rag.search_files("query")
 
             assert len(result) == EXPECTED_RESULT_COUNT
-            assert "/path/to/file1.py" in result
-            assert "/path/to/file2.py" in result
+            assert WHITELISTED_SOURCES[0] in result
+            assert WHITELISTED_SOURCES[1] in result
 
 
 class TestLocalRAGSingleton:

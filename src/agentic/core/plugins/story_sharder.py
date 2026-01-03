@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from src.agentic.core.protocols import Plan
+from src.agentic.core.utils.logging_utils import log_event
 
 
 @dataclass
@@ -169,7 +170,7 @@ class StorySharder:
             content = self._render_story_markdown(story)
             story_path.write_text(content, encoding='utf-8')
             paths.append(story_path)
-            print(f"[StorySharder] Created: {story_path.name}")
+            log_event(f"Created: {story_path.name}", component="story_sharder")
 
         return paths
 
@@ -252,7 +253,7 @@ This PRD was auto-generated. Review and adjust as needed before implementation.
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(prd_content, encoding='utf-8')
-        print(f"[StorySharder] Created PRD: {output_path}")
+        log_event(f"Created PRD: {output_path}", component="story_sharder")
         return output_path
 
     def stories_to_plans(self, stories: list[Story], original_plan: Plan) -> list[Plan]:

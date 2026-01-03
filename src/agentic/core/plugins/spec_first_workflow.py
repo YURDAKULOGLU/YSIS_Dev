@@ -20,6 +20,7 @@ from datetime import datetime
 from src.agentic.core.plugins.spec_writer_agent import SpecWriterAgent, SpecContent
 from src.agentic.core.plugins.spec_validator import SpecValidator, ParsedSpec, ValidationResult
 from src.agentic.core.config import USE_LITELLM, LITELLM_QUALITY
+from src.agentic.core.utils.logging_utils import log_event
 
 
 @dataclass
@@ -56,6 +57,10 @@ class WorkflowResult:
             self.artifacts = {}
 
 
+def _log(message: str) -> None:
+    log_event(message, component="spec_first_workflow")
+
+
 class SpecFirstWorkflow:
     """
     Orchestrates the complete Spec-Driven Development workflow.
@@ -71,7 +76,7 @@ class SpecFirstWorkflow:
 
     Features:
     - Enforces spec-first discipline (SPEC.md required)
-    - Validates at each gate (spec → plan → implementation)
+    - Validates at each gate (spec -> plan -> implementation)
     - Blocks on validation failures (configurable)
     - Generates compliance reports
     - Integrates with existing SimplePlannerV2 and executors
@@ -121,20 +126,20 @@ class SpecFirstWorkflow:
         workspace_path = Path(workspace_path)
         workspace_path.mkdir(parents=True, exist_ok=True)
 
-        print(f"\n{'='*60}")
-        print(f"SPEC-FIRST WORKFLOW: {task_id}")
-        print(f"{'='*60}\n")
+        _log(f"\n{'='*60}")
+        _log(f"SPEC-FIRST WORKFLOW: {task_id}")
+        _log(f"{'='*60}\n")
 
         result = WorkflowResult(success=False, phase="INIT")
 
         try:
             # Phase 1: SPEC GENERATION/VALIDATION
-            print("[Phase 1] SPEC GENERATION/VALIDATION")
+            _log("[Phase 1] SPEC GENERATION/VALIDATION")
             spec_path = workspace_path / "SPEC.md"
 
             if not spec_path.exists():
                 if self.config.auto_generate_spec:
-                    print("  → SPEC.md missing, generating...")
+                    _log("  -> SPEC.md missing, generating...")
                     spec_content, spec_path = await self.spec_writer.generate_and_save(
                         task_id=task_id,
                         goal=goal,
@@ -142,7 +147,7 @@ class SpecFirstWorkflow:
                         workspace_path=workspace_path,
                         context=context
                     )
-                    print(f"  ✅ Generated SPEC.md ({len(spec_content.content)} chars)")
+                    _log(f"  Generated SPEC.md ({len(spec_content.content)} chars)")
 
                     if spec_content.warnings:
                         result.warnings.extend(spec_content.warnings)
@@ -156,30 +161,30 @@ class SpecFirstWorkflow:
                     # Continue without spec
                     return await self._execute_without_spec(task_id, goal, details, workspace_path, result)
             else:
-                print(f"  ✅ Found existing SPEC.md")
+                _log("  Found existing SPEC.md")
 
             result.spec_path = spec_path
             result.artifacts["spec"] = spec_path
 
             # Phase 2: SPEC PARSING
-            print("\n[Phase 2] SPEC PARSING")
+            _log("\n[Phase 2] SPEC PARSING")
             try:
                 parsed_spec = self.spec_validator.parse_spec(spec_path)
-                print(f"  ✅ Parsed spec (type: {parsed_spec.spec_type})")
-                print(f"     - Requirements: {len(parsed_spec.requirements)}")
-                print(f"     - Success Criteria: {len(parsed_spec.success_criteria)}")
-                print(f"     - Implementation Steps: {len(parsed_spec.implementation_steps)}")
+                _log(f"  Parsed spec (type: {parsed_spec.spec_type})")
+                _log(f"     - Requirements: {len(parsed_spec.requirements)}")
+                _log(f"     - Success Criteria: {len(parsed_spec.success_criteria)}")
+                _log(f"     - Implementation Steps: {len(parsed_spec.implementation_steps)}")
                 result.phase = "SPEC_PARSED"
             except Exception as e:
                 result.error = f"Failed to parse SPEC.md: {e}"
                 return result
 
             # Phase 3: PLAN CREATION
-            print("\n[Phase 3] PLAN CREATION")
+            _log("\n[Phase 3] PLAN CREATION")
             plan_path = workspace_path / "docs" / "PLAN.md"
 
             if not plan_path.exists():
-                print("  → PLAN.md missing, delegating to planner...")
+                _log("  -> PLAN.md missing, delegating to planner...")
                 # NOTE: This should be handled by external planner (SimplePlannerV2)
                 # For now, we just validate if plan exists after this workflow
                 result.warnings.append("PLAN.md should be created by SimplePlannerV2 before validation")
@@ -188,14 +193,14 @@ class SpecFirstWorkflow:
                 result.artifacts["parsed_spec"] = parsed_spec
                 return result
             else:
-                print(f"  ✅ Found existing PLAN.md")
+                _log("  Found existing PLAN.md")
 
             result.plan_path = plan_path
             result.artifacts["plan"] = plan_path
 
             # Phase 4: PLAN VALIDATION
             if self.config.validate_plan:
-                print("\n[Phase 4] PLAN VALIDATION")
+                _log("\n[Phase 4] PLAN VALIDATION")
                 plan_content = plan_path.read_text(encoding='utf-8')
 
                 plan_validation = await self.spec_validator.validate_plan(
@@ -204,33 +209,33 @@ class SpecFirstWorkflow:
                     use_llm=self.config.use_llm_validation
                 )
 
-                print(f"  → Plan Validation Score: {plan_validation.score:.2%}")
-                print(f"  → Requirements Met: {plan_validation.requirements_met}/{plan_validation.requirements_total}")
-                print(f"  → Errors: {len(plan_validation.errors)}")
-                print(f"  → Warnings: {len(plan_validation.warnings)}")
+                _log(f"  -> Plan Validation Score: {plan_validation.score:.2%}")
+                _log(f"  -> Requirements Met: {plan_validation.requirements_met}/{plan_validation.requirements_total}")
+                _log(f"  -> Errors: {len(plan_validation.errors)}")
+                _log(f"  -> Warnings: {len(plan_validation.warnings)}")
 
                 result.plan_validation = plan_validation
 
                 if not plan_validation.passed:
                     if plan_validation.score < self.config.min_plan_score:
                         result.error = f"Plan validation failed (score: {plan_validation.score:.2%} < {self.config.min_plan_score:.2%})"
-                        print(f"  ❌ {result.error}")
+                        _log(f"  ERROR: {result.error}")
 
                         # Print errors
                         for error in plan_validation.errors[:5]:
-                            print(f"     ERROR: {error.message}")
+                            _log(f"     ERROR: {error.message}")
 
                         return result
                     else:
                         result.warnings.append(f"Plan has validation issues but score acceptable ({plan_validation.score:.2%})")
 
-                print(f"  ✅ Plan validation passed")
+                _log("  Plan validation passed")
                 result.phase = "PLAN_VALIDATED"
 
             # Phase 5: IMPLEMENTATION
-            print("\n[Phase 5] IMPLEMENTATION")
-            print("  → Execution delegated to AiderExecutorEnhanced")
-            print("  → (This workflow validates implementation after execution)")
+            _log("\n[Phase 5] IMPLEMENTATION")
+            _log("  -> Execution delegated to AiderExecutorEnhanced")
+            _log("  -> (This workflow validates implementation after execution)")
             result.phase = "IMPLEMENTATION_PENDING"
 
             # At this point, implementation would be done by external executor
@@ -241,7 +246,7 @@ class SpecFirstWorkflow:
 
         except Exception as e:
             result.error = f"Workflow error in phase {result.phase}: {e}"
-            print(f"  ❌ {result.error}")
+            _log(f"  ERROR: {result.error}")
             return result
 
     async def validate_implementation(
@@ -266,9 +271,9 @@ class SpecFirstWorkflow:
         workspace_path = Path(workspace_path)
         result = WorkflowResult(success=False, phase="IMPL_VALIDATION")
 
-        print(f"\n{'='*60}")
-        print(f"IMPLEMENTATION VALIDATION: {task_id}")
-        print(f"{'='*60}\n")
+        _log(f"\n{'='*60}")
+        _log(f"IMPLEMENTATION VALIDATION: {task_id}")
+        _log(f"{'='*60}\n")
 
         try:
             # Load spec
@@ -279,7 +284,7 @@ class SpecFirstWorkflow:
                 return result
 
             parsed_spec = self.spec_validator.parse_spec(spec_path)
-            print(f"[Spec] Loaded {parsed_spec.spec_type} spec")
+            _log(f"[Spec] Loaded {parsed_spec.spec_type} spec")
 
             # Load file contents if not provided
             if file_contents is None:
@@ -290,9 +295,9 @@ class SpecFirstWorkflow:
                         if path.exists():
                             file_contents[file_path] = path.read_text(encoding='utf-8')
                     except Exception as e:
-                        print(f"  Warning: Could not read {file_path}: {e}")
+                        _log(f"  Warning: Could not read {file_path}: {e}")
 
-            print(f"[Files] Validating {len(file_contents)} changed files")
+            _log(f"[Files] Validating {len(file_contents)} changed files")
 
             # Validate implementation
             impl_validation = await self.spec_validator.validate_implementation(
@@ -302,26 +307,26 @@ class SpecFirstWorkflow:
                 use_llm=self.config.use_llm_validation
             )
 
-            print(f"\n[Validation Results]")
-            print(f"  Score: {impl_validation.score:.2%}")
-            print(f"  Requirements Met: {impl_validation.requirements_met}/{impl_validation.requirements_total}")
-            print(f"  Criteria Met: {impl_validation.criteria_met}/{impl_validation.criteria_total}")
-            print(f"  Errors: {len(impl_validation.errors)}")
-            print(f"  Warnings: {len(impl_validation.warnings)}")
+            _log(f"\n[Validation Results]")
+            _log(f"  Score: {impl_validation.score:.2%}")
+            _log(f"  Requirements Met: {impl_validation.requirements_met}/{impl_validation.requirements_total}")
+            _log(f"  Criteria Met: {impl_validation.criteria_met}/{impl_validation.criteria_total}")
+            _log(f"  Errors: {len(impl_validation.errors)}")
+            _log(f"  Warnings: {len(impl_validation.warnings)}")
 
             result.impl_validation = impl_validation
 
             if impl_validation.score < self.config.min_impl_score:
                 result.error = f"Implementation validation failed (score: {impl_validation.score:.2%})"
-                print(f"\n  ❌ {result.error}")
+                _log(f"\n  ERROR: {result.error}")
 
                 # Print errors
                 for error in impl_validation.errors[:5]:
-                    print(f"     ERROR: {error.message}")
+                    _log(f"     ERROR: {error.message}")
 
                 result.success = False
             else:
-                print(f"\n  ✅ Implementation validation passed")
+                _log("\n  Implementation validation passed")
                 result.success = True
 
             result.phase = "IMPL_VALIDATED"
@@ -337,7 +342,7 @@ class SpecFirstWorkflow:
 
         except Exception as e:
             result.error = f"Implementation validation error: {e}"
-            print(f"  ❌ {result.error}")
+            _log(f"  ERROR: {result.error}")
             return result
 
     async def _execute_without_spec(
@@ -349,7 +354,7 @@ class SpecFirstWorkflow:
         result: WorkflowResult
     ) -> WorkflowResult:
         """Execute workflow without spec (fallback mode)"""
-        print("\n[Fallback] Proceeding without SPEC.md")
+        _log("\n[Fallback] Proceeding without SPEC.md")
         result.warnings.append("Running in spec-less mode (not recommended)")
         result.success = True
         result.phase = "NO_SPEC"
@@ -374,7 +379,7 @@ class SpecFirstWorkflow:
 ## Summary
 
 **Overall Score:** {impl_validation.score:.2%}
-**Status:** {'✅ PASSED' if impl_validation.passed else '❌ FAILED'}
+**Status:** {'PASSED' if impl_validation.passed else 'FAILED'}
 
 ## Requirements Compliance
 
@@ -397,7 +402,7 @@ class SpecFirstWorkflow:
         for error in impl_validation.errors:
             report += f"**[{error.section}]** {error.message}\n"
             if error.suggestion:
-                report += f"  → Suggestion: {error.suggestion}\n"
+                report += f"  -> Suggestion: {error.suggestion}\n"
             report += "\n"
 
         report += f"\n### Warnings ({len(impl_validation.warnings)})\n\n"
@@ -405,13 +410,13 @@ class SpecFirstWorkflow:
         for warning in impl_validation.warnings:
             report += f"**[{warning.section}]** {warning.message}\n"
             if warning.suggestion:
-                report += f"  → Suggestion: {warning.suggestion}\n"
+                report += f"  -> Suggestion: {warning.suggestion}\n"
             report += "\n"
 
         report += f"\n## Detailed Summary\n\n{impl_validation.summary}\n"
 
         report_path.write_text(report, encoding='utf-8')
-        print(f"\n[Report] Generated compliance report: {report_path}")
+        _log(f"\n[Report] Generated compliance report: {report_path}")
 
     def get_config(self) -> WorkflowConfig:
         """Get current workflow configuration"""
@@ -429,3 +434,4 @@ __all__ = [
     "WorkflowConfig",
     "WorkflowResult"
 ]
+

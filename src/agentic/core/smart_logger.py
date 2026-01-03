@@ -15,12 +15,12 @@ class SmartLogger:
     - Console: Shows only INFO/ERROR (Low Token)
     - File: Shows DEBUG/TRACE (High Detail)
     """
-    
+
     @staticmethod
     def get_logger(name: str):
         logger = logging.getLogger(name)
         logger.setLevel(logging.DEBUG)
-        
+
         # Clear existing handlers to prevent duplicate logs
         if logger.hasHandlers():
             logger.handlers.clear()
@@ -37,12 +37,12 @@ class SmartLogger:
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(logging.INFO)
         # Minimal format: just the message, maybe a tiny prefix
-        console_formatter = logging.Formatter('➤ %(message)s') 
+        console_formatter = logging.Formatter('> %(message)s')
         console_handler.setFormatter(console_formatter)
 
         logger.addHandler(file_handler)
         logger.addHandler(console_handler)
-        
+
         return logger
 
 # Helper for scripts

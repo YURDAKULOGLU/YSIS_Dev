@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from .base import BaseProvider, ProviderCapabilities
 from .providers import OllamaProvider
+from src.agentic.core.utils.logging_utils import log_event
 
 
 class ProviderFactory:
@@ -29,7 +30,7 @@ class ProviderFactory:
 
         if mode in ("api", "cli"):
             # Not implemented yet; fallback to Ollama.
-            print(f"[ProviderFactory] '{mode}' provider not implemented. Falling back to ollama.")
+            log_event(f"'{mode}' provider not implemented. Falling back to ollama.", component="provider_factory", level="warning")
             return OllamaProvider()
 
         return OllamaProvider()

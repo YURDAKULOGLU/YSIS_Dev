@@ -1,4 +1,5 @@
 import json
+import os
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -29,7 +30,8 @@ class ArtifactGenerator:
         return None
 
     def _normalize_paths(self, paths: list[str]) -> list[str]:
-        root = Path(PROJECT_ROOT).resolve()
+        code_root = os.getenv("YBIS_CODE_ROOT")
+        root = Path(code_root).resolve() if code_root else Path(PROJECT_ROOT).resolve()
         normalized: list[str] = []
         for path in paths:
             try:

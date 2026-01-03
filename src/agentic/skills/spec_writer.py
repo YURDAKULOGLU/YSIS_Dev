@@ -19,7 +19,7 @@ def generate_spec(input_data: SpecWriterInput) -> str:
     project = input_data.project_name
     desc = input_data.description
     stack = input_data.tech_stack
-    
+
     # 1. Architecture
     arch_doc = f"""# {project} - ARCHITECTURE.md
 
@@ -70,9 +70,9 @@ def generate_spec(input_data: SpecWriterInput) -> str:
     # Save to disk (simulated 'Kit' generation)
     target_dir = f"specs/{project.lower().replace(' ', '_')}"
     os.makedirs(target_dir, exist_ok=True)
-    
+
     with open(f"{target_dir}/ARCHITECTURE.md", "w") as f: f.write(arch_doc)
     with open(f"{target_dir}/API.md", "w") as f: f.write(api_doc)
     with open(f"{target_dir}/SCHEMA.md", "w") as f: f.write(db_doc)
-    
-    return f"✅ Spec Kit generated at: {target_dir}/"
+
+    return f"[OK] Spec Kit generated at: {target_dir}/"

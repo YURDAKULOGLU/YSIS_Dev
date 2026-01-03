@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-01-03T15:30:22.690075",
+  "files": [
+    "C:\\Projeler\\YBIS_Dev\\workspaces\\worktrees\\TASK-New-1038\\tests\\unit\\test_url_validator_v2.py",
+    "C:\\Projeler\\YBIS_Dev\\workspaces\\worktrees\\TASK-New-1038\\src\\utils\\url_validator_v2.py"
+  ],
+  "ruff_output": "W293 Blank line contains whitespace\n --> workspaces\\worktrees\\TASK-New-1038\\src\\utils\\url_validator_v2.py:7:1\n  |\n5 |     \"\"\"\n6 |     Validates URLs based on specific rules.\n7 |     \n  | ^^^^\n8 |     Rules:\n9 |     - TLD must be between 2 and 6 characters long.\n  |\nhelp: Remove whitespace from blank line\n\nW293 Blank line contains whitespace\n  --> workspaces\\worktrees\\TASK-New-1038\\src\\utils\\url_validator_v2.py:32:1\n   |\n30 |         \"\"\"\n31 |         Validate the URL based on specific rules.\n32 |         \n   | ^^^^^^^^\n33 |         Args:\n34 |             url (str): The URL to validate.\n   |\nhelp: Remove whitespace from blank line\n\nW293 Blank line contains whitespace\n  --> workspaces\\worktrees\\TASK-New-1038\\src\\utils\\url_validator_v2.py:35:1\n   |\n33 |         Args:\n34 |             url (str): The URL to validate.\n35 |             \n   | ^^^^^^^^^^^^\n36 |         Returns:\n37 |             bool: True if the URL is valid, False otherwise.\n   |\nhelp: Remove whitespace from blank line\n\nFound 3 errors.\nNo fixes available (3 hidden fixes can be enabled with the `--unsafe-fixes` option).\n",
+  "error_type": "linting"
+}

@@ -8,7 +8,7 @@
 ## 🛑 1. CRITICAL: Object vs. File Distinction
 **Lesson:** Agents often confuse "Editing a source file" with "Modifying the running State Object."
 **Failure Pattern:** In task `TASK-New-218-FINAL`, the agent updated `sdd_schema.py` to add a `proposed_tasks` list but failed to actually populate the `state.proposed_tasks` list *during* the graph execution.
-**Correction:** 
+**Correction:**
 - If a protocol requires updating the **State** (e.g., Task Chaining), you MUST modify the Pydantic state object in memory before the node returns.
 - Simply writing code into a file does not trigger system-level logic (like the Chainer node).
 

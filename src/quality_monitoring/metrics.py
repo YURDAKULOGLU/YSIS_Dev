@@ -7,10 +7,10 @@ with open('config/code_quality_thresholds.json', 'r') as f:
 def check_code_quality(metrics):
     """
     Check if the code metrics are within the defined quality thresholds.
-    
+
     Args:
         metrics (dict): A dictionary containing code metrics such as complexity, cyclomatic_complexity, maintainability_index, lines_of_code.
-        
+
     Returns:
         bool: True if all metrics are within thresholds, False otherwise.
     """
@@ -29,7 +29,7 @@ if __name__ == "__main__":
         "maintainability_index": 75,
         "lines_of_code": 450
     }
-    
+
     if check_code_quality(example_metrics):
         print("Code quality is within acceptable thresholds.")
     else:

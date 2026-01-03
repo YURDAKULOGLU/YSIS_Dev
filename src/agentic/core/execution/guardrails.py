@@ -22,6 +22,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 from enum import Enum
+from src.agentic.core.utils.logging_utils import log_event
 
 
 # ============================================================================
@@ -85,7 +86,7 @@ class ExecutionGuardrails:
         self.enable_syntax_check = enable_syntax_check
         self.enable_import_check = enable_import_check
         self.enable_type_check = enable_type_check
-        self.base_dir = Path(base_dir) if base_dir else Path.getcwd()
+        self.base_dir = Path(base_dir) if base_dir else Path.cwd()
 
         # Lazy-loaded linters
         self._python_linter = None
@@ -233,11 +234,12 @@ class ExecutionGuardrails:
             True if safe to edit
         """
         file_path = Path(file)
+        posix_path = file_path.as_posix()
 
         # Block system directories
         system_dirs = ["/etc", "/bin", "/usr", "/var", "/sys", "/proc", "/boot"]
         for sys_dir in system_dirs:
-            if str(file_path).startswith(sys_dir):
+            if posix_path.startswith(sys_dir):
                 return False
 
         # Block .env files (may contain credentials)
@@ -553,27 +555,27 @@ def hello()
     print("Missing colon!")
 """
 
-    print("=== Testing Python Syntax ===")
+    log_event("=== Testing Python Syntax ===", component="guardrails_test")
     result = await guardrails.validate_edit("test.py", valid_python)
-    print(f"Valid Python: {'✓' if result.success else '✗'}")
+    log_event(f"Valid Python: {'OK' if result.success else 'FAIL'}", component="guardrails_test", level="success" if result.success else "warning")
 
     result = await guardrails.validate_edit("test.py", invalid_python)
-    print(f"Invalid Python: {'✗' if not result.success else '✓'}")
+    log_event(f"Invalid Python: {'OK' if not result.success else 'FAIL'}", component="guardrails_test", level="success" if not result.success else "warning")
     if result.errors:
-        print(f"  Errors: {result.errors}")
+        log_event(f"  Errors: {result.errors}", component="guardrails_test", level="warning")
 
     # Test file safety
-    print("\n=== Testing File Safety ===")
+    log_event("=== Testing File Safety ===", component="guardrails_test")
     safe_files = ["src/main.py", "test.txt", "README.md"]
     unsafe_files = ["/etc/passwd", ".env", ".git/config"]
 
     for f in safe_files:
         safe = await guardrails.check_file_safety(f)
-        print(f"{'✓' if safe else '✗'} {f}")
+        log_event(f"{'OK' if safe else 'FAIL'} {f}", component="guardrails_test", level="success" if safe else "warning")
 
     for f in unsafe_files:
         safe = await guardrails.check_file_safety(f)
-        print(f"{'✗' if not safe else '✓'} {f}")
+        log_event(f"{'OK' if not safe else 'FAIL'} {f}", component="guardrails_test", level="success" if not safe else "warning")
 
 
 if __name__ == "__main__":

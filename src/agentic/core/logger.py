@@ -18,7 +18,7 @@ logger.remove()
 logger.add(
     sys.stderr,
     level="INFO",
-    format="<green>➤</green> <level>{message}</level>",
+    format="<green>></green> <level>{message}</level>",
     colorize=True,
     backtrace=False,
     diagnose=False

@@ -9,6 +9,7 @@ from typing import Dict, Any
 from pathlib import Path
 import asyncio
 import time
+from src.agentic.core.utils.logging_utils import log_event
 
 from src.agentic.core.protocols import Plan
 from src.agentic.core.config import CONSTITUTION_PATH, ENABLE_METRICS
@@ -23,7 +24,7 @@ class SimplePlannerV2:
 
     Features:
     - Multi-provider support (Claude, GPT, Gemini, DeepSeek, Ollama)
-    - Automatic fallbacks (API → Local)
+    - Automatic fallbacks (API -> Local)
     - Prompt caching (90% cost savings on Claude)
     - Structured outputs (zero JSON errors)
     - Dependency awareness (Neo4j integration)
@@ -79,7 +80,7 @@ class SimplePlannerV2:
             plan = self._parse_response(response["content"], task)
         except Exception as e:
             parse_success = False
-            print(f"[SimplePlannerV2] Parse error: {e}")
+            log_event(f"Parse error: {e}", component="simple_planner_v2", level="warning")
             # Still create fallback plan
             plan = Plan(
                 objective=task,
@@ -159,7 +160,7 @@ class SimplePlannerV2:
             return None
 
         except Exception as e:
-            print(f"[SimplePlannerV2] Impact check failed: {e}")
+            log_event(f"Impact check failed: {e}", component="simple_planner_v2", level="warning")
             return {
                 'checked': False,
                 'error': str(e),
@@ -243,8 +244,8 @@ Respond ONLY with the JSON object, no additional text."""
 
         except json.JSONDecodeError as e:
             # Fallback: create basic plan
-            print(f"[SimplePlannerV2] Failed to parse JSON: {e}")
-            print(f"[SimplePlannerV2] Response was: {response[:200]}")
+            log_event(f"Failed to parse JSON: {e}", component="simple_planner_v2", level="warning")
+            log_event(f"Response was: {response[:200]}", component="simple_planner_v2", level="warning")
 
             return Plan(
                 objective=task,
@@ -267,9 +268,9 @@ async def test_universal_planner():
 
     # Show available providers
     provider = get_provider()
-    print("Available providers:")
+    log_event("Available providers:", component="simple_planner_v2_test")
     for name in provider.get_available_providers():
-        print(f"  - {name}")
+        log_event(f"  - {name}", component="simple_planner_v2_test")
 
     # Test planning
     plan = await planner.plan(
@@ -277,16 +278,16 @@ async def test_universal_planner():
         context={"repo": "YBIS", "current_branch": "main"}
     )
 
-    print(f"\nObjective: {plan.objective}")
-    print(f"Steps ({len(plan.steps)}):")
+    log_event(f"Objective: {plan.objective}", component="simple_planner_v2_test")
+    log_event(f"Steps ({len(plan.steps)}):", component="simple_planner_v2_test")
     for i, step in enumerate(plan.steps, 1):
-        print(f"  {i}. {step}")
-    print(f"Files to modify: {plan.files_to_modify}")
-    print(f"\nMetadata:")
-    print(f"  Model: {plan.metadata.get('model')}")
-    print(f"  Provider: {plan.metadata.get('provider')}")
-    print(f"  Cached: {plan.metadata.get('cached')}")
-    print(f"  Cost: ${plan.metadata.get('cost', 0):.4f}")
+        log_event(f"  {i}. {step}", component="simple_planner_v2_test")
+    log_event(f"Files to modify: {plan.files_to_modify}", component="simple_planner_v2_test")
+    log_event("Metadata:", component="simple_planner_v2_test")
+    log_event(f"  Model: {plan.metadata.get('model')}", component="simple_planner_v2_test")
+    log_event(f"  Provider: {plan.metadata.get('provider')}", component="simple_planner_v2_test")
+    log_event(f"  Cached: {plan.metadata.get('cached')}", component="simple_planner_v2_test")
+    log_event(f"  Cost: ${plan.metadata.get('cost', 0):.4f}", component="simple_planner_v2_test")
 
 
 if __name__ == "__main__":

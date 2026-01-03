@@ -13,8 +13,8 @@ from src.agentic.core.plugins.task_board_manager import TaskBoardManager
 from src.agentic.core.plugins.rag_memory import RAGMemory
 
 async def run_step1_v3():
-    print("🏗️ TIER 3 - STEP 1 (FINAL ATTEMPT): LangGraph Clean Slate")
-    
+    print("[INFO] TIER 3 - STEP 1 (FINAL ATTEMPT): LangGraph Clean Slate")
+
     rag = RAGMemory()
     orchestrator = OrchestratorV3(
         planner=SimplePlanner(),
@@ -24,10 +24,10 @@ async def run_step1_v3():
         task_board=TaskBoardManager(),
         rag_memory=rag
     )
-    
+
     task_description = """
     Create two NEW files from scratch. DO NOT reuse old broken code.
-    
+
     1. File: 'src/agentic/core/graphs/basic_graph.py'
     Content:
     from typing import Annotated, TypedDict
@@ -62,16 +62,16 @@ async def run_step1_v3():
         result = graph.invoke(initial_state)
         assert result["message"] == " Hello World"
     """
-    
+
     task_id = "TIER3-STEP-1-FINAL"
-    
-    print(f"▶️ Delegating {task_id} to Orchestrator...")
+
+    print(f"-> Delegating {task_id} to Orchestrator...")
     result = await orchestrator.run_task(task_id, task_description)
-    
+
     if result.phase == "done":
-        print("✅ STEP 1 SUCCESSFUL. LangGraph is integrated.")
+        print("[SUCCESS] STEP 1 SUCCESSFUL. LangGraph is integrated.")
     else:
-        print(f"❌ STEP 1 FAILED. Phase: {result.phase}")
+        print(f"[ERROR] STEP 1 FAILED. Phase: {result.phase}")
 
 if __name__ == "__main__":
     asyncio.run(run_step1_v3())

@@ -124,20 +124,20 @@ completed_at: {datetime.now().isoformat()}
         """Create a new task in the database."""
         conn = self._get_connection()
         cursor = conn.cursor()
-        
+
         try:
             import random
             task_id = f"TASK-New-{random.randint(1000, 9999)}"
-            
+
             cursor.execute("""
                 INSERT INTO tasks (id, goal, details, priority, status, assignee, updated_at)
                 VALUES (?, ?, ?, ?, 'BACKLOG', NULL, CURRENT_TIMESTAMP)
             """, (task_id, goal, details, priority))
-            
+
             conn.commit()
             print(f"[SUCCESS] Task created: {task_id}")
             print(f"[INFO] Goal: {goal}")
-            
+
         except Exception as e:
             print(f"[ERROR] Failed to create task: {e}")
         finally:
@@ -291,6 +291,69 @@ completed_at: {datetime.now().isoformat()}
 
         except Exception as e:
             print(f"[ERROR] Failed to complete task: {e}")
+            return False
+        finally:
+            conn.close()
+
+    def release_task(self, task_id: str = None, release_all: bool = False, reason: str = "manual"):
+        """
+        Release stuck task(s) back to BACKLOG (self-healing).
+
+        Usage:
+            ybis release TASK-123           # Release specific task
+            ybis release --all              # Release all stale tasks (>30min)
+        """
+        conn = self._get_connection()
+        cursor = conn.cursor()
+
+        try:
+            if release_all:
+                # Release all stale tasks (>30 min old)
+                from datetime import timedelta
+                cutoff = (datetime.now() - timedelta(minutes=30)).isoformat()
+
+                cursor.execute("""
+                    SELECT id FROM tasks
+                    WHERE status='IN_PROGRESS' AND updated_at < ?
+                """, (cutoff,))
+                stale = [row[0] for row in cursor.fetchall()]
+
+                if not stale:
+                    print("[INFO] No stale tasks found.")
+                    return True
+
+                cursor.execute("""
+                    UPDATE tasks
+                    SET status='BACKLOG', assignee=NULL, updated_at=CURRENT_TIMESTAMP
+                    WHERE status='IN_PROGRESS' AND updated_at < ?
+                """, (cutoff,))
+                conn.commit()
+
+                print(f"[SELF-HEAL] Released {len(stale)} stale tasks: {stale}")
+                return True
+
+            elif task_id:
+                # Release specific task
+                cursor.execute("""
+                    UPDATE tasks
+                    SET status='BACKLOG', assignee=NULL, updated_at=CURRENT_TIMESTAMP
+                    WHERE id=? AND status='IN_PROGRESS'
+                """, (task_id,))
+
+                if cursor.rowcount == 0:
+                    print(f"[WARN] Task {task_id} not found or not IN_PROGRESS")
+                    return False
+
+                conn.commit()
+                print(f"[SUCCESS] Released {task_id} back to BACKLOG (reason: {reason})")
+                return True
+
+            else:
+                print("[ERROR] Specify task_id or use --all")
+                return False
+
+        except Exception as e:
+            print(f"[ERROR] Failed to release task: {e}")
             return False
         finally:
             conn.close()
@@ -455,6 +518,12 @@ def main():
     complete_parser.add_argument("task_id", help="Task ID to complete")
     complete_parser.add_argument("--status", default="SUCCESS", help="Final status")
 
+    # release command (self-healing)
+    release_parser = subparsers.add_parser("release", help="Release stuck task back to BACKLOG")
+    release_parser.add_argument("task_id", nargs="?", help="Task ID (or --all for stale tasks)")
+    release_parser.add_argument("--all", action="store_true", help="Release all stale tasks (>30min)")
+    release_parser.add_argument("--reason", default="manual", help="Reason for release")
+
     # list command
     list_parser = subparsers.add_parser("list", help="List tasks")
     list_parser.add_argument("--status", help="Filter by status")
@@ -493,7 +562,7 @@ def main():
     # debate command
     debate_parser = subparsers.add_parser("debate", help="Debate management")
     debate_sub = debate_parser.add_subparsers(dest="debate_cmd", help="Debate commands")
-    
+
     start_db = debate_sub.add_parser("start", help="Start a new debate")
     start_db.add_argument("--topic", required=True, help="Debate topic")
     start_db.add_argument("--proposal", required=True, help="Debate proposal content")
@@ -514,6 +583,8 @@ def main():
         cli.claim_task(args.task_id, args.agent)
     elif args.command == "complete":
         cli.complete_task(args.task_id, args.status)
+    elif args.command == "release":
+        cli.release_task(args.task_id, args.all, args.reason)
     elif args.command == "list":
         cli.list_tasks(args.status)
     elif args.command == "workspace":

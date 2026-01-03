@@ -2,6 +2,7 @@ import asyncio
 import os
 from collections import deque
 from pathlib import Path
+from src.agentic.core.utils.logging_utils import log_event
 
 from src.agentic.core.config import (
     AIDER_BIN,
@@ -15,6 +16,15 @@ from src.agentic.core.config import (
 )
 from src.agentic.core.plugins.model_router import default_router
 from src.agentic.core.protocols import CodeResult, ExecutorProtocol, Plan
+
+
+def _get_code_root() -> Path:
+    from src.agentic.core.config import PROJECT_ROOT
+
+    override = os.getenv("YBIS_CODE_ROOT")
+    if override:
+        return Path(override).resolve()
+    return Path(PROJECT_ROOT).resolve()
 
 
 class AiderExecutorEnhanced(ExecutorProtocol):
@@ -37,7 +47,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         self._aci = None  # Lazy-loaded
 
         if self.use_aci:
-            print(f"[AiderEnhanced] ACI mode enabled (allowlist={ALLOWLIST_MODE}, sandbox={SANDBOX_MODE})")
+            log_event(f"ACI mode enabled (allowlist={ALLOWLIST_MODE}, sandbox={SANDBOX_MODE})", component="aider_executor")
 
     def name(self) -> str:
         return "Aider-Enhanced-Executor"
@@ -53,6 +63,55 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         except Exception:
             # Logging must never block execution
             pass
+
+    def _rve_preflight(
+        self,
+        files: list[str],
+        git_root: Path,
+        sandbox_path: str
+    ) -> tuple[bool, str, list[str]]:
+        """
+        Read-Verify-Edit (RVE) preflight.
+        Reads target files and captures anchors to reduce search/replace errors.
+        """
+        log_dir = self._ensure_log_dir(sandbox_path)
+        issues: list[str] = []
+        summaries: list[str] = []
+
+        for rel_path in files:
+            path = git_root / rel_path
+            if not path.exists():
+                summaries.append(f"{rel_path} | NEW FILE")
+                continue
+
+            try:
+                content = path.read_text(encoding="utf-8")
+            except Exception as exc:
+                issues.append(f"Unreadable file: {rel_path} ({exc})")
+                continue
+
+            lines = content.splitlines()
+            line_count = len(lines)
+            first = ""
+            last = ""
+            for line in lines:
+                if line.strip():
+                    first = line.strip()
+                    break
+            for line in reversed(lines):
+                if line.strip():
+                    last = line.strip()
+                    break
+
+            summaries.append(
+                f"{rel_path} | lines={line_count} | first='{first[:80]}' | last='{last[:80]}'"
+            )
+
+        summary_text = "\n".join(summaries)
+        if summary_text:
+            self._write_log(log_dir, "rve_preflight.txt", summary_text)
+
+        return len(issues) == 0, summary_text, issues
 
     async def _collect_git_status(self, git_root: Path) -> list[str]:
         proc = await asyncio.create_subprocess_shell(
@@ -199,7 +258,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                 # Live console output (sanitized for Windows terminal)
                 if live_output and text.strip():
                     safe_text = text.encode('ascii', 'replace').decode('ascii')
-                    print(f"{live_prefix}[{ts}] {safe_text.rstrip()}")
+                    log_event(f"{live_prefix}[{ts}] {safe_text.rstrip()}", component="aider_executor")
 
     async def execute(
         self, plan: Plan, sandbox_path: str,
@@ -227,7 +286,21 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         No ACI constraints - full shell access to Aider.
         """
         model_config = self.router.get_model("CODING")
-        print(f"[AiderEnhanced] Using model: {model_config.model_name} ({model_config.provider}) [DIRECT MODE]")
+        log_event(
+            f"Using model: {model_config.model_name} ({model_config.provider}) [DIRECT MODE]",
+            component="aider_executor"
+        )
+
+        # AGGRESSIVE CONTEXT CLEANUP: Delete history files to prevent hallucinations
+        try:
+            log_dir = self._ensure_log_dir(sandbox_path)
+            for history_file in ["aider_chat_history.md", "aider_input_history.txt", "aider_llm_history.jsonl"]:
+                file_path = log_dir / history_file
+                if file_path.exists():
+                    file_path.unlink()
+            log_event("Context cleaned: History files removed", component="aider_executor")
+        except Exception as e:
+            log_event(f"Context cleanup warning: {e}", component="aider_executor", level="warning")
 
         # 1. Load Contextual Knowledge
         constitution = ""
@@ -277,8 +350,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             prompt += f"{i+1}. {step}\n"
 
         # 3. Handle File Paths
-        from src.agentic.core.config import PROJECT_ROOT
-        git_root = Path(PROJECT_ROOT).resolve()
+        git_root = _get_code_root()
 
         files = plan.files_to_modify if plan.files_to_modify else []
         if not files:
@@ -310,6 +382,22 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         for f in normalized_files:
             prompt += f"- {f}\n"
 
+        rve_ok, rve_summary, rve_issues = self._rve_preflight(
+            normalized_files, git_root, sandbox_path
+        )
+        if not rve_ok:
+            return CodeResult(
+                files_modified={},
+                commands_run=[],
+                outputs={"rve_issues": "\n".join(rve_issues)},
+                success=False,
+                error="RVE preflight failed"
+            )
+
+        if rve_summary:
+            prompt += "\n## RVE PREFLIGHT (file anchors)\n"
+            prompt += rve_summary + "\n"
+
         # 4. Construct Command
         cmd = self._resolve_aider_command()
         cmd.extend(normalized_files)
@@ -321,7 +409,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             if ctx_file not in normalized_files:  # Don't double-add edit targets
                 cmd.extend(["--read", ctx_file])
         if context_files:
-            print(f"[AiderEnhanced] Context injection: {len(context_files)} files via --read")
+            log_event(f"Context injection: {len(context_files)} files via --read", component="aider_executor")
 
         prompt += f"\nNote: All paths provided are relative to the Git Root: {git_root}\n"
         message_path = self._write_message_file(sandbox_path, prompt)
@@ -332,13 +420,52 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             model_full_name = f"ollama/{model_config.model_name}"
         cmd.extend(["--model", model_full_name])
 
-        edit_format = "whole" if retry_count > 0 else "diff"
+        # FIX-2: Use whole-edit for new/untracked files or retries
+        tracked_files: set[str] = set()
+        try:
+            tracked_result = subprocess.run(
+                ["git", "ls-files"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+                cwd=str(git_root)
+            )
+            if tracked_result.returncode == 0:
+                tracked_files = {
+                    line.strip().replace("\\", "/")
+                    for line in tracked_result.stdout.splitlines()
+                    if line.strip()
+                }
+        except Exception:
+            tracked_files = set()
+
+        def _is_new_or_untracked(path: str) -> bool:
+            candidate = Path(path)
+            if candidate.is_absolute():
+                try:
+                    rel = candidate.resolve().relative_to(git_root).as_posix()
+                except Exception:
+                    return False
+            else:
+                rel = candidate.as_posix()
+            if rel not in tracked_files:
+                return True
+            file_path = git_root / rel
+            return not file_path.exists() or file_path.stat().st_size == 0
+
+        has_new_files = any(_is_new_or_untracked(f) for f in normalized_files)
+        if has_new_files:
+            log_event("New files detected -> using whole-edit format", component="aider_executor")
+        edit_format = "whole" if (retry_count > 0 or has_new_files) else "diff"
         cmd.extend([
             "--model-settings-file", "config/aider_model_settings.yml",
             "--no-show-model-warnings",
             "--no-pretty",
+            "--no-analytics",
             "--no-auto-lint",
             "--no-suggest-shell-commands",
+            "--map-tokens", "0",
+            "--map-refresh", "manual",
             "--edit-format", edit_format,
             "--no-multiline",
             "--aiderignore", "config/.sandbox_aiderignore",
@@ -350,7 +477,8 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             "--llm-history-file", str(self._ensure_log_dir(sandbox_path) / "aider_llm_history.jsonl"),
             "--yes",
             "--yes-always",
-            "--no-auto-commits"
+            "--no-auto-commits",
+            "--exit"
         ])
 
         # 5. Execute Aider
@@ -371,7 +499,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                 cwd=str(git_root),
                 env=env
             )
-            print("[Aider] === LIVE OUTPUT START ===")
+            log_event("=== LIVE OUTPUT START ===", component="aider_executor")
             stdout_task = asyncio.create_task(
                 self._stream_to_file(process.stdout, stdout_path, stdout_tail, "[AIDER] ", live_output=True)
             )
@@ -393,7 +521,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                 success = (process.returncode == 0)
 
             elapsed = time.time() - start_time
-            print(f"[Aider] === LIVE OUTPUT END === (elapsed: {elapsed:.1f}s, exit: {process.returncode}, timeout: {timed_out})")
+            log_event(f"=== LIVE OUTPUT END === (elapsed: {elapsed:.1f}s, exit: {process.returncode}, timeout: {timed_out})", component="aider_executor")
 
             await stdout_task
             await stderr_task
@@ -406,7 +534,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             # This is more reliable than git status delta when files are already modified
             import re
             applied_edits = re.findall(r"Applied edit to ([^\n]+)", stdout_text)
-            print(f"[AiderEnhanced] Detected applied edits: {applied_edits}")
+            log_event(f"Detected applied edits: {applied_edits}", component="aider_executor")
 
             actual_files = {}
             unexpected = []
@@ -452,6 +580,9 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                 )
 
             error_message = None
+            if not actual_files:
+                error_message = "No edits applied by Aider"
+                success = False
             if not success:
                 error_message = "Aider execution timed out" if timed_out else "Aider execution failed (see logs)"
             if detected_failure:
@@ -490,15 +621,14 @@ class AiderExecutorEnhanced(ExecutorProtocol):
 
         This is safer than direct execution but may be less flexible.
         """
-        print("[AiderEnhanced] Executing with ACI (constrained mode)")
+        log_event("Executing with ACI (constrained mode)", component="aider_executor")
 
         # Lazy-load ACI
         if self._aci is None:
-            from src.agentic.core.config import PROJECT_ROOT
             from src.agentic.core.execution import AgentComputerInterface
 
             self._aci = AgentComputerInterface(
-                base_dir=str(PROJECT_ROOT),
+                base_dir=str(_get_code_root()),
                 enable_validation=ENABLE_VALIDATION,
                 enable_allowlist=True,
                 enable_sandbox=True
@@ -510,11 +640,10 @@ class AiderExecutorEnhanced(ExecutorProtocol):
 
         # Current approach: Run Aider through ACI sandbox
         model_config = self.router.get_model("CODING")
-        print(f"[AiderEnhanced] Using model: {model_config.model_name} ({model_config.provider}) [ACI MODE]")
+        log_event(f"Using model: {model_config.model_name} ({model_config.provider}) [ACI MODE]", component="aider_executor")
 
         # Build Aider command (same as direct mode)
-        from src.agentic.core.config import PROJECT_ROOT
-        git_root = Path(PROJECT_ROOT).resolve()
+        git_root = _get_code_root()
 
         constitution = ""
         if os.path.exists(self.constitution_path):
@@ -596,6 +725,22 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         for f in normalized_files:
             prompt += f"- {f}\n"
 
+        rve_ok, rve_summary, rve_issues = self._rve_preflight(
+            normalized_files, git_root, sandbox_path
+        )
+        if not rve_ok:
+            return CodeResult(
+                files_modified={},
+                commands_run=[],
+                outputs={"rve_issues": "\n".join(rve_issues)},
+                success=False,
+                error="RVE preflight failed"
+            )
+
+        if rve_summary:
+            prompt += "\n## RVE PREFLIGHT (file anchors)\n"
+            prompt += rve_summary + "\n"
+
         # Build command
         cmd_parts = self._resolve_aider_command()
         cmd_parts.extend(normalized_files)
@@ -613,8 +758,11 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             "--model-settings-file", "config/aider_model_settings.yml",
             "--no-show-model-warnings",
             "--no-pretty",
+            "--no-analytics",
             "--no-auto-lint",
             "--no-suggest-shell-commands",
+            "--map-tokens", "0",
+            "--map-refresh", "manual",
             "--edit-format", "diff",
             "--no-multiline",
             "--aiderignore", "config/.sandbox_aiderignore",
@@ -626,7 +774,8 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             "--llm-history-file", str(self._ensure_log_dir(sandbox_path) / "aider_llm_history.jsonl"),
             "--yes",
             "--yes-always",
-            "--no-auto-commits"
+            "--no-auto-commits",
+            "--exit"
         ])
 
         # Execute through ACI (sandboxed)
@@ -685,6 +834,15 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                     outputs={"stdout": result.stdout, "stderr": result.stderr, "status": "Unexpected files modified"},
                     success=False,
                     error=f"Unexpected file changes: {', '.join(unexpected)}"
+                )
+
+            if not actual_files:
+                return CodeResult(
+                    files_modified={},
+                    commands_run=[command],
+                    outputs={"stdout": result.stdout, "stderr": result.stderr},
+                    success=False,
+                    error="No edits applied by Aider"
                 )
 
             return CodeResult(

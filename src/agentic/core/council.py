@@ -6,6 +6,7 @@ Inspired by karpathy/llm-council.
 """
 
 import json
+from src.agentic.core.utils.logging_utils import log_event
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 from pydantic import BaseModel, Field
@@ -43,14 +44,14 @@ class TheCouncil:
         # In V2, we will force agents to send structured JSON.
         for msg in data.get("messages", []):
             content = msg.get("content", "")
-            
+
             # Simple keyword parsing (Frankenstein style)
             if "VOTE: APPROVE" in content:
                 votes.append(Vote(agent_id=msg["from"], decision="APPROVE", score=10.0, reason="Text analysis"))
             elif "VOTE: REJECT" in content:
                 votes.append(Vote(agent_id=msg["from"], decision="REJECT", score=0.0, reason="Text analysis"))
             # TODO: Add regex for "Score: 8.5" extraction
-        
+
         return votes
 
     def evaluate_debate(self, debate_id: str, threshold: float = 7.0) -> CouncilResult:
@@ -65,7 +66,7 @@ class TheCouncil:
             data = json.load(f)
 
         votes = self._parse_votes(debate_id)
-        
+
         if not votes:
             return CouncilResult(
                 topic=data.get("topic", ""),
@@ -90,4 +91,4 @@ class TheCouncil:
 if __name__ == "__main__":
     council = TheCouncil()
     # Mocking a check (replace with real ID in prod)
-    print("Council Module Loaded.")
+    log_event("Council Module Loaded.", component="council")

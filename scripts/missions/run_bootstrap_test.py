@@ -14,8 +14,8 @@ from src.agentic.core.plugins.artifact_generator import ArtifactGenerator
 from src.agentic.core.plugins.task_board_manager import TaskBoardManager
 
 async def run_bootstrap_test():
-    print("🚀 STARTING BOOTSTRAP TEST: Orchestrator V3")
-    
+    print("[INFO] STARTING BOOTSTRAP TEST: Orchestrator V3")
+
     orchestrator = OrchestratorV3(
         planner=SimplePlanner(),
         executor=AiderExecutor(),
@@ -23,19 +23,19 @@ async def run_bootstrap_test():
         artifact_gen=ArtifactGenerator(),
         task_board=TaskBoardManager()
     )
-    
+
     task_description = """
     Create a new python file named 'src/utils/math_helper.py'.
     The file should contain:
     1. A function 'calculate_factorial(n)' that returns the factorial of n using recursion.
     2. A main block that prints 'Factorial of 5 is: {result}'.
     """
-    
+
     task_id = "BOOTSTRAP-001"
-    
-    print(f"▶️ Delegating Task {task_id} to Orchestrator...")
+
+    print(f"-> Delegating Task {task_id} to Orchestrator...")
     await orchestrator.run_task(task_id, task_description)
-    print("✅ Orchestrator finished execution.")
+    print("[SUCCESS] Orchestrator finished execution.")
 
 if __name__ == "__main__":
     asyncio.run(run_bootstrap_test())

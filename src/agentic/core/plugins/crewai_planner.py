@@ -38,6 +38,7 @@ if platform.system() == "Windows":
 import os
 from pathlib import Path
 from typing import Dict, Any
+from src.agentic.core.utils.logging_utils import log_event
 import json
 import re
 
@@ -65,7 +66,7 @@ class CrewAIPlanner:
     async def plan(self, task: str, context: Dict[str, Any]) -> Plan:
         """Generate execution plan using CrewAI"""
 
-        print(f"[CrewAIPlanner] Analyzing task with multi-agent crew...")
+        log_event("Analyzing task with multi-agent crew...", component="crewai_planner")
 
         # Run CrewAI crew
         # Note: PlanningCrew.run() is synchronous, not async
@@ -100,9 +101,9 @@ class CrewAIPlanner:
                 result_str = str(result)
 
             # Debug: print raw output
-            print(f"\n[DEBUG] Raw CrewAI output (first 1000 chars):")
-            print(result_str[:1000])
-            print(f"[DEBUG] Output type: {type(result)}")
+            log_event("Raw CrewAI output (first 1000 chars):", component="crewai_planner")
+            log_event(result_str[:1000], component="crewai_planner")
+            log_event(f"Output type: {type(result)}", component="crewai_planner")
 
             # Try to find JSON in the output
             json_match = re.search(r'\{[\s\S]*\}', result_str)
@@ -115,8 +116,8 @@ class CrewAIPlanner:
             return self._create_plan_from_text(result_str, task)
 
         except Exception as e:
-            print(f"[CrewAIPlanner] Failed to parse output: {e}")
-            print(f"[CrewAIPlanner] Raw output: {result_str[:500]}")
+            log_event(f"Failed to parse output: {e}", component="crewai_planner", level="warning")
+            log_event(f"Raw output: {result_str[:500]}", component="crewai_planner", level="warning")
 
             # Fallback: create basic plan
             return Plan(
@@ -190,13 +191,13 @@ async def test_crewai_planner():
         context={"repo": "YBIS", "current_branch": "main"}
     )
 
-    print(f"\n[TEST] CrewAI Planner Result:")
-    print(f"Objective: {plan.objective}")
-    print(f"Steps ({len(plan.steps)}):")
+    log_event("[TEST] CrewAI Planner Result:", component="crewai_planner_test")
+    log_event(f"Objective: {plan.objective}", component="crewai_planner_test")
+    log_event(f"Steps ({len(plan.steps)}):", component="crewai_planner_test")
     for i, step in enumerate(plan.steps, 1):
-        print(f"  {i}. {step}")
-    print(f"Files to modify: {plan.files_to_modify}")
-    print(f"Metadata: {plan.metadata}")
+        log_event(f"  {i}. {step}", component="crewai_planner_test")
+    log_event(f"Files to modify: {plan.files_to_modify}", component="crewai_planner_test")
+    log_event(f"Metadata: {plan.metadata}", component="crewai_planner_test")
 
 
 if __name__ == "__main__":

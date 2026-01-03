@@ -36,7 +36,7 @@ class SentinelVerifier(VerifierProtocol):
             is_system = any(path_str.replace("\\", "/").endswith(s) for s in self.SYSTEM_IGNORE_LIST)
             if not is_system:
                 cleaned_files.append(path_str)
-        
+
         logs["files_checked"] = cleaned_files
         for file_path in cleaned_files:
             normalized = file_path.replace("\\", "/")

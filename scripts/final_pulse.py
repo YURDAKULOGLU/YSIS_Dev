@@ -4,8 +4,8 @@ import os
 from pathlib import Path
 
 def check_pulse():
-    print("--- 🏥 YBIS SYSTEM HEALTH CHECK (WRAP-UP) ---")
-    
+    print("--- [INFO] YBIS SYSTEM HEALTH CHECK (WRAP-UP) ---")
+
     # 1. DB Check
     try:
         conn = sqlite3.connect('Knowledge/LocalDB/tasks.db')
@@ -31,7 +31,7 @@ def check_pulse():
     # (Testing Neo4j usually requires credentials, but we can check if ingest ran)
     if Path("worker.out").exists():
         print("[OK] Worker Logs: Active.")
-    
+
     print("\n--- 🏁 WRAP-UP STATUS: STABLE ---")
 
 if __name__ == "__main__":

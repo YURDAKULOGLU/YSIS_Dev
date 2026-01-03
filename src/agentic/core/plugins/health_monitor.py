@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from src.agentic.core.config import CHROMA_DB_PATH, PROJECT_ROOT, TASKS_DB_PATH
+from src.agentic.core.utils.logging_utils import log_event
 
 
 @dataclass
@@ -52,6 +53,7 @@ class HealthMonitor:
         self._check_recent_task_metrics()
         self._check_encoding_errors()
         self._check_config_issues()
+        self._check_and_release_stale_tasks()
 
         # Auto-create remediation tasks if enabled
         if self.auto_create_tasks:
@@ -260,6 +262,46 @@ class HealthMonitor:
         except Exception:
             pass  # Config check is best-effort
 
+    def _check_and_release_stale_tasks(self):
+        """Check for and auto-release stale IN_PROGRESS tasks (self-healing)."""
+        try:
+            if not TASKS_DB_PATH.exists():
+                return
+
+            conn = sqlite3.connect(str(TASKS_DB_PATH))
+            cursor = conn.cursor()
+
+            # Find tasks stuck for more than 30 minutes
+            from datetime import timedelta
+            cutoff = (datetime.now() - timedelta(minutes=30)).isoformat()
+
+            cursor.execute("""
+                SELECT id FROM tasks
+                WHERE status='IN_PROGRESS' AND updated_at < ?
+            """, (cutoff,))
+            stale_tasks = [row[0] for row in cursor.fetchall()]
+
+            if stale_tasks:
+                # Auto-release them
+                cursor.execute("""
+                    UPDATE tasks
+                    SET status='BACKLOG', assignee=NULL
+                    WHERE status='IN_PROGRESS' AND updated_at < ?
+                """, (cutoff,))
+                conn.commit()
+
+                self.issues.append(HealthIssue(
+                    category="EXECUTION",
+                    severity="INFO",
+                    message=f"Auto-released {len(stale_tasks)} stale tasks: {stale_tasks}"
+                ))
+                log_event(f"[SELF-HEAL] Released {len(stale_tasks)} stale tasks back to BACKLOG", component="health_monitor")
+
+            conn.close()
+
+        except Exception as e:
+            log_event(f"Stale task check failed: {e}", component="health_monitor", level="warning")
+
     def _create_remediation_tasks(self):
         """Create tasks for issues that have auto_task defined."""
         if not TASKS_DB_PATH.exists():
@@ -291,13 +333,13 @@ class HealthMonitor:
                         "HIGH" if issue.severity == "CRITICAL" else "MEDIUM"
                     ))
 
-                    print(f"[HealthMonitor] Created remediation task: {task_id}")
+                    log_event(f"Created remediation task: {task_id}", component="health_monitor")
 
             conn.commit()
             conn.close()
 
         except Exception as e:
-            print(f"[HealthMonitor] Failed to create remediation tasks: {e}")
+            log_event(f"Failed to create remediation tasks: {e}", component="health_monitor", level="warning")
 
     def get_report(self) -> dict[str, Any]:
         """Get health report as dictionary."""
@@ -316,27 +358,27 @@ class HealthMonitor:
         """Print health report to console."""
         report = self.get_report()
 
-        print("\n" + "=" * 60)
-        print("SYSTEM HEALTH REPORT")
-        print("=" * 60)
+        log_event("=" * 60, component="health_monitor")
+        log_event("SYSTEM HEALTH REPORT", component="health_monitor")
+        log_event("=" * 60, component="health_monitor")
 
         summary = report["summary"]
-        print(f"Critical: {summary['critical']} | Warning: {summary['warning']} | Info: {summary['info']}")
-        print("-" * 60)
+        log_event(f"Critical: {summary['critical']} | Warning: {summary['warning']} | Info: {summary['info']}", component="health_monitor")
+        log_event("-" * 60, component="health_monitor")
 
         for issue in self.issues:
             icon = {"CRITICAL": "[!]", "WARNING": "[~]", "INFO": "[i]"}.get(issue.severity, "[?]")
-            print(f"{icon} [{issue.category}] {issue.message}")
+            log_event(f"{icon} [{issue.category}] {issue.message}", component="health_monitor")
             if issue.auto_task:
-                print(f"    -> Auto-task: {issue.auto_task['goal']}")
+                log_event(f"    -> Auto-task: {issue.auto_task['goal']}", component="health_monitor")
 
         if self.metrics:
-            print("-" * 60)
-            print("Metrics:")
+            log_event("-" * 60, component="health_monitor")
+            log_event("Metrics:", component="health_monitor")
             for k, v in self.metrics.items():
-                print(f"  {k}: {v}")
+                log_event(f"  {k}: {v}", component="health_monitor")
 
-        print("=" * 60 + "\n")
+        log_event("=" * 60, component="health_monitor")
 
 
 def run_health_check(auto_create_tasks: bool = False) -> dict[str, Any]:

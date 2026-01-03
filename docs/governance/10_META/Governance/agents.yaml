@@ -29,4 +29,3 @@ agents:
     modes: ["analysis-only"]
     strengths: ["architecture", "deep audits", "risk finding", "systems thinking"]
     weak_spots: ["should not be primary implementer"]
-

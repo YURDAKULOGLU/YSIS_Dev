@@ -45,13 +45,13 @@ def scan_file_for_imports(file_path: Path):
         return [f"Could not read file: {e}"]
 
 def check_architecture():
-    print("🛡️  STARTING ARCHITECTURE ENFORCEMENT SCAN...")
+    print("[INFO]  STARTING ARCHITECTURE ENFORCEMENT SCAN...")
     print(f"   Root: {PROJECT_ROOT}")
-    
+
     violations = 0
-    
+
     # 1. Scan SRC for forbidden imports
-    print("\n🔍 Scanning src/ for The Old Brain...")
+    print("\n[INFO] Scanning src/ for The Old Brain...")
     src_dir = PROJECT_ROOT / "src"
     if src_dir.exists():
         for file_path in src_dir.rglob("*.py"):
@@ -59,29 +59,29 @@ def check_architecture():
             issues = scan_file_for_imports(file_path)
             if issues:
                 for issue in issues:
-                    print(f"   ❌ [VIOLATION] {file_path.relative_to(PROJECT_ROOT)}: {issue}")
+                    print(f"   [ERROR] [VIOLATION] {file_path.relative_to(PROJECT_ROOT)}: {issue}")
                     violations += 1
-    
+
     # 2. Check Scripts
-    print("\n🔍 Checking Script Status...")
+    print("\n[INFO] Checking Script Status...")
     for script in DEPRECATED_SCRIPTS:
         p = PROJECT_ROOT / script
         if p.exists():
-            print(f"   ⚠️  [DEPRECATED] {script} still exists. Should be replaced by 'run_orchestrator.py'.")
+            print(f"   [WARN]  [DEPRECATED] {script} still exists. Should be replaced by 'run_orchestrator.py'.")
             # This is a warning, not a violation for now, until Codex finishes.
-    
+
     new_runner = PROJECT_ROOT / "scripts" / "run_orchestrator.py"
     if not new_runner.exists():
-        print(f"   ⚠️  [MISSING] 'scripts/run_orchestrator.py' is not yet created (Waiting for Codex).")
+        print(f"   [WARN]  [MISSING] 'scripts/run_orchestrator.py' is not yet created (Waiting for Codex).")
     else:
-        print(f"   ✅ [OK] 'scripts/run_orchestrator.py' exists.")
+        print(f"   [SUCCESS] [OK] 'scripts/run_orchestrator.py' exists.")
 
     print("\n" + "="*40)
     if violations > 0:
-        print(f"❌ ARCHITECTURE CHECK FAILED: {violations} violations found.")
+        print(f"[ERROR] ARCHITECTURE CHECK FAILED: {violations} violations found.")
         sys.exit(1)
     else:
-        print("✅ ARCHITECTURE CHECK PASSED. System is compliant.")
+        print("[SUCCESS] ARCHITECTURE CHECK PASSED. System is compliant.")
         sys.exit(0)
 
 if __name__ == "__main__":

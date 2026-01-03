@@ -15,7 +15,7 @@ Don't use a sledgehammer to crack a nut.
 Move beyond basic wrappers to high-performance engines.
 - **vLLM Integration:** Use PagedAttention to handle massive context without VRAM fragmentation.
 - **TensorRT-LLM:** Leverage NVIDIA-specific optimizations for the 5090.
-- **Quantization Strategy:** 
+- **Quantization Strategy:**
     - Use `EXL2` or `AWQ` for coding models (better logic retention).
     - Use `GGUF` only for low-priority background tasks.
 - **Context Caching:** Enable "Flash Attention 2" and "Prompt Caching" to skip processing unchanged parts of the codebase.

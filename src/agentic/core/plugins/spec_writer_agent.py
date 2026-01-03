@@ -11,6 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Tuple
 from dataclasses import dataclass
+from src.agentic.core.utils.logging_utils import log_event
 
 from src.agentic.core.plugins.spec_templates import get_template, list_templates
 from src.agentic.core.config import USE_LITELLM, LITELLM_QUALITY
@@ -42,7 +43,7 @@ class SpecWriterAgent:
     LLM-powered agent for generating comprehensive task specifications.
 
     Workflow:
-    1. Analyze task goal/details → determine spec type
+    1. Analyze task goal/details -> determine spec type
     2. Select appropriate template
     3. Use LLM to fill placeholders intelligently
     4. Present spec for review
@@ -173,7 +174,7 @@ Format your response as JSON:
         if spec_type is None:
             analysis = await self.analyze_task(task_id, goal, details)
             spec_type = analysis.spec_type
-            print(f"[SpecWriter] Auto-detected spec type: {spec_type} (confidence: {analysis.confidence:.2f})")
+            log_event(f"Auto-detected spec type: {spec_type} (confidence: {analysis.confidence:.2f})", component="spec_writer")
         else:
             spec_type = spec_type.lower().strip()
 
@@ -182,7 +183,7 @@ Format your response as JSON:
 
         # Extract placeholders from template
         placeholders = self._extract_placeholders(template)
-        print(f"[SpecWriter] Found {len(placeholders)} placeholders to fill")
+        log_event(f"Found {len(placeholders)} placeholders to fill", component="spec_writer")
 
         # Fill placeholders using LLM
         filled_values = await self._fill_placeholders(
@@ -411,7 +412,7 @@ Important:
         try:
             return json.loads(content)
         except json.JSONDecodeError:
-            print(f"[SpecWriter] Warning: Failed to parse JSON response")
+            log_event("Warning: Failed to parse JSON response", component="spec_writer", level="warning")
             return {}
 
     async def save_spec(
@@ -439,7 +440,7 @@ Important:
         spec_file = workspace_path / filename
         spec_file.write_text(spec_content.content, encoding='utf-8')
 
-        print(f"[SpecWriter] Saved spec to: {spec_file}")
+        log_event(f"Saved spec to: {spec_file}", component="spec_writer")
         return spec_file
 
     async def generate_and_save(
@@ -480,14 +481,14 @@ Important:
 
         # Print warnings and suggestions
         if spec.warnings:
-            print(f"[SpecWriter] Warnings:")
+            log_event("Warnings:", component="spec_writer", level="warning")
             for warning in spec.warnings:
-                print(f"  - {warning}")
+                log_event(f"  - {warning}", component="spec_writer", level="warning")
 
         if spec.suggestions:
-            print(f"[SpecWriter] Suggestions:")
+            log_event("Suggestions:", component="spec_writer")
             for suggestion in spec.suggestions:
-                print(f"  - {suggestion}")
+                log_event(f"  - {suggestion}", component="spec_writer")
 
         # Save spec
         spec_file = await self.save_spec(spec, workspace_path)

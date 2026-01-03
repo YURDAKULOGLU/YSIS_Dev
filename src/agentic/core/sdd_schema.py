@@ -1,5 +1,6 @@
 
 from pydantic import BaseModel, Field
+from src.agentic.core.utils.logging_utils import log_event
 
 
 class Blueprint(BaseModel):
@@ -45,4 +46,4 @@ if __name__ == "__main__":
         assert "Mission SDD: Full System Integration" in state.proposed_tasks
         assert "Follow-up Task: Validate Self-Propagation Protocol" in state.proposed_tasks
     else:
-        print(f"{sdd_schema_path} dosyası bulunamadı.")
+        log_event(f"{sdd_schema_path} dosyası bulunamadı.", component="sdd_schema", level="warning")

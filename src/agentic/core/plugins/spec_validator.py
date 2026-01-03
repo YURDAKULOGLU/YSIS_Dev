@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
+from src.agentic.core.utils.logging_utils import log_event
 
 
 class ValidationLevel(Enum):
@@ -114,7 +115,7 @@ class SpecValidator:
                     from src.agentic.core.litellm_provider import OllamaProvider
                     self.llm_provider = OllamaProvider()
             except Exception as e:
-                print(f"[SpecValidator] LLM provider unavailable: {e}")
+                log_event(f"LLM provider unavailable: {e}", component="spec_validator", level="warning")
                 self.llm_provider = None
 
         self._provider_initialized = True
@@ -418,7 +419,7 @@ Respond with JSON array of issues (empty if no issues):
 
             return issues
         except Exception as e:
-            print(f"[SpecValidator] Semantic validation failed: {e}")
+            log_event(f"Semantic validation failed: {e}", component="spec_validator", level="warning")
             return []
 
     # ===== Helper Methods =====

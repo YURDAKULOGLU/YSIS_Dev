@@ -24,16 +24,16 @@ class MockRAG:
 
 async def test_rag_integration():
     print("Testing RAG Aware Planner Integration...")
-    
+
     # Setup
     mock_planner = MockPlanner()
     mock_rag = MockRAG()
     rag_planner = RAGAwarePlanner(base_planner=mock_planner, rag_memory=mock_rag)
-    
+
     # Execute
     task = "Fix the login bug"
     context = {"user": "tester"}
-    
+
     await rag_planner.plan(task, context)
     print("Test Complete.")
 

@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 from typing import List
 import asyncio
+from src.agentic.core.utils.logging_utils import log_event
 
 # Add paths
 current_dir = Path(__file__).parent
@@ -38,8 +39,8 @@ class SimpleExecutor:
     async def execute(self, plan: Plan, sandbox_path: str, error_history: List[str] = None, retry_count: int = 0) -> CodeResult:
         """Execute plan using DeveloperAgent"""
 
-        print(f"[SimpleExecutor] Executing plan in {sandbox_path}")
-        print(f"[SimpleExecutor] Objective: {plan.objective}")
+        log_event(f"Executing plan in {sandbox_path}", component="simple_executor")
+        log_event(f"Objective: {plan.objective}", component="simple_executor")
 
         # Build prompt for developer
         prompt = self._build_prompt(plan)
@@ -109,7 +110,7 @@ FILE: path/to/another.py
                     f.write(agent_result.code)
 
                 files_modified[agent_result.filename] = agent_result.code
-                print(f"[SimpleExecutor] [OK] Wrote {agent_result.filename}")
+                log_event(f"[OK] Wrote {agent_result.filename}", component="simple_executor")
 
         # If no files written but plan specified files, create placeholders
         if not files_modified and plan.files_to_modify:
@@ -123,7 +124,7 @@ FILE: path/to/another.py
                     f.write(content)
 
                 files_modified[file_path] = content
-                print(f"[SimpleExecutor] [WARN] Created placeholder: {file_path}")
+                log_event(f"[WARN] Created placeholder: {file_path}", component="simple_executor", level="warning")
 
         return files_modified
 
@@ -160,9 +161,9 @@ async def test_simple_executor():
 
     result = await executor.execute(plan, ".sandbox/test")
 
-    print(f"Success: {result.success}")
-    print(f"Files modified: {list(result.files_modified.keys())}")
-    print(f"Commands run: {result.commands_run}")
+    log_event(f"Success: {result.success}", component="simple_executor_test")
+    log_event(f"Files modified: {list(result.files_modified.keys())}", component="simple_executor_test")
+    log_event(f"Commands run: {result.commands_run}", component="simple_executor_test")
 
 
 if __name__ == "__main__":

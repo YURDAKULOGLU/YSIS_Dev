@@ -36,13 +36,13 @@ logger = logging.getLogger(__name__)
 
 async def worker_loop():
     logger.info("YBIS AUTONOMOUS WORKER STARTED (LangGraph Engine)")
-    
+
     # Use SmartPlanner for context-aware planning
     planner = SmartPlanner()
     executor = AiderExecutorEnhanced(router=default_router)
     verifier = SentinelVerifierEnhanced()
     artifact_gen = ArtifactGenerator()
-    
+
     import socket
     worker_id = f"worker-{socket.gethostname()}"
 
@@ -57,21 +57,21 @@ async def worker_loop():
                 claimed_raw = mcp_server.claim_next_task(worker_id)
                 claimed = json.loads(claimed_raw)
                 active_task = claimed.get("task")
-            
+
             if active_task:
                 task_id = active_task["id"]
                 goal = active_task["goal"]
                 details = active_task.get("details", "")
-                
+
                 logger.info(f">>> EXECUTING TASK: {task_id}")
-                
+
                 graph_system = OrchestratorGraph(
                     planner=planner,
                     executor=executor,
                     verifier=verifier,
                     artifact_gen=artifact_gen
                 )
-                
+
                 state = {
                     "task_id": task_id,
                     "task_description": f"{goal}\n{details}",
@@ -87,18 +87,18 @@ async def worker_loop():
                     "artifacts_path": f".sandbox_worker/{task_id}",
                     "final_status": "UNKNOWN"
                 }
-                
+
                 try:
                     final_state = await graph_system.run_task(state)
                     phase = final_state.get('phase', 'unknown')
-                    
+
                     if phase == "done":
                         logger.info(f"<<< TASK SUCCESS: {task_id}")
                         mcp_server.update_task_status(task_id, "COMPLETED")
                     else:
                         logger.error(f"<<< TASK FAILED/INCOMPLETE: {task_id}")
                         mcp_server.update_task_status(task_id, "FAILED")
-                        
+
                 except Exception as e:
                     logger.error(f"Graph Execution Error: {e}")
                     logger.error(traceback.format_exc())

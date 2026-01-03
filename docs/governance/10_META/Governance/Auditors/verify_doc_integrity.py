@@ -54,13 +54,13 @@ import rag_memory
 def verify_chain():
     # Initialize RAG Memory
     rag = rag_memory.RAGMemory()
-    
+
     print(f"🔗 YBIS Global Integrity Checker (v2.0 - File Tracking)")
     print(f"📂 Project Root: {PROJECT_ROOT}")
     if force_update:
         print("🚨 Running in --force-update mode.")
     print("---------------------------------------------")
-    
+
     config = load_lock_file()
     if not config:
         sys.exit(1)
@@ -77,22 +77,22 @@ def verify_chain():
     for dep in dependencies:
         source_pattern = dep.get("source_pattern") or dep.get("source") # Handle legacy key
         target = dep.get("target")
-        
+
         # Ensure tracked_files is a dict (filename -> hash)
         # If it's old format (list) or missing, initialize as empty dict
         tracked_files = dep.get("tracked_files", {})
         if not isinstance(tracked_files, dict):
-            tracked_files = {} 
+            tracked_files = {}
             dep["tracked_files"] = tracked_files # Update the config object in place
 
         # 1. Find all current files matching the pattern
         source_full_pattern = str(PROJECT_ROOT / source_pattern)
         # Exclude .pyc and __pycache__
         current_files_paths = [
-            Path(p) for p in glob.glob(source_full_pattern, recursive=True) 
+            Path(p) for p in glob.glob(source_full_pattern, recursive=True)
             if not p.endswith(".pyc") and "__pycache__" not in p and Path(p).is_file()
         ]
-        
+
         current_files_map = {} # path_str -> current_hash
 
         # 2. Calculate current hashes
@@ -101,13 +101,13 @@ def verify_chain():
                 rel_path = str(file_path.relative_to(PROJECT_ROOT)).replace("\\", "/")
             except ValueError:
                 continue # Should not happen if glob is correct
-            
+
             file_hash = calculate_hash(file_path)
             if file_hash:
                 current_files_map[rel_path] = file_hash
 
         # 3. Compare with Tracked Files
-        
+
         # Check for MODIFIED or NEW files
         for rel_path, current_hash in current_files_map.items():
             stored_hash = tracked_files.get(rel_path)
@@ -121,7 +121,7 @@ def verify_chain():
                 else:
                     violations.append(f"Untracked file found: {rel_path}")
                     print(f"❌ UNTRACKED: {rel_path} (Run with --force-update to add)")
-            
+
             elif stored_hash != current_hash:
                 # MODIFIED FILE
                 if force_update:
@@ -157,7 +157,7 @@ def verify_chain():
             if "source" in dep: # Migrate 'source' to 'source_pattern'
                 dep["source_pattern"] = dep["source"]
                 del dep["source"]
-                
+
         save_lock_file(config)
 
     print("---------------------------------------------")
@@ -176,7 +176,7 @@ if __name__ == "__main__":
     if force_update:
         print("🚨 Running in --force-update mode.")
     print("---------------------------------------------")
-    
+
     config = load_lock_file()
     if not config:
         sys.exit(1)
@@ -193,22 +193,22 @@ if __name__ == "__main__":
     for dep in dependencies:
         source_pattern = dep.get("source_pattern") or dep.get("source") # Handle legacy key
         target = dep.get("target")
-        
+
         # Ensure tracked_files is a dict (filename -> hash)
         # If it's old format (list) or missing, initialize as empty dict
         tracked_files = dep.get("tracked_files", {})
         if not isinstance(tracked_files, dict):
-            tracked_files = {} 
+            tracked_files = {}
             dep["tracked_files"] = tracked_files # Update the config object in place
 
         # 1. Find all current files matching the pattern
         source_full_pattern = str(PROJECT_ROOT / source_pattern)
         # Exclude .pyc and __pycache__
         current_files_paths = [
-            Path(p) for p in glob.glob(source_full_pattern, recursive=True) 
+            Path(p) for p in glob.glob(source_full_pattern, recursive=True)
             if not p.endswith(".pyc") and "__pycache__" not in p and Path(p).is_file()
         ]
-        
+
         current_files_map = {} # path_str -> current_hash
 
         # 2. Calculate current hashes
@@ -217,13 +217,13 @@ if __name__ == "__main__":
                 rel_path = str(file_path.relative_to(PROJECT_ROOT)).replace("\\", "/")
             except ValueError:
                 continue # Should not happen if glob is correct
-            
+
             file_hash = calculate_hash(file_path)
             if file_hash:
                 current_files_map[rel_path] = file_hash
 
         # 3. Compare with Tracked Files
-        
+
         # Check for MODIFIED or NEW files
         for rel_path, current_hash in current_files_map.items():
             stored_hash = tracked_files.get(rel_path)
@@ -237,7 +237,7 @@ if __name__ == "__main__":
                 else:
                     violations.append(f"Untracked file found: {rel_path}")
                     print(f"❌ UNTRACKED: {rel_path} (Run with --force-update to add)")
-            
+
             elif stored_hash != current_hash:
                 # MODIFIED FILE
                 if force_update:
@@ -270,7 +270,7 @@ if __name__ == "__main__":
             if "source" in dep: # Migrate 'source' to 'source_pattern'
                 dep["source_pattern"] = dep["source"]
                 del dep["source"]
-                
+
         save_lock_file(config)
 
     print("---------------------------------------------")

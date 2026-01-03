@@ -12,19 +12,19 @@ from src.agentic.core.plugins.sentinel import SentinelVerifier
 from src.agentic.core.protocols import TaskState
 
 async def run_final_polish():
-    print("✨ BOOTSTRAP PHASE 4: Final Polish & Dashboard (T-105)")
-    
+    print("[SUCCESS] BOOTSTRAP PHASE 4: Final Polish & Dashboard (T-105)")
+
     orchestrator = OrchestratorGraph(
         planner=RAGAwarePlanner(),
         executor=AiderExecutor(),
         verifier=SentinelVerifier()
     )
-    
+
     task_description = """
     FINAL POLISH for Beta Release.
-    
+
     OBJECTIVE: Make the system visually representable and stable.
-    
+
     REQUIRED DELIVERABLES:
     1. 'src/dashboard/app.py': Enhanced Streamlit UI.
        - Show 'Current Mission' status.
@@ -32,12 +32,12 @@ async def run_final_polish():
        - Live graph visualization of Orchestrator state.
     2. 'SYSTEM_STATE.md': Update with the completed Phase 1, 2, 3 and current Phase 4.
     3. 'tests/test_tier4_e2e.py': A simple end-to-end test that ensures the Graph can run.
-    
+
     CONSTRAINTS:
     - No placeholders in Dashboard.
     - Sentinel will verify this. Ensure tests pass.
     """
-    
+
     task_id = "T-105-POLISH"
     artifacts_path = os.path.join(".sandbox", "hybrid", task_id)
     os.makedirs(artifacts_path, exist_ok=True)
@@ -55,7 +55,7 @@ async def run_final_polish():
         "artifacts_path": artifacts_path
     }
 
-    print(f"▶️ Executing Final Polish {task_id}...")
+    print(f"-> Executing Final Polish {task_id}...")
     await orchestrator.ainvoke(state)
 
 if __name__ == "__main__":

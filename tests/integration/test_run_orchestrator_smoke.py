@@ -18,6 +18,11 @@ def test_run_orchestrator_smoke(monkeypatch, tmp_path):
 
     monkeypatch.setattr(run_orchestrator, "PROJECT_ROOT", tmp_path)
     monkeypatch.setattr(run_orchestrator, "USE_SPEC_FIRST", False)
+    monkeypatch.setattr(run_orchestrator, "USE_REVIEW_GATE", False)
+    monkeypatch.setattr(run_orchestrator, "USE_WORKTREES", False)
+    monkeypatch.setattr(run_orchestrator, "USE_FRAMEWORK_DEBATE", False)
+    monkeypatch.setattr(run_orchestrator, "USE_RAG", False)
+    monkeypatch.setattr(run_orchestrator, "_run_closed_loop_verification", lambda *a, **k: True)
     monkeypatch.setattr(run_orchestrator, "_select_planner", lambda: object())
     monkeypatch.setattr(run_orchestrator, "OrchestratorGraph", FakeOrchestrator)
     monkeypatch.setattr(run_orchestrator, "AiderExecutorEnhanced", lambda *a, **k: object())

@@ -185,35 +185,95 @@ class PlanningCrew:
             return self._fallback_plan(task_description)
 
     def _parse_crew_output(self, result: Any, task_description: str) -> Plan:
-        """Parse CrewAI output into Plan object."""
-        try:
-            # Try to extract JSON from result
-            result_str = str(result)
+        """Parse CrewAI output into Plan object with robust JSON handling."""
+        result_str = str(result)
 
-            # Find JSON in the output
-            start = result_str.find('{')
-            end = result_str.rfind('}') + 1
+        # Try multiple JSON extraction strategies
+        json_str = self._extract_json(result_str)
 
-            if start >= 0 and end > start:
-                json_str = result_str[start:end]
-                data = json.loads(json_str)
+        if json_str:
+            try:
+                # Try to repair common JSON issues
+                repaired = self._repair_json(json_str)
+                data = json.loads(repaired)
+
+                files = data.get('files_to_modify', [])
+                # If no files specified, infer from task
+                if not files:
+                    files = self._infer_files(task_description)
 
                 return Plan(
                     objective=data.get('objective', task_description),
                     steps=data.get('steps', []),
-                    files_to_modify=data.get('files_to_modify', []),
+                    files_to_modify=files,
                     dependencies=data.get('dependencies', []),
                     risks=data.get('risks', []),
                     success_criteria=data.get('success_criteria', []),
                     metadata={'source': 'CrewAI', 'raw_output': result_str[:500]}
                 )
-        except (json.JSONDecodeError, Exception) as e:
-            print(f"[PlanningCrew] Parse failed: {e}")
+            except json.JSONDecodeError as e:
+                print(f"[PlanningCrew] Parse failed: {e}")
 
         return self._fallback_plan(task_description)
 
+    def _extract_json(self, text: str) -> str | None:
+        """Extract JSON from text with multiple strategies."""
+        import re
+
+        # Strategy 1: Find outermost { }
+        start = text.find('{')
+        end = text.rfind('}') + 1
+        if start >= 0 and end > start:
+            return text[start:end]
+
+        # Strategy 2: Look for ```json blocks
+        match = re.search(r'```json\s*(.*?)\s*```', text, re.DOTALL)
+        if match:
+            return match.group(1).strip()
+
+        return None
+
+    def _repair_json(self, json_str: str) -> str:
+        """Attempt to repair common JSON issues."""
+        import re
+
+        repaired = json_str
+
+        # Remove trailing commas before ] or }
+        repaired = re.sub(r',\s*([}\]])', r'\1', repaired)
+
+        # Fix unescaped newlines in strings
+        repaired = re.sub(r'(?<!\\)\n(?=[^"]*"[^"]*$)', r'\\n', repaired)
+
+        # Remove control characters
+        repaired = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', repaired)
+
+        return repaired
+
+    def _infer_files(self, task_description: str) -> list[str]:
+        """Infer target files from task description."""
+        import re
+        files = []
+
+        # Look for file paths in description
+        patterns = [
+            r'(src/[a-zA-Z0-9_/]+\.py)',
+            r'(tests/[a-zA-Z0-9_/]+\.py)',
+            r'([a-zA-Z0-9_]+\.py)',
+        ]
+
+        for pattern in patterns:
+            matches = re.findall(pattern, task_description)
+            files.extend(matches)
+
+        # Deduplicate
+        return list(dict.fromkeys(files))
+
     def _fallback_plan(self, task_description: str) -> Plan:
         """Generate fallback plan when crew fails."""
+        # Try to infer files from task description
+        inferred_files = self._infer_files(task_description)
+
         return Plan(
             objective=task_description,
             steps=[
@@ -222,11 +282,11 @@ class PlanningCrew:
                 "Write tests",
                 "Verify changes"
             ],
-            files_to_modify=[],
+            files_to_modify=inferred_files,
             dependencies=[],
             risks=["Plan generated from fallback - manual review recommended"],
             success_criteria=["Task completed successfully"],
-            metadata={'source': 'fallback'}
+            metadata={'source': 'fallback', 'files_inferred': bool(inferred_files)}
         )
 
     def name(self) -> str:

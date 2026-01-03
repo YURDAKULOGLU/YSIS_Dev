@@ -14,16 +14,16 @@ from src.agentic.core.plugins.task_board_manager import TaskBoardManager
 from src.agentic.core.plugins.rag_memory import RAGMemory
 
 async def run_new_brain():
-    print("🧠 TIER 3 - STEP 3: Awakening the Graph")
-    
+    print("[INFO] TIER 3 - STEP 3: Awakening the Graph")
+
     # Init Plugins
     planner = SimplePlanner()
     executor = AiderExecutor()
     verifier = SentinelVerifier()
-    
+
     # Init Graph
     orchestrator = OrchestratorGraph(planner, executor, verifier)
-    
+
     # Prepare Input State (TypedDict compatible)
     initial_state = {
         "task_id": "TIER3-TEST",
@@ -39,21 +39,21 @@ async def run_new_brain():
         "verification": None,
         "error": None
     }
-    
-    print(f"▶️ Invoking Graph for task: {initial_state['task_description']}")
-    
+
+    print(f"-> Invoking Graph for task: {initial_state['task_description']}")
+
     try:
         final_state = await orchestrator.ainvoke(initial_state)
-        print("\n✅ GRAPH EXECUTION COMPLETE!")
+        print("\n[SUCCESS] GRAPH EXECUTION COMPLETE!")
         print(f"Final Phase: {final_state.get('phase')}")
-        
+
         if final_state.get('verification') and final_state['verification'].tests_passed:
-             print("🎉 SUCCESS: Verification Passed.")
+             print("[SUCCESS] SUCCESS: Verification Passed.")
         else:
-             print("⚠️ WARNING: Verification didn't pass or run (check logs).")
-             
+             print("[WARN] WARNING: Verification didn't pass or run (check logs).")
+
     except Exception as e:
-        print(f"❌ GRAPH CRASHED: {e}")
+        print(f"[ERROR] GRAPH CRASHED: {e}")
         import traceback
         traceback.print_exc()
 

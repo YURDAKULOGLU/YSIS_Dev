@@ -7,6 +7,7 @@ Allows easy swapping of implementations without changing core logic.
 
 from datetime import datetime
 from typing import Any, Protocol, Literal
+from src.agentic.core.utils.logging_utils import log_event
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -62,6 +63,7 @@ class TaskState(BaseModel):
     """The central State object for the entire factory. Supports task chaining."""
     task_id: str = Field(default="UNKNOWN")
     task_description: str = Field(default="")
+    context: dict[str, Any] = Field(default_factory=dict)
     artifacts_path: str = Field(default=".sandbox_worker/default")
     phase: str = "init"
     plan: Plan | None = None
@@ -79,8 +81,11 @@ class TaskState(BaseModel):
     final_status: str = "UNKNOWN"
     proposed_tasks: list[ProposedTask] = Field(default_factory=list)
 
-    class Config:
-        arbitrary_types_allowed = True
+    if ConfigDict:
+        model_config = ConfigDict(arbitrary_types_allowed=True)
+    else:
+        class Config:
+            arbitrary_types_allowed = True
 
 class InterAgentMessage(BaseModel):
     """
@@ -121,22 +126,41 @@ class InterAgentMessage(BaseModel):
     # Metadata
     metadata: dict[str, Any] = Field(default_factory=dict, description="Extensible metadata field")
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "id": "MSG-20251227203000",
-                "from_agent": "claude-code",
-                "to": "gemini-cli",
-                "subject": "PROJECT NEO Complete",
-                "content": "Graph ingestion finished. 88 CodeFiles, 52 DocFiles.",
-                "message_type": "direct",
-                "priority": "HIGH",
-                "tags": ["project-neo", "completion"],
-                "timestamp": "2025-12-27T20:30:00",
-                "seen_by": [],
-                "ack_by": {}
+    if ConfigDict:
+        model_config = ConfigDict(
+            json_schema_extra={
+                "example": {
+                    "id": "MSG-20251227203000",
+                    "from_agent": "claude-code",
+                    "to": "gemini-cli",
+                    "subject": "PROJECT NEO Complete",
+                    "content": "Graph ingestion finished. 88 CodeFiles, 52 DocFiles.",
+                    "message_type": "direct",
+                    "priority": "HIGH",
+                    "tags": ["project-neo", "completion"],
+                    "timestamp": "2025-12-27T20:30:00",
+                    "seen_by": [],
+                    "ack_by": {}
+                }
             }
-        }
+        )
+    else:
+        class Config:
+            json_schema_extra = {
+                "example": {
+                    "id": "MSG-20251227203000",
+                    "from_agent": "claude-code",
+                    "to": "gemini-cli",
+                    "subject": "PROJECT NEO Complete",
+                    "content": "Graph ingestion finished. 88 CodeFiles, 52 DocFiles.",
+                    "message_type": "direct",
+                    "priority": "HIGH",
+                    "tags": ["project-neo", "completion"],
+                    "timestamp": "2025-12-27T20:30:00",
+                    "seen_by": [],
+                    "ack_by": {}
+                }
+            }
 
 
 # ============================================================================
@@ -324,8 +348,8 @@ class GateValidator:
         if not last_error and state.error_history:
             last_error = state.error_history[-1]
 
-        if last_error and ("VIOLATION" in last_error or "⛔" in last_error):
-            print("[GATE] 🛑 SECURITY VIOLATION DETECTED. NO RETRY ALLOWED.")
+        if last_error and ("VIOLATION" in last_error or "[ERROR]" in last_error):
+            log_event("🛑 SECURITY VIOLATION DETECTED. NO RETRY ALLOWED.", component="gate_validator", level="warning")
             return False
 
         # 2. Check Retry Count

@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-01-03T15:37:16.292368",
+  "files": [
+    "C:\\Projeler\\YBIS_Dev\\workspaces\\worktrees\\TASK-New-1819\\src\\url_validator_v3.py",
+    "C:\\Projeler\\YBIS_Dev\\workspaces\\worktrees\\TASK-New-1819\\tests\\test_url_validator_v3.py"
+  ],
+  "ruff_output": "PLR2004 Magic value used in comparison, consider replacing `4` with a constant variable\n  --> workspaces\\worktrees\\TASK-New-1819\\src\\url_validator_v3.py:23:37\n   |\n21 |             if '.' in url.split('://')[-1].split(':')[0]:\n22 |                 ip_parts = url.split('://')[-1].split(':')[0].split('.')\n23 |                 if len(ip_parts) != 4:\n   |                                     ^\n24 |                     return False\n25 |                 for part in ip_parts:\n   |\n\nPLR2004 Magic value used in comparison, consider replacing `255` with a constant variable\n  --> workspaces\\worktrees\\TASK-New-1819\\src\\url_validator_v3.py:26:47\n   |\n24 |                     return False\n25 |                 for part in ip_parts:\n26 |                     if not (0 <= int(part) <= 255):\n   |                                               ^^^\n27 |                         return False\n28 |             return True\n   |\n\nFound 2 errors.\n",
+  "error_type": "linting"
+}

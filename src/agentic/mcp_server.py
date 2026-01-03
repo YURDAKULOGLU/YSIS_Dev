@@ -936,5 +936,5 @@ def search_memory(
 
 # --- ENTRY POINT ---
 if __name__ == "__main__":
-    print("🚀 YBIS MCP Server Starting...")
+    print("[INFO] YBIS MCP Server Starting...")
     mcp.run()

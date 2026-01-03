@@ -12,6 +12,7 @@ Flow:
 import operator
 from typing import Annotated, List, TypedDict, Union, Optional
 from langgraph.graph import StateGraph, END
+from src.agentic.core.utils.logging_utils import log_event
 
 # --- STATE DEFINITION ---
 class AgentState(TypedDict):
@@ -30,14 +31,14 @@ def planner_node(state: AgentState):
     Analyzes the task and creates a plan.
     Uses PydanticAI / Local LLM (Ollama) logic here.
     """
-    print(f"\n[PLANNER] Analyzing: {state['task']}")
-    
+    log_event(f"Analyzing: {state['task']}", component="legacy_graph")
+
     # MOCK FOR NOW - We will hook real Ollama here next
     plan_text = "1. Create hello_factory.py\n2. Add greet function\n3. Add main block"
     files = ["src/utils/hello_factory.py"]
-    
+
     return {
-        "plan": plan_text, 
+        "plan": plan_text,
         "files_to_edit": files,
         "status": "EXECUTING"
     }
@@ -46,9 +47,9 @@ def executor_node(state: AgentState):
     """
     Executes the plan using Aider.
     """
-    print(f"\n[EXECUTOR] Coding... (Attempt {state.get('retry_count', 0) + 1})")
-    print(f"Target Files: {state['files_to_edit']}")
-    
+    log_event(f"Coding... (Attempt {state.get('retry_count', 0) + 1})", component="legacy_graph")
+    log_event(f"Target Files: {state['files_to_edit']}", component="legacy_graph")
+
     # MOCK FOR NOW - We will hook real Aider here next
     # Simulating a successful run
     return {
@@ -59,11 +60,11 @@ def verifier_node(state: AgentState):
     """
     Checks the work (Sentinel Logic).
     """
-    print(f"\n[VERIFIER] Checking code quality...")
-    
+    log_event("Checking code quality...", component="legacy_graph")
+
     # MOCK Sentinel Logic
     # If retry_count > 2, fail. Else pass.
-    
+
     return {
         "status": "DONE"
     }

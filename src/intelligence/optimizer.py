@@ -10,7 +10,7 @@ It learns from successful task completions to optimize instructions.
 class PromptOptimizer:
     def __init__(self):
         self.modules = {}
-        
+
     def get_optimized_prompt(self, task_type: str, raw_input: str) -> str:
         """
         Returns an optimized prompt based on training data.

@@ -14,8 +14,8 @@ class InterpreterBridge:
 
     def execute(self, code: str, language: str = "python") -> Dict[str, Any]:
         """Execute code using Open Interpreter logic (simulated via Docker for security)"""
-        print(f"🛠️ Executing {language} code in sandbox...")
-        
+        print(f"[INFO] Executing {language} code in sandbox...")
+
         try:
             # We wrap the code in a shell command for the docker container
             # This is a simplified version of what Open Interpreter does
@@ -24,21 +24,21 @@ class InterpreterBridge:
                 self.sandbox_image,
                 "python3", "-c", code
             ]
-            
+
             result = subprocess.run(
                 cmd,
                 capture_output=True,
                 text=True,
                 timeout=60
             )
-            
+
             return {
                 "success": result.returncode == 0,
                 "output": result.stdout,
                 "error": result.stderr,
                 "exit_code": result.returncode
             }
-            
+
         except subprocess.TimeoutExpired:
             return {"success": False, "output": "", "error": "Execution timed out", "exit_code": -1}
         except Exception as e:

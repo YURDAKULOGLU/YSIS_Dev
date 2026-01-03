@@ -37,7 +37,7 @@ REQUIREMENTS:
 3. Replace Agentic/Agents/developer.py with CrewAI Agent
 4. Replace Agentic/Agents/qa.py with CrewAI Agent
 5. Update orchestrator_v2.py to use CrewAI agents instead of PydanticAI
-6. Keep LangGraph workflow intact (Init → Analyze → Execute → Lint → QA → Commit)
+6. Keep LangGraph workflow intact (Init -> Analyze -> Execute -> Lint -> QA -> Commit)
 7. Ensure homogeneous integration: LangGraph orchestrates CrewAI agents
 
 INTEGRATION PHILOSOPHY:

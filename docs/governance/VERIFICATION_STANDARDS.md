@@ -16,6 +16,7 @@ For any task modifying src/ or scripts/:
 - Unit Tests: At least one new unit test for new logic.
 - Regression: Existing core tests must pass.
 - Command: pytest tests/unit/
+ - Enforcement: Tasks modifying code must add or update at least one task-specific test.
 
 ### C) Linting Gate (Recommended)
 - Ruff: Code should pass ruff check if ruff is installed.

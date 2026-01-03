@@ -23,7 +23,7 @@ move_file() {
         else
             mkdir -p "$(dirname "$dest")"
             mv "$src" "$dest"
-            echo "✓ Moved: '$src' -> '$dest'"
+            echo "OK Moved: '$src' -> '$dest'"
         fi
     else
         if $DRY_RUN; then
@@ -41,7 +41,7 @@ remove_file() {
             echo "[DRY-RUN] Would remove: '$file'"
         else
             rm "$file"
-            echo "✓ Removed: '$file'"
+            echo "OK Removed: '$file'"
         fi
     fi
 }
@@ -79,10 +79,10 @@ if [ -d "specs" ]; then
         if [ "$(ls -A specs)" ]; then
             mv specs/* docs/specs/ 2>/dev/null || true
             rmdir specs 2>/dev/null || echo "Warning: Could not remove specs/ (not empty)"
-            echo "✓ Moved: specs/ -> docs/specs/"
+            echo "OK Moved: specs/ -> docs/specs/"
         else
             rmdir specs
-            echo "✓ Removed empty: specs/"
+            echo "OK Removed empty: specs/"
         fi
     fi
 fi
@@ -99,7 +99,7 @@ if [ -d "path" ]; then
         echo "[DRY-RUN] Would delete: path/"
     else
         rm -rf path/
-        echo "✓ Deleted: path/"
+        echo "OK Deleted: path/"
     fi
 fi
 

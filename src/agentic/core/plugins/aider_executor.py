@@ -6,11 +6,19 @@ from typing import List, Set
 from src.agentic.core.protocols import ExecutorProtocol, Plan, CodeResult
 
 from src.agentic.core.plugins.model_router import default_router
-from src.agentic.core.config import AIDER_VENV_PATH, AIDER_BIN, PROJECT_ROOT
+from src.agentic.core.config import AIDER_VENV_PATH, AIDER_BIN, AIDER_ENCODING, AIDER_CHAT_LANGUAGE, PROJECT_ROOT
+from src.agentic.core.utils.logging_utils import log_event
 
 # Execution settings
 AIDER_TIMEOUT_SECONDS = 300  # 5 minutes max
 AIDER_MAX_RETRIES = 3
+
+
+def _get_code_root() -> Path:
+    override = os.getenv("YBIS_CODE_ROOT")
+    if override:
+        return Path(override).resolve()
+    return Path(PROJECT_ROOT).resolve()
 
 class AiderExecutor(ExecutorProtocol):
     """
@@ -54,7 +62,7 @@ class AiderExecutor(ExecutorProtocol):
             result = subprocess.run(
                 ["git", "status", "--porcelain"],
                 capture_output=True, text=True, timeout=10,
-                cwd=PROJECT_ROOT
+                cwd=_get_code_root()
             )
             files = set()
             for line in result.stdout.strip().splitlines():
@@ -66,7 +74,7 @@ class AiderExecutor(ExecutorProtocol):
                     files.add(file_path)
             return files
         except Exception as e:
-            print(f"[AiderExecutor] Warning: Could not get baseline: {e}")
+            log_event(f"Warning: Could not get baseline: {e}", component="aider_executor", level="warning")
             return set()
 
     def _get_new_changes(self, baseline: Set[str]) -> Set[str]:
@@ -80,13 +88,13 @@ class AiderExecutor(ExecutorProtocol):
             result = subprocess.run(
                 ["python", "scripts/verify_code.py", "--quiet"],
                 capture_output=True, text=True, timeout=60,
-                cwd=PROJECT_ROOT
+                cwd=_get_code_root()
             )
             if result.returncode == 0:
                 return True, "Verification passed"
             return False, result.stdout + result.stderr
         except FileNotFoundError:
-            print("[AiderExecutor] Warning: verify_code.py not found, skipping verification")
+            log_event("Warning: verify_code.py not found, skipping verification", component="aider_executor", level="warning")
             return True, "Skipped (verify_code.py not found)"
         except Exception as e:
             return False, str(e)
@@ -96,13 +104,13 @@ class AiderExecutor(ExecutorProtocol):
         try:
             if files:
                 for f in files:
-                    subprocess.run(["git", "checkout", "--", f], cwd=PROJECT_ROOT, timeout=10)
-                print(f"[AiderExecutor] Rolled back {len(files)} files")
+                    subprocess.run(["git", "checkout", "--", f], cwd=_get_code_root(), timeout=10)
+                log_event(f"Rolled back {len(files)} files", component="aider_executor")
             else:
-                subprocess.run(["git", "checkout", "--", "."], cwd=PROJECT_ROOT, timeout=10)
-                print("[AiderExecutor] Rolled back all changes")
+                subprocess.run(["git", "checkout", "--", "."], cwd=_get_code_root(), timeout=10)
+            log_event("Rolled back all changes", component="aider_executor")
         except Exception as e:
-            print(f"[AiderExecutor] Warning: Rollback failed: {e}")
+            log_event(f"Warning: Rollback failed: {e}", component="aider_executor", level="warning")
 
     def name(self) -> str:
         return "Aider-CLI-Executor"
@@ -117,13 +125,13 @@ class AiderExecutor(ExecutorProtocol):
         """
         # Get model config from router
         model_config = self.router.get_model("CODING")
-        print(f"[AiderExecutor] Using model: {model_config.model_name} via {model_config.provider}")
-        print(f"[AiderExecutor] Preparing to execute plan with {len(plan.steps)} steps.")
+        log_event(f"Using model: {model_config.model_name} via {model_config.provider}", component="aider_executor")
+        log_event(f"Preparing to execute plan with {len(plan.steps)} steps.", component="aider_executor")
 
         # CAPTURE BASELINE - to detect only NEW changes (fixes dirty tree false positives)
         baseline_files = self._get_baseline_files()
         if baseline_files:
-            print(f"[AiderExecutor] Baseline: {len(baseline_files)} pre-existing dirty files (will be ignored)")
+            log_event(f"Baseline: {len(baseline_files)} pre-existing dirty files (will be ignored)", component="aider_executor")
 
         # 1. Construct the prompt for Aider
         prompt = ""
@@ -147,10 +155,9 @@ class AiderExecutor(ExecutorProtocol):
 
 
         # 2. Identify target files and normalize paths relative to Git Root
-        from src.agentic.core.config import PROJECT_ROOT
-        git_root = Path(PROJECT_ROOT).resolve()
+        git_root = _get_code_root()
 
-        print(f"[AiderExecutor] Using PROJECT_ROOT as Git Root: {git_root}")
+        log_event(f"Using CODE_ROOT as Git Root: {git_root}", component="aider_executor")
 
         current_path = Path(sandbox_path).resolve()
         rel_path_from_root = current_path.relative_to(git_root)
@@ -176,7 +183,7 @@ class AiderExecutor(ExecutorProtocol):
                 # If path is not inside git root, use absolute path
                 normalized_files.append(str(full_path))
 
-        print(f"[AiderExecutor] Normalized Files: {normalized_files}")
+        log_event(f"Normalized Files: {normalized_files}", component="aider_executor")
 
         # 3. Construct the command
         cmd = self._resolve_aider_command()
@@ -200,6 +207,16 @@ class AiderExecutor(ExecutorProtocol):
         # Inject Model Settings to silence warnings & Enforce Model
         cmd.extend(["--model-settings-file", "config/aider_model_settings.yml"])
         cmd.extend(["--no-show-model-warnings"])
+        cmd.extend(["--edit-format", "diff"])
+        cmd.extend(["--no-multiline"])
+        cmd.extend(["--encoding", AIDER_ENCODING])
+        cmd.extend(["--chat-language", AIDER_CHAT_LANGUAGE])
+        cmd.extend(["--no-restore-chat-history"])
+        log_dir = Path(sandbox_path) / "logs"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        cmd.extend(["--input-history-file", str(log_dir / "aider_input_history.txt")])
+        cmd.extend(["--chat-history-file", str(log_dir / "aider_chat_history.md")])
+        cmd.extend(["--llm-history-file", str(log_dir / "aider_llm_history.jsonl")])
 
         # NON-INTERACTIVE & BACKGROUND FLAGS
         cmd.extend(["--no-pretty"])            # Disable rich/colorful output (Fixes Windows encoding crash)
@@ -213,7 +230,7 @@ class AiderExecutor(ExecutorProtocol):
         cmd.extend(["--yes", "--yes-always"])
         cmd.extend(["--no-auto-commits"]) # Let Orchestrator handle commits after verification
 
-        print(f"[AiderExecutor] Running command: {' '.join(cmd)}")
+        log_event(f"Running command: {' '.join(cmd)}", component="aider_executor")
 
         # 4. Run Aider
         try:
@@ -238,7 +255,7 @@ class AiderExecutor(ExecutorProtocol):
                 await asyncio.wait_for(process.wait(), timeout=AIDER_TIMEOUT_SECONDS)
             except asyncio.TimeoutError:
                 process.kill()
-                print(f"[AiderExecutor] TIMEOUT after {AIDER_TIMEOUT_SECONDS}s - killed process")
+                log_event(f"TIMEOUT after {AIDER_TIMEOUT_SECONDS}s - killed process", component="aider_executor", level="warning")
                 return CodeResult(
                     files_modified={},
                     commands_run=[' '.join(cmd)],
@@ -252,26 +269,26 @@ class AiderExecutor(ExecutorProtocol):
 
             # Detect NEW changes only (ignore baseline dirty files)
             new_changes = self._get_new_changes(baseline_files)
-            print(f"[AiderExecutor] Detected {len(new_changes)} new file changes")
+            log_event(f"Detected {len(new_changes)} new file changes", component="aider_executor")
 
             if success and new_changes:
                 # VERIFICATION - check code quality before accepting
-                print("[AiderExecutor] Running verification...")
+                log_event("Running verification...", component="aider_executor")
                 verify_ok, verify_msg = self._verify_changes()
 
                 if verify_ok:
-                    print(f"[AiderExecutor] Verification passed: {verify_msg}")
+                    log_event(f"Verification passed: {verify_msg}", component="aider_executor")
                 else:
-                    print(f"[AiderExecutor] Verification FAILED: {verify_msg}")
+                    log_event(f"Verification FAILED: {verify_msg}", component="aider_executor", level="warning")
                     # ROLLBACK - revert only new changes
                     self._rollback_changes(new_changes)
                     success = False
                     output_str = f"Verification failed: {verify_msg}"
 
             if success:
-                print("[AiderExecutor] Success!")
+                log_event("Success!", component="aider_executor")
             else:
-                print("[AiderExecutor] Failed!")
+                log_event("Failed!", component="aider_executor", level="warning")
 
             # Detect actually modified files using git
             actual_files = {}
@@ -303,7 +320,7 @@ class AiderExecutor(ExecutorProtocol):
                          abs_path = (git_root / file_path).resolve()
                          actual_files[str(abs_path)] = f"Detected change: {status_code}"
             except Exception as git_err:
-                 print(f"[AiderExecutor] Failed to detect changes: {git_err}")
+                 log_event(f"Failed to detect changes: {git_err}", component="aider_executor", level="warning")
                  # Fallback to plan files
                  actual_files = {f: "Modified by Aider (Fallback)" for f in files}
 

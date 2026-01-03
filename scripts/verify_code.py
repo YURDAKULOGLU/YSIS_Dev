@@ -133,12 +133,17 @@ def run_related_tests(file_path: str) -> tuple[bool, str]:
     if not test_file:
         return True, "SKIP (no tests found)"
 
+    # Prepare environment with current directory in PYTHONPATH
+    env = sys.environ.copy()
+    env["PYTHONPATH"] = os.getcwd() + os.pathsep + env.get("PYTHONPATH", "")
+
     try:
         result = subprocess.run(
             [sys.executable, "-m", "pytest", str(test_file), "-x", "-q", "--tb=short"],
             capture_output=True,
             text=True,
-            timeout=60
+            timeout=60,
+            env=env
         )
         if result.returncode == 0:
             return True, "OK"
@@ -233,9 +238,17 @@ def main():
     else:
         files = get_modified_files() + get_staged_files()
 
-    # Filter to code files only
+    # Filter to code files only, handle Windows 'nul' and Worktree paths
     code_extensions = {'.py', '.ts', '.js', '.tsx', '.jsx'}
-    files = [f for f in files if Path(f).suffix in code_extensions and Path(f).exists()]
+    valid_files = []
+    for f in files:
+        if f.lower() == 'nul':
+            continue
+        path = Path(f)
+        if path.suffix in code_extensions and path.exists():
+            valid_files.append(f)
+    
+    files = valid_files
 
     if not files:
         print("[VERIFY] No code files to check")

@@ -24,8 +24,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 from enum import Enum
+from src.agentic.core.utils.logging_utils import log_event
 
-from .aci import CommandResult
+try:
+    from .aci import CommandResult
+except ImportError:
+    from src.agentic.core.execution.aci import CommandResult
 
 
 # ============================================================================
@@ -513,21 +517,25 @@ async def test_sandbox():
     """Test sandbox functionality"""
     sandbox = ExecutionSandbox(timeout_seconds=5, max_memory_mb=256)
 
-    print("=== Testing Sandbox ===")
+    log_event("=== Testing Sandbox ===", component="sandbox_test")
 
     # Test normal command
     result = await sandbox.run_isolated("echo 'Hello, sandbox!'")
-    print(f"Echo: {'✓' if result.success else '✗'}")
+    log_event(f"Echo: {'OK' if result.success else 'FAIL'}", component="sandbox_test", level="success" if result.success else "warning")
     if result.success:
-        print(f"  Output: {result.stdout.strip()}")
+        log_event(f"  Output: {result.stdout.strip()}", component="sandbox_test")
 
     # Test timeout
-    result = await sandbox.run_isolated("sleep 10")
-    print(f"Timeout test: {'✓' if not result.success and 'timeout' in result.stderr.lower() else '✗'}")
+    result = await sandbox.run_isolated("python -c \"import time; time.sleep(10)\"")
+    timeout_text = result.stderr.lower()
+    timed_out = "timeout" in timeout_text or "timed out" in timeout_text
+    log_event(f"Timeout test: {'OK' if not result.success and timed_out else 'FAIL'}", component="sandbox_test", level="success" if not result.success and timed_out else "warning")
+    log_event(f"Timeout stderr: {result.stderr}", component="sandbox_test", level="warning")
+    log_event(f"Timeout exit_code: {result.exit_code}", component="sandbox_test", level="warning")
 
     # Test path restriction
     result = await sandbox.run_isolated("ls /etc", cwd="/etc")
-    print(f"Path restriction: {'✓' if result.sandbox_violation else '✗'}")
+    log_event(f"Path restriction: {'OK' if result.sandbox_violation else 'FAIL'}", component="sandbox_test", level="success" if result.sandbox_violation else "warning")
 
 
 if __name__ == "__main__":

@@ -28,7 +28,7 @@ The factory follows a strict state-machine flow:
 
 ## 3. STATE MANAGEMENT (TaskState)
 
-We use a single Pydantic model (`TaskState`) defined in `src/agentic/core/protocols.py`. 
+We use a single Pydantic model (`TaskState`) defined in `src/agentic/core/protocols.py`.
 - Every node receives a `TaskState` object.
 - Every node returns a `dict` update.
 - LangGraph ensures all updates are merged and validated.

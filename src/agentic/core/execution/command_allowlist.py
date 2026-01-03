@@ -14,6 +14,7 @@ import os
 import re
 from typing import Tuple, Optional, Set, List
 from enum import Enum
+from src.agentic.core.utils.logging_utils import log_event
 
 
 class AllowlistMode(Enum):
@@ -155,7 +156,7 @@ class CommandAllowlist:
 
         # Cron/scheduling
         r"crontab\s+",             # Cron jobs
-        r"at\s+",                  # Scheduled tasks
+        r"\bat\s+",                # Scheduled tasks
 
         # Dangerous redirects
         r">\s*/etc/",              # Writing to /etc
@@ -391,22 +392,26 @@ def test_allowlist():
         "dd if=/dev/zero of=/dev/sda",
     ]
 
-    print("=== Testing Safe Commands ===")
+    log_event("=== Testing Safe Commands ===", component="command_allowlist_test")
     for cmd in safe_commands:
         allowed, reason = allowlist.is_allowed(cmd)
-        print(f"{'✓' if allowed else '✗'} {cmd}")
+        status = "OK" if allowed else "FAIL"
+        level = "success" if allowed else "warning"
+        log_event(f"{status} {cmd}", component="command_allowlist_test", level=level)
         if not allowed:
-            print(f"   Reason: {reason}")
+            log_event(f"   Reason: {reason}", component="command_allowlist_test", level="warning")
 
-    print("\n=== Testing Dangerous Commands ===")
+    log_event("=== Testing Dangerous Commands ===", component="command_allowlist_test")
     for cmd in dangerous_commands:
         allowed, reason = allowlist.is_allowed(cmd)
-        print(f"{'✗' if not allowed else '✓'} {cmd}")
+        status = "OK" if not allowed else "FAIL"
+        level = "success" if not allowed else "warning"
+        log_event(f"{status} {cmd}", component="command_allowlist_test", level=level)
         if not allowed:
-            print(f"   Reason: {reason}")
+            log_event(f"   Reason: {reason}", component="command_allowlist_test", level="warning")
             alt = allowlist.suggest_alternative(cmd)
             if alt:
-                print(f"   Alternative: {alt}")
+                log_event(f"   Alternative: {alt}", component="command_allowlist_test")
 
 
 if __name__ == "__main__":

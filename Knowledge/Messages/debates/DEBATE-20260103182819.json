@@ -1,0 +1,9 @@
+{
+  "id": "DEBATE-20260103182819",
+  "topic": "AIDER-CONTEXT-CLEANUP: Should we aggressively delete all Aider history before each run?",
+  "initiator": "claude-code",
+  "proposal": "ROOT CAUSE: Aider chat history files persist hallucinated messages (greeting changes). PROPOSED FIX: Delete history files before each execute(). QUESTIONS: 1) Is this too aggressive? 2) Should we keep history for debugging? 3) Alternative: use --no-restore-chat-history flag only?",
+  "messages": [],
+  "status": "open",
+  "started_at": "2026-01-03T18:28:19.289012"
+}

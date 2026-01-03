@@ -15,13 +15,13 @@ async def test_worker_init():
         from src.agentic.core.plugins.artifact_generator import ArtifactGenerator
         from src.agentic.core.plugins.task_board_manager import TaskBoardManager
         from src.agentic.core.plugins.rag_memory import RAGMemory
-        
+
         print("[DRY_RUN] Imports successful.")
-        
+
         print("[DRY_RUN] Initializing SentinelVerifier...")
         verifier = SentinelVerifier()
         print(f"[DRY_RUN] Sentinel Name: {verifier.name()}")
-        
+
         print("[DRY_RUN] Initializing OrchestratorV3...")
         orchestrator = OrchestratorV3(
             planner=SimplePlanner(),
@@ -32,15 +32,15 @@ async def test_worker_init():
             rag_memory=RAGMemory(),
             sandbox_root=".sandbox_dry_run"
         )
-        
+
         print("[DRY_RUN] Orchestrator Status:", orchestrator.get_status())
-        print("[DRY_RUN] ✅ Worker initialization test PASSED.")
-        
+        print("[DRY_RUN] [OK] Worker initialization test PASSED.")
+
     except ImportError as e:
-        print(f"[DRY_RUN] ❌ Import Error: {e}")
+        print(f"[DRY_RUN] [ERROR] Import Error: {e}")
         sys.exit(1)
     except Exception as e:
-        print(f"[DRY_RUN] ❌ Runtime Error: {e}")
+        print(f"[DRY_RUN] [ERROR] Runtime Error: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":

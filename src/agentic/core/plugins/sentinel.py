@@ -16,7 +16,7 @@ class SentinelVerifier:
     async def verify(self, code_result: CodeResult, sandbox_path: str) -> VerificationResult:
         errors = []
         logs = {}
-        
+
         # files_modified is a dict: path -> content
         files_modified = list(code_result.files_modified.keys()) if code_result.files_modified else []
 
@@ -28,7 +28,7 @@ class SentinelVerifier:
 
         # 2. Syntax & Quality Check (Ruff)
         target = " ".join(files_modified) if files_modified else "src"
-        
+
         # Use env with PYTHONPATH
         env = os.environ.copy()
         env["PYTHONPATH"] = "."
@@ -45,9 +45,9 @@ class SentinelVerifier:
         # 3. Functional Testing (Pytest)
         try:
             # Run specific tests or generic unit tests
-            cmd = "pytest tests/unit" 
+            cmd = "pytest tests/unit"
             test_result = subprocess.run(cmd, shell=True, capture_output=True, text=True, env=env)
-            
+
             logs["pytest_stdout"] = test_result.stdout
             if test_result.returncode != 0:
                 # Only fail if it's a real test failure, not a collection error of unrelated files

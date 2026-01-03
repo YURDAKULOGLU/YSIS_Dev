@@ -4,6 +4,7 @@ import logging
 import ast
 import re
 from typing import Dict, List, Tuple, Any
+from src.agentic.core.config import REQUIRE_TESTS
 from src.agentic.core.protocols import VerifierProtocol, VerificationResult, CodeResult
 
 class SentinelVerifierEnhanced(VerifierProtocol):
@@ -22,11 +23,32 @@ class SentinelVerifierEnhanced(VerifierProtocol):
         errors = []
         warnings = []
         logs = {}
-        
+
+        if not code_result.success:
+            errors.append(f"EXECUTOR FAIL: {code_result.error or 'unknown error'}")
+            return VerificationResult(
+                lint_passed=False,
+                tests_passed=False,
+                coverage=0.0,
+                errors=errors,
+                warnings=warnings,
+                logs=logs
+            )
+
         # 0. Identify REALLY modified files (not just everything in git status)
         # We only care about files that are in the CodeResult and actually exist
         files_modified = [f for f in code_result.files_modified.keys() if os.path.exists(f)]
-        
+        if not files_modified:
+            errors.append("No files modified by executor.")
+            return VerificationResult(
+                lint_passed=False,
+                tests_passed=False,
+                coverage=0.0,
+                errors=errors,
+                warnings=warnings,
+                logs=logs
+            )
+
         # 1. Path Safety Check (CRITICAL)
         # Only block if the file is explicitly in a protected directory
         for file in files_modified:
@@ -42,7 +64,7 @@ class SentinelVerifierEnhanced(VerifierProtocol):
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
-                
+
                 # Emoji Ban
                 if any(ord(char) > 127 for char in content):
                     if re.search(r'[^\x00-\x7F]+', content):
@@ -94,23 +116,29 @@ class SentinelVerifierEnhanced(VerifierProtocol):
         try:
             # ONLY run tests that were modified in THIS task
             task_tests = [f for f in files_modified if "test_" in os.path.basename(f)]
-            
+
+            code_change = any(
+                ("/src/" in f.replace("\\", "/"))
+                or ("/scripts/" in f.replace("\\", "/"))
+                or f.endswith(".py")
+                for f in files_modified
+            )
+
             if task_tests:
-                cmd = f"pytest {' '.join([f'"{t}"' for f in task_tests])}"
+                cmd = f"pytest {' '.join([f'"{t}"' for t in task_tests])}"
                 test_result = subprocess.run(cmd, shell=True, capture_output=True, text=True, env=env)
                 logs["pytest_stdout"] = test_result.stdout
-                
                 if test_result.returncode != 0:
                     error_summary = "\n".join(test_result.stdout.splitlines()[-5:])
                     errors.append(f"Task-specific tests failed: {error_summary}")
             else:
                 # No new tests? Just pass if lint passed, or run a very minimal check
                 warnings.append("No specific tests found for this task. Reliability not guaranteed.")
-
+                if REQUIRE_TESTS and code_change:
+                    errors.append("Test requirement not met: no task-specific tests were updated.")
         except Exception as e:
             errors.append(f"Pytest system error: {e}")
-
-        # Lint passes if no syntax errors AND (no ruff errors OR ruff errors were auto-fixed)
+# Lint passes if no syntax errors AND (no ruff errors OR ruff errors were auto-fixed)
         lint_passed = not any(e for e in errors if "Ruff" in e or "SYNTAX" in e) and not logs.get("ruff_needs_feedback", False)
         tests_passed = not any(e for e in errors if "Tests failed" in e or "SECURITY" in e or "RESTRICTED" in e)
 

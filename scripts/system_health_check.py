@@ -27,7 +27,7 @@ def check_import(module_name, class_name=None):
 def main():
     print("[INFO] YBIS System Health Check")
     print("--------------------------------")
-    
+
     # Core Config
     if not check_import("src.agentic.core.config"):
         print("CRITICAL: Config module missing.")
@@ -51,7 +51,7 @@ def main():
     ]
 
     all_passed = True
-    
+
     print("\n[INFO] Checking Core Components...")
     for mod, cls in components:
         if not check_import(mod, cls):
@@ -61,7 +61,7 @@ def main():
     for mod, cls in bridges:
         if not check_import(mod, cls):
             all_passed = False
-            
+
     print("\n--------------------------------")
     if all_passed:
         print("[SUCCESS] SYSTEM INTEGRITY: 100% - Ready to Start")

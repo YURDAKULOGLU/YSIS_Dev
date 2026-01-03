@@ -37,4 +37,3 @@ PLR2004 Magic value used in comparison, consider replacing `-2` with a constant 
    |
 
 Found 2 errors.
-

@@ -9,6 +9,7 @@ import sys
 import pandas as pd
 from pathlib import Path
 import sqlite3
+import redis
 import json
 from datetime import datetime
 
@@ -16,29 +17,34 @@ from datetime import datetime
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+# Database connections
+DB_PATH = PROJECT_ROOT / "Knowledge/LocalDB/tasks.db"
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+
 # Imports from our bridges
 try:
     from src.agentic.bridges.mem0_bridge import Mem0Bridge
     from src.agentic.bridges.crewai_bridge import CrewAIBridge
 except ImportError:
-    st.error("❌ Bridges not found. Run from project root.")
+    st.error("[ERROR] Bridges not found. Run from project root.")
 
 st.set_page_config(
     page_title="YBIS Control Center",
-    page_icon="🏭",
+    page_icon="[INFO]",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # --- SIDEBAR ---
-st.sidebar.title("🏭 YBIS Factory")
+st.sidebar.title("[INFO] YBIS Factory")
 st.sidebar.markdown("---")
-page = st.sidebar.radio("Navigation", ["Dashboard", "Task Board", "Messaging", "Hive Mind", "Memory Bank", "Research Lab", "System Health"])
+page = st.sidebar.radio("Navigation", ["Dashboard", "Task Board", "Messaging", "Hive Mind", "Lessons Learned", "Memory Bank", "Global Health", "Research Lab", "System Health"])
 
 # --- HELPERS ---
 from src.dashboard.components.hive_visualizer import render_hive_mind
-DB_PATH = PROJECT_ROOT / "Knowledge/LocalDB/tasks.db"
-MESSAGES_DIR = PROJECT_ROOT / "Knowledge/Messages"
+from src.dashboard.components.lessons_viewer import render_lessons_trends
+from src.dashboard.components.health_monitor import render_health_dashboard
 
 def _load_mcp_tools():
     try:
@@ -84,6 +90,24 @@ def _read_json(path: Path):
     except Exception:
         return None
 
+def _read_jsonl(path: Path, limit: int = 50):
+    if not path.exists():
+        return []
+    rows = []
+    try:
+        with path.open("r", encoding="utf-8", errors="replace") as handle:
+            for line in handle:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    rows.append(json.loads(line))
+                except Exception:
+                    continue
+    except Exception:
+        return []
+    return rows[-limit:]
+
 def load_tasks_db():
     if not DB_PATH.exists():
         return {"backlog": [], "in_progress": [], "done": []}
@@ -91,7 +115,12 @@ def load_tasks_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute("SELECT id, goal, details, status, priority, assignee, final_status, metadata FROM tasks")
+    cursor.execute("PRAGMA table_info(tasks)")
+    columns = [row[1] for row in cursor.fetchall()]
+    select_fields = ["id", "goal", "details", "status", "priority", "assignee", "final_status", "metadata"]
+    if "updated_at" in columns:
+        select_fields.append("updated_at")
+    cursor.execute(f"SELECT {', '.join(select_fields)} FROM tasks")
     rows = cursor.fetchall()
     conn.close()
 
@@ -108,6 +137,33 @@ def load_tasks_db():
             backlog.append(task)
 
     return {"backlog": backlog, "in_progress": in_progress, "done": done}
+
+def _task_stats(tasks: dict):
+    done = tasks.get("done", [])
+    completed = [t for t in done if (t.get("status") or "").upper() in ("DONE", "COMPLETED")]
+    failed = [t for t in done if (t.get("status") or "").upper() == "FAILED"]
+    total_done = len(done)
+    success_rate = (len(completed) / total_done) * 100 if total_done else 0
+    return {
+        "completed": len(completed),
+        "failed": len(failed),
+        "success_rate": success_rate,
+    }
+
+def _list_worktrees():
+    try:
+        from src.agentic.core.plugins.git_manager import GitWorktreeManager
+    except Exception:
+        return []
+    manager = GitWorktreeManager(PROJECT_ROOT)
+    return [str(p) for p in manager.list_worktrees()]
+
+def load_redis_data():
+    redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
+    data = {}
+    for key in redis_client.keys('*'):
+        data[key] = redis_client.get(key)
+    return data
 
 def add_task_db(goal: str, details: str = "Added via Dashboard"):
     if not DB_PATH.exists():
@@ -130,20 +186,64 @@ def add_task_db(goal: str, details: str = "Added via Dashboard"):
 # --- PAGES ---
 
 if page == "Dashboard":
-    st.title("🚀 Factory Status")
-    
+    st.title("[INFO] Factory Status")
+
     col1, col2, col3 = st.columns(3)
     tasks = load_tasks_db()
-    
+
     col1.metric("Backlog Tasks", len(tasks.get("backlog", [])))
     col2.metric("In Progress", len(tasks.get("in_progress", [])))
     col3.metric("Completed", len(tasks.get("done", [])))
-    
-    st.markdown("### 📢 Active Signals")
-    # Mock signals for now, connect to log file later
-    st.info("System is operational. RTX 5090 detected.")
-    
-    st.markdown("### 📝 Quick Task Add")
+
+    stats = _task_stats(tasks)
+    col4, col5, col6 = st.columns(3)
+    col4.metric("Done (OK)", stats["completed"])
+    col5.metric("Done (Failed)", stats["failed"])
+    col6.metric("Success Rate", f"{stats['success_rate']:.1f}%")
+
+    st.markdown("### [INFO] Worktrees")
+    worktrees = _list_worktrees()
+    st.caption(f"Active worktrees: {len(worktrees)}")
+    if worktrees:
+        for wt in worktrees:
+            st.code(wt)
+
+    st.markdown("### [INFO] Insights")
+    done_tasks = tasks.get("done", [])
+    if done_tasks:
+        failures = {}
+        for t in done_tasks:
+            reason = (t.get("final_status") or "UNKNOWN").upper()
+            failures[reason] = failures.get(reason, 0) + 1
+        failure_df = pd.DataFrame(
+            [{"reason": key, "count": value} for key, value in failures.items()]
+        ).sort_values("count", ascending=False)
+        st.bar_chart(failure_df.set_index("reason"))
+
+    st.markdown("### [RETRY] Merge Failures")
+    merge_failures = _read_jsonl(PROJECT_ROOT / "Knowledge" / "Logs" / "merge_failures.jsonl", limit=20)
+    if merge_failures:
+        mf_df = pd.DataFrame(merge_failures)
+        cols = ["timestamp", "task_id", "branch", "base_branch", "error"]
+        visible_cols = [c for c in cols if c in mf_df.columns]
+        st.dataframe(mf_df[visible_cols], use_container_width=True)
+    else:
+        st.caption("No merge failures recorded.")
+
+    st.markdown("### 🧾 Recent Tasks")
+    recent_rows = tasks.get("in_progress", []) + tasks.get("done", [])
+    if recent_rows:
+        recent_df = pd.DataFrame(recent_rows)
+        cols = ["id", "status", "final_status", "assignee", "updated_at", "goal"]
+        visible_cols = [c for c in cols if c in recent_df.columns]
+        st.dataframe(recent_df[visible_cols].head(20), use_container_width=True)
+
+    st.markdown("### [INFO] Active Signals")
+    redis_data = load_redis_data()
+    for key, value in redis_data.items():
+        st.info(f"{key}: {value}")
+
+    st.markdown("### [INFO] Quick Task Add")
     with st.form("quick_add"):
         new_task = st.text_input("New Task Goal")
         submitted = st.form_submit_button("Add to Backlog")
@@ -156,11 +256,11 @@ if page == "Dashboard":
             st.rerun()
 
 elif page == "Task Board":
-    st.title("📋 Kanban Board")
+    st.title("[INFO] Kanban Board")
     tasks = load_tasks_db()
-    
+
     col_backlog, col_wip, col_done = st.columns(3)
-    
+
     with col_backlog:
         st.header("Backlog")
         for t in tasks.get("backlog", []):
@@ -169,7 +269,7 @@ elif page == "Task Board":
                 st.caption(f"Priority: {t.get('priority', 'Normal')}")
                 if t.get("details"):
                     st.write(t["details"])
-    
+
     with col_wip:
         st.header("In Progress")
         for t in tasks.get("in_progress", []):
@@ -181,11 +281,11 @@ elif page == "Task Board":
                 if workspace:
                     st.caption(f"Workspace: {workspace}")
                 st.progress(50)
-    
+
     with col_done:
         st.header("Done")
         for t in tasks.get("done", []):
-            st.success(f"✅ {t['goal']}")
+            st.success(f"[OK] {t['goal']}")
             metadata = t.get("metadata") or {}
             workspace = metadata.get("workspace")
             if workspace:
@@ -322,6 +422,7 @@ elif page == "Messaging":
                     st.write(result)
 
     with st.expander("Legacy Archive (Read-Only)"):
+        MESSAGES_DIR = PROJECT_ROOT / "Knowledge/Messages"
         if not MESSAGES_DIR.exists():
             st.info("No message archive found.")
         else:
@@ -340,21 +441,25 @@ elif page == "Messaging":
                             st.code(json.dumps(data, indent=2))
 
 elif page == "Hive Mind":
-    st.title("🧠 Hive Mind Intelligence")
+    st.title("[INFO] Hive Mind Intelligence")
     render_hive_mind()
 
+elif page == "Lessons Learned":
+    st.title("[INFO] Intelligent Retrospection")
+    render_lessons_trends()
+
 elif page == "Memory Bank":
-    st.title("🧠 Mem0 Neural Link")
-    
+    st.title("[INFO] Mem0 Neural Link")
+
     query = st.text_input("Search Memories", placeholder="e.g. 'project preferences'...")
-    
+
     if query:
         with st.spinner("Searching neural database..."):
             try:
                 mem = Mem0Bridge(user_id="default_user") # Or test_user
                 # Using the bridge we fixed
                 results = mem.search(query, limit=5)
-                
+
                 if results:
                     for r in results:
                         st.info(r)
@@ -362,7 +467,7 @@ elif page == "Memory Bank":
                     st.warning("No memories found.")
             except Exception as e:
                 st.error(f"Memory Error: {e}")
-                
+
     st.markdown("---")
     st.subheader("Add New Memory")
     new_mem = st.text_area("Observation")
@@ -375,11 +480,14 @@ elif page == "Memory Bank":
             except Exception as e:
                 st.error(f"Store Error: {e}")
 
+elif page == "Global Health":
+    render_health_dashboard()
+
 elif page == "Research Lab":
-    st.title("🔬 Research Agent (CrewAI)")
-    
+    st.title("[INFO] Research Agent (CrewAI)")
+
     topic = st.text_input("Research Topic")
-    
+
     if st.button("Deploy Agents"):
         if topic:
             with st.status("Agents are working...", expanded=True) as status:
@@ -389,7 +497,7 @@ elif page == "Research Lab":
                     st.write("Agents Deployed (Researcher + Writer)...")
                     result = bridge.create_research_crew(topic)
                     status.update(label="Research Complete!", state="complete", expanded=False)
-                    st.markdown("### 📄 Report")
+                    st.markdown("### [INFO] Report")
                     st.markdown(result)
                 except Exception as e:
                     st.error(f"Crew Failure: {e}")
@@ -397,39 +505,39 @@ elif page == "Research Lab":
 
 elif page == "System Health":
     st.title("❤️ System Health")
-    
+
     import psutil
     import torch
-    
+
     # --- Resources ---
     st.subheader("Resources")
     col1, col2, col3 = st.columns(3)
-    
+
     # CPU
     cpu = psutil.cpu_percent(interval=1)
     col1.metric("CPU Usage", f"{cpu}%")
-    
+
     # RAM
     ram = psutil.virtual_memory()
     col2.metric("RAM Usage", f"{ram.percent}%", f"{ram.used / (1024**3):.1f} GB Used")
-    
+
     # Disk
     disk = psutil.disk_usage('/')
     col3.metric("Disk Usage", f"{disk.percent}%", f"{disk.free / (1024**3):.1f} GB Free")
-    
+
     # --- Hardware ---
     st.subheader("Hardware Acceleration")
     col_gpu, col_torch = st.columns(2)
-    
+
     col_torch.metric("PyTorch Version", str(torch.__version__))
-    
+
     if torch.cuda.is_available():
         gpu_name = torch.cuda.get_device_name(0)
         gpu_mem = torch.cuda.get_device_properties(0).total_memory / (1024**3)
         col_gpu.success(f"GPU: {gpu_name} ({gpu_mem:.1f} GB VRAM)")
     else:
         col_gpu.error("Running on CPU (Slow)")
-        
+
     st.markdown("### Logs")
     log_file = Path("worker.out")
     if log_file.exists():

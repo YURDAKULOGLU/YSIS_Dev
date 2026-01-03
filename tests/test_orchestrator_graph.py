@@ -60,13 +60,23 @@ class MockVerifier(VerifierProtocol):
     def __init__(self, fail_verification: bool = False):
         self.fail_verification = fail_verification
 
+
+class DummyGitManager:
+    async def commit_task(self, task_id: str, message: str, allowed_files: list[str] | None = None) -> bool:
+        return True
+
 def test_retry_logic():
     planner = MockPlanner()
     executor = MockExecutor()
     verifier = MockVerifier(fail_verification=True)
 
-    orchestrator_graph = OrchestratorGraph(planner=planner, executor=executor, verifier=verifier)
-    
+    orchestrator_graph = OrchestratorGraph(
+        planner=planner,
+        executor=executor,
+        verifier=verifier,
+        git_manager=DummyGitManager()
+    )
+
     initial_state: TaskState = {
         "task_id": "1",
         "task_description": "Test task",
@@ -95,8 +105,13 @@ def test_successful_verification():
     executor = MockExecutor()
     verifier = MockVerifier(fail_verification=False)
 
-    orchestrator_graph = OrchestratorGraph(planner=planner, executor=executor, verifier=verifier)
-    
+    orchestrator_graph = OrchestratorGraph(
+        planner=planner,
+        executor=executor,
+        verifier=verifier,
+        git_manager=DummyGitManager()
+    )
+
     initial_state: TaskState = {
         "task_id": "1",
         "task_description": "Test task",
@@ -115,7 +130,7 @@ def test_successful_verification():
     }
 
     final_state = asyncio.run(orchestrator_graph.run_task(initial_state))
-    
+
     assert final_state.phase == 'done'
     assert len(final_state.error_history) == 0
     assert final_state.retry_count == 0

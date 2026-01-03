@@ -10,7 +10,7 @@ import os
 class Mem0Bridge:
     def __init__(self, user_id: str = "default_user"):
         self.user_id = user_id
-        
+
         # Configure Mem0
         # FULL LOCAL MODE (No OpenAI)
         config = {
@@ -37,7 +37,7 @@ class Mem0Bridge:
                 }
             }
         }
-        
+
         self.client = Memory.from_config(config)
         print(f"[Mem0Bridge] Initialized for user: {self.user_id}")
 
@@ -49,16 +49,16 @@ class Mem0Bridge:
         """Search memories."""
         response = self.client.search(query, user_id=self.user_id, limit=limit)
         print(f"[DEBUG] Search Response Raw: {response}")
-        
+
         # Handle dict response (Mem0 v1.0.1 style)
         if isinstance(response, dict):
             results = response.get("results", [])
         else:
             results = response
-            
+
         if not results:
             return []
-            
+
         normalized = []
         for r in results:
             # Handle Dict
@@ -72,7 +72,7 @@ class Mem0Bridge:
                 normalized.append(r)
             else:
                 normalized.append(str(r))
-                
+
         return normalized
 
     def get_all(self) -> List[str]:
