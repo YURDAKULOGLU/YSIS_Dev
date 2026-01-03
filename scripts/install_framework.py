@@ -25,6 +25,11 @@ FRAMEWORK_DOCS = {
     "instructor": "https://github.com/jxnl/instructor",  # GitHub-based
     "swarm": None,  # Check GitHub
     "autogpt": None,  # Check GitHub
+    "temporalio": "https://docs.temporal.io/",
+    "ray": "https://docs.ray.io/",
+    "prefect": "https://docs.prefect.io/",
+    "spade": "https://spadeagents.eu/docs/",
+    "celery": "https://docs.celeryproject.org/",
 }
 
 
@@ -96,10 +101,11 @@ class FrameworkInstaller:
                 if self._is_doc_page(full_url, base_url):
                     links.append(full_url)
             
-            # Download each page
-            for i, url in enumerate(set(links)[:50], 1):  # Limit to 50 pages
+            # Download each page (deduplicate links first)
+            unique_links = list(set(links))[:50]  # Limit to 50 pages
+            for i, url in enumerate(unique_links, 1):
                 try:
-                    print(f"  [{i}/{min(50, len(set(links)))}] Downloading {url}...")
+                    print(f"  [{i}/{len(unique_links)}] Downloading {url}...")
                     page_response = requests.get(url, timeout=10)
                     page_soup = BeautifulSoup(page_response.content, 'html.parser')
                     
@@ -126,40 +132,82 @@ class FrameworkInstaller:
         """Download documentation from GitHub repo."""
         print(f"  Downloading from GitHub: {repo_url}...")
         
-        # Try to get README
+        # Framework-specific repo mappings
+        repo_mappings = {
+            "prefect": ("prefecthq", "prefect"),
+            "spade": ("javipalanca", "spade"),
+            "celery": ("celery", "celery"),
+            "temporalio": ("temporalio", "python-sdk"),
+            "ray": ("ray-project", "ray"),
+        }
+        
         try:
-            if "github.com" in repo_url:
-                # Extract owner/repo
+            # Try framework-specific mapping first
+            if self.framework_name in repo_mappings:
+                owner, repo = repo_mappings[self.framework_name]
+            elif "github.com" in repo_url:
+                # Extract owner/repo from URL
                 parts = repo_url.replace("https://github.com/", "").split("/")
                 if len(parts) >= 2:
                     owner, repo = parts[0], parts[1]
+                else:
+                    print(f"    [WARN] Could not parse GitHub URL: {repo_url}")
+                    return
+            else:
+                print(f"    [WARN] Not a GitHub URL: {repo_url}")
+                return
+            
+            # Download README
+            for branch in ["main", "master", "develop"]:
+                readme_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/README.md"
+                try:
+                    readme_response = requests.get(readme_url, timeout=10)
+                    if readme_response.status_code == 200:
+                        (self.docs_dir / "README.md").write_text(readme_response.text, encoding='utf-8')
+                        print(f"    [OK] README.md downloaded from {branch} branch")
+                        break
+                except:
+                    continue
+            
+            # Try docs/ folder (recursive)
+            self._download_github_docs_recursive(owner, repo, "docs", self.docs_dir)
                     
-                    # Download README
-                    readme_url = f"https://raw.githubusercontent.com/{owner}/{repo}/main/README.md"
-                    try:
-                        readme_response = requests.get(readme_url, timeout=10)
-                        if readme_response.status_code == 200:
-                            (self.docs_dir / "README.md").write_text(readme_response.text, encoding='utf-8')
-                            print(f"    [OK] README.md downloaded")
-                    except:
-                        pass
-                    
-                    # Try docs/ folder
-                    docs_url = f"https://api.github.com/repos/{owner}/{repo}/contents/docs"
-                    try:
-                        docs_response = requests.get(docs_url, timeout=10)
-                        if docs_response.status_code == 200:
-                            docs_files = docs_response.json()
-                            for file_info in docs_files:
-                                if file_info['type'] == 'file' and file_info['name'].endswith('.md'):
-                                    file_url = file_info['download_url']
-                                    file_response = requests.get(file_url, timeout=10)
-                                    (self.docs_dir / file_info['name']).write_text(file_response.text, encoding='utf-8')
-                                    print(f"    [OK] {file_info['name']} downloaded")
-                    except:
-                        pass
         except Exception as e:
             print(f"    [WARN] GitHub download failed: {e}")
+    
+    def _download_github_docs_recursive(self, owner: str, repo: str, path: str, target_dir: Path, max_depth: int = 3, current_depth: int = 0):
+        """Recursively download docs from GitHub."""
+        if current_depth >= max_depth:
+            return
+        
+        try:
+            docs_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
+            docs_response = requests.get(docs_url, timeout=10)
+            if docs_response.status_code == 200:
+                items = docs_response.json()
+                for item in items:
+                    if item['type'] == 'file' and item['name'].endswith('.md'):
+                        try:
+                            file_response = requests.get(item['download_url'], timeout=10)
+                            if file_response.status_code == 200:
+                                # Preserve directory structure
+                                relative_path = item['path'].replace(f"{path}/", "").replace(path, "")
+                                if relative_path:
+                                    file_path = target_dir / relative_path
+                                    file_path.parent.mkdir(parents=True, exist_ok=True)
+                                else:
+                                    file_path = target_dir / item['name']
+                                file_path.write_text(file_response.text, encoding='utf-8')
+                                print(f"    [OK] {item['path']} downloaded")
+                        except Exception as e:
+                            print(f"    [WARN] Failed to download {item['name']}: {e}")
+                    elif item['type'] == 'dir' and current_depth < max_depth - 1:
+                        # Recursively download subdirectories
+                        subdir = target_dir / item['name']
+                        subdir.mkdir(parents=True, exist_ok=True)
+                        self._download_github_docs_recursive(owner, repo, item['path'], subdir, max_depth, current_depth + 1)
+        except Exception as e:
+            print(f"    [WARN] Failed to list {path}: {e}")
     
     def _is_doc_page(self, url: str, base_url: str) -> bool:
         """Check if URL is a documentation page."""
@@ -191,11 +239,18 @@ class FrameworkInstaller:
     def ingest_to_rag(self):
         """Ingest downloaded docs into RAG."""
         try:
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).parent.parent))
             from src.agentic.tools.local_rag import get_local_rag
             
             rag = get_local_rag()
-            if not rag or not rag.is_available():
-                print("  [SKIP] RAG not available")
+            if not rag:
+                print("  [SKIP] RAG not available (get_local_rag returned None)")
+                return
+            
+            if not hasattr(rag, 'is_available') or not rag.is_available():
+                print("  [SKIP] RAG not available (is_available() returned False)")
                 return
             
             # Ingest all markdown files
