@@ -1,0 +1,3 @@
+def reverse_string(s: str) -> str:
+    """Reverse the input string."""
+    return s[::-1]
