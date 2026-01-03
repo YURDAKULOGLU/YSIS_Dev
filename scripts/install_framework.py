@@ -16,6 +16,7 @@ import json
 
 # Framework documentation URLs
 FRAMEWORK_DOCS = {
+    "aider": "https://aider.chat/docs/",  # Official Aider documentation
     "langgraph": "https://langchain-ai.github.io/langgraph/",
     "litellm": "https://docs.litellm.ai/",
     "redis": "https://redis.io/docs/",
