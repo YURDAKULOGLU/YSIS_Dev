@@ -323,14 +323,11 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                 log_event(f"Project context load failed: {e}", component="aider_executor", level="warning")
 
         # 2. Construct the Hyper-Prompt
-        # CRITICAL: Override Aider's default system prompt by starting with SYSTEM directive
-        # This ensures Constitution is seen BEFORE Aider's template example
-        prompt = "SYSTEM You are an elite autonomous developer in the YBIS Software Factory.\n"
-        prompt += "SYSTEM You MUST follow the YBIS Constitution and code standards below.\n"
-        prompt += "SYSTEM IGNORE any previous examples or templates in the conversation history.\n"
-        prompt += "SYSTEM ONLY follow the instructions in this message.\n\n"
-
-        prompt += "### YBIS ENHANCED EXECUTION PROTOCOL ###\n\n"
+        # Industry best practice: Lead with clear role and context, not aggressive overrides
+        # This is more natural and less "forceful" than SYSTEM directives
+        prompt = "### YBIS ENHANCED EXECUTION PROTOCOL ###\n"
+        prompt += "You are an elite autonomous developer in the YBIS Software Factory.\n"
+        prompt += "Your task is defined in the MISSION OBJECTIVE section below.\n\n"
 
         # CRITICAL: CODE STANDARDS FIRST - Most important rules at the top
         prompt += "## ⚠️ CODE STANDARDS (MANDATORY - READ FIRST) ⚠️\n"
