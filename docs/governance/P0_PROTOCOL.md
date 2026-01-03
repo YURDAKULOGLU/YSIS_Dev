@@ -1,4 +1,4 @@
-# 🚨 P0 (Critical) Task Protocol
+# [ALERT] P0 (Critical) Task Protocol
 
 > **Standard v1.0**
 > *Total accountability for system-critical changes.*

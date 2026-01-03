@@ -1,6 +1,6 @@
 # 🔰 YBIS Agent Onboarding Protocol (v1.0)
 
-> **⚠️ STOP & READ:** This is the entry point for ALL agents (Human & AI).
+> **[WARN]️ STOP & READ:** This is the entry point for ALL agents (Human & AI).
 > Do not proceed to execute tasks until you have assimilated this protocol.
 
 ## 1. 🆔 Who Are You? (Identity Handshake)
@@ -31,7 +31,7 @@ YBIS uses a strict **Deterministic Document Dependency** system. Information flo
 
 > **⛔ FATAL RULE:** If a document higher in the chain is modified (hash changed), all downstream artifacts are immediately considered **INVALID (Broken)**. You MUST update the downstream document to match the new version before writing any code.
 
-### 🛠️ Action: Verify Integrity Now
+### [TOOLS]️ Action: Verify Integrity Now
 Run this command immediately to check if the chain is intact:
 ```bash
 python .YBIS_Dev/Meta/System/Automation/verify-doc-integrity.py

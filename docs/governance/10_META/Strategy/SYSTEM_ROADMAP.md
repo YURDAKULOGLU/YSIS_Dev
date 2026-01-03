@@ -4,7 +4,7 @@
 
 ---
 
-## ✅ Tier 4: Autonomous Production (COMPLETED)
+## [OK] Tier 4: Autonomous Production (COMPLETED)
 - [x] **LangGraph Engine:** State machine for reliable workflows.
 - [x] **Pydantic Spine:** Zero-error state validation.
 - [x] **Git Cleanup:** Otonom commits via GitManager.
@@ -12,7 +12,7 @@
 
 ---
 
-## 🚀 Tier 5: Self-Architecture (CURRENT)
+## [LAUNCH] Tier 5: Self-Architecture (CURRENT)
 - [ ] **Roadmap Agent:** An agent that analyzes this document and updates it based on system progress.
 - [x] **SQL-Powered Task Board:** Migrated from file-based tasks to SQLite for high concurrency.
 - [ ] **Config Brain:** Centralized Pydantic-Settings for the entire factory.
@@ -28,7 +28,7 @@
 
 ---
 
-## 🛠️ ACTIVE MISSIONS (For Roadmap Agent)
+## [TOOLS]️ ACTIVE MISSIONS (For Roadmap Agent)
 1.  **Mission SQLite:** Completed (TaskBoardManager now uses SQLite).
 2.  **Mission Dashboard:** Revitalize `src/dashboard` to show the LangGraph flow in real-time.
 3.  **Mission RAG Mastery:** Improve `RAGMemory` to automatically index `docs/governance` for all agents.

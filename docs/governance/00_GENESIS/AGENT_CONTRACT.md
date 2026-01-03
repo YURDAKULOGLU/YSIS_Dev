@@ -1,6 +1,6 @@
 # YBIS Dev MVP Contract (Agent-Agnostic)
 
-This is the minimal “shared contract” that all CLI agents (Codex/Cursor/Claude/Gemini/etc) must follow when operating in `.YBIS_Dev`.
+This is the minimal "shared contract" that all CLI agents (Codex/Cursor/Claude/Gemini/etc) must follow when operating in `.YBIS_Dev`.
 
 The goal is consistency: same inputs, same outputs, same safety boundaries, same artifacts.
 
@@ -9,16 +9,16 @@ The goal is consistency: same inputs, same outputs, same safety boundaries, same
 ## 1) Scope & Boundaries
 
 ### Allowed write scope (default)
-- ✅ Write freely under `.YBIS_Dev/**`
-- ❌ Do not write to `apps/**`, `packages/**`, `docs/**` unless the task explicitly grants it.
-- ❌ Never touch `.git/**`
+- [OK] Write freely under `.YBIS_Dev/**`
+- [FAIL] Do not write to `apps/**`, `packages/**`, `docs/**` unless the task explicitly grants it.
+- [FAIL] Never touch `.git/**`
 
 ### Runtime state policy
 - Runtime artifacts must go to `workspaces/active/<TASK_ID>/` per YBIS_CONSTITUTION.md §3
 - Subdirectories: `docs/` (PLAN, RUNBOOK), `artifacts/` (RESULT, META), `tests/`
 - Knowledge base state (if any) must go to `Knowledge/**`
 
-### No local DB / no “agent memory services” (MVP constraint)
+### No local DB / no "agent memory services" (MVP constraint)
 For the MVP pipeline, do **not** rely on local databases (Chroma/SQLite/Redis) or background daemons.
 All coordination and memory must be expressed as plain files:
 - Tasks: `Knowledge/LocalDB/tasks.db` (SQLite, authoritative)
@@ -32,7 +32,7 @@ All coordination and memory must be expressed as plain files:
 All tasks live in:
 - `.YBIS_Dev/Meta/Active/TASK_BOARD.md`
 
-No other ad-hoc task queues are “authoritative”.
+No other ad-hoc task queues are "authoritative".
 
 ---
 
@@ -86,7 +86,7 @@ Per YBIS_CONSTITUTION.md §4, this is the canonical verification tool.
 1. **Search for existing tests:**
    - Find test files for modified code: `*.test.ts`, `*.test.tsx`, `*.spec.ts`, `__tests__/`
 
-2. **If no test exists → CREATE ONE:**
+2. **If no test exists -> CREATE ONE:**
    - Write test file following repo patterns
    - Minimum coverage: happy path + one failure case
    - Document test file path in RESULT.md
@@ -103,9 +103,9 @@ Per YBIS_CONSTITUTION.md §4, this is the canonical verification tool.
    - `pnpm lint` (if applicable)
 
 **No task can move to `done/` without:**
-- ✅ All tests passing (`pnpm test:all`)
-- ✅ Test coverage for new/changed code
-- ✅ `python scripts/protocol_check.py --mode lite` passing (constitution §4)
+- [OK] All tests passing (`pnpm test:all`)
+- [OK] Test coverage for new/changed code
+- [OK] `python scripts/protocol_check.py --mode lite` passing (constitution §4)
 
 ---
 

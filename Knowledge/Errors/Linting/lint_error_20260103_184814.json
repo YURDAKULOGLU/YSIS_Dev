@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-01-03T18:48:14.762390",
+  "files": [
+    "C:\\Projeler\\YBIS_Dev\\workspaces\\worktrees\\TASK-New-9046\\src\\agentic\\core\\intelligence\\lesson_engine.py"
+  ],
+  "ruff_output": "\u001b[1m\u001b[91mF821 \u001b[0m\u001b[1mUndefined name `os`\u001b[0m\n  \u001b[1m\u001b[94m-->\u001b[0m workspaces\\worktrees\\TASK-New-9046\\src\\agentic\\core\\intelligence\\lesson_engine.py:20:31\n   \u001b[1m\u001b[94m|\u001b[0m\n\u001b[1m\u001b[94m18 |\u001b[0m     def __init__(self):\n\u001b[1m\u001b[94m19 |\u001b[0m         self.llm_model = \"gpt-3.5-turbo\"  # Specify the LLM model to use\n\u001b[1m\u001b[94m20 |\u001b[0m         self.openai_api_key = os.getenv(\"OPENAI_API_KEY\")  # Ensure API key is set in environment\n   \u001b[1m\u001b[94m|\u001b[0m                               \u001b[1m\u001b[91m^^\u001b[0m\n\u001b[1m\u001b[94m21 |\u001b[0m\n\u001b[1m\u001b[94m22 |\u001b[0m         if not self.openai_api_key:\n   \u001b[1m\u001b[94m|\u001b[0m\n\n\u001b[1m\u001b[91mE741 \u001b[0m\u001b[1mAmbiguous variable name: `l`\u001b[0m\n   \u001b[1m\u001b[94m-->\u001b[0m workspaces\\worktrees\\TASK-New-9046\\src\\agentic\\core\\intelligence\\lesson_engine.py:117:13\n    \u001b[1m\u001b[94m|\u001b[0m\n\u001b[1m\u001b[94m115 |\u001b[0m         # Simple grouping by category for now\n\u001b[1m\u001b[94m116 |\u001b[0m         categories = {}\n\u001b[1m\u001b[94m117 |\u001b[0m         for l in lessons:\n    \u001b[1m\u001b[94m|\u001b[0m             \u001b[1m\u001b[91m^\u001b[0m\n\u001b[1m\u001b[94m118 |\u001b[0m             cat = l.get(\"category\", \"General\")\n\u001b[1m\u001b[94m119 |\u001b[0m             if cat not in categories:\n    \u001b[1m\u001b[94m|\u001b[0m\n\nFound 2 errors.\n",
+  "error_type": "linting"
+}

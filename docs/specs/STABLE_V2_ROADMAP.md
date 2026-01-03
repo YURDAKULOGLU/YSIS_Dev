@@ -7,13 +7,13 @@
 
 ---
 
-## 🎯 OBJECTIVE
+## [TARGET] OBJECTIVE
 Transform YBIS from a self-modifying system into a **Universal Project Factory**.
 "One prompt, one project, one deploy."
 
 ---
 
-## 🚀 PHASE 1: FOUNDATION & MODERNIZATION (Week 1)
+## [LAUNCH] PHASE 1: FOUNDATION & MODERNIZATION (Week 1)
 *Goal: Bridge infrastructure gaps and catch up to 2025 standards.*
 
 1.  **Unified Messaging Mesh (P0):**
@@ -41,7 +41,7 @@ Transform YBIS from a self-modifying system into a **Universal Project Factory**
 
 ---
 
-## 🧪 PHASE 3: AUTONOMOUS TEST & DEPLOY (Week 3)
+## [TEST] PHASE 3: AUTONOMOUS TEST & DEPLOY (Week 3)
 *Goal: Verification and Delivery.*
 
 1.  **DeploymentManager:**

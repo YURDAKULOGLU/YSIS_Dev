@@ -35,7 +35,7 @@
 - **The Control Tower:** Dashboard üzerinden anlık Graph akışı, VRAM takibi ve TPS monitörü.
 - **Autonomous PRs:** Görev bittiğinde otomatik Pull Request ve detaylı teknik açıklama üretimi.
 
-## 🚀 6. EVRİM VE MUTASYON (Self-Improvement)
+## [LAUNCH] 6. EVRİM VE MUTASYON (Self-Improvement)
 - **Graph Mutation:** Sistemin kendi iş akışına yeni node'lar ekleyebilmesi.
 - **Code Auditor:** Aider kod yazarken başka bir ajanın (Codex) onu anlık denetleyip engellemesi.
 - **Maintenance Automator:** Boş zamanlarda sistemin kendi teknik borcunu (Technical Debt) temizlemesi.

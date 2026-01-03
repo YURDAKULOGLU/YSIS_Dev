@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 Core Philosophy
+## [TARGET] Core Philosophy
 
 ### Principle 1: Plugin-First Architecture
 **Dogma:** "Core is minimal, everything else is a plugin"
@@ -20,11 +20,11 @@
 
 **Example:**
 ```python
-# ❌ BAD (hard-coded)
+# [FAIL] BAD (hard-coded)
 planner = SimplePlanner()
 executor = AiderExecutor()
 
-# ✅ GOOD (plugin-based)
+# [OK] GOOD (plugin-based)
 planner = PluginRegistry.load("@llm/planner")
 executor = PluginRegistry.load("@tools/aider")
 ```
@@ -42,14 +42,14 @@ executor = PluginRegistry.load("@tools/aider")
 - Transparency
 
 **Allowed:**
-- ✅ MIT/Apache/BSD licensed frameworks
-- ✅ Self-hosted services
-- ✅ Local execution (Ollama, Docker)
+- [OK] MIT/Apache/BSD licensed frameworks
+- [OK] Self-hosted services
+- [OK] Local execution (Ollama, Docker)
 
 **Forbidden:**
-- ❌ Proprietary APIs (OpenAI, Anthropic, Tavily)
-- ❌ Cloud-only services (E2B, Firecrawl)
-- ❌ Paid tiers as requirements
+- [FAIL] Proprietary APIs (OpenAI, Anthropic, Tavily)
+- [FAIL] Cloud-only services (E2B, Firecrawl)
+- [FAIL] Paid tiers as requirements
 
 **Exceptions:**
 - Optional plugins for paid services (user choice)
@@ -212,14 +212,14 @@ async def invoke(tool_name: str, **kwargs):
 
 **When adding a new dependency, ask:**
 
-1. ✅ Is it free & open-source?
-2. ✅ Can it run locally/self-hosted?
-3. ✅ Does it fit the plugin model?
-4. ✅ Is there dogfooding potential?
-5. ✅ Does it replace proprietary tool?
+1. [OK] Is it free & open-source?
+2. [OK] Can it run locally/self-hosted?
+3. [OK] Does it fit the plugin model?
+4. [OK] Is there dogfooding potential?
+5. [OK] Does it replace proprietary tool?
 
-**If all YES → Add it**
-**If any NO → Find alternative or build minimal version**
+**If all YES -> Add it**
+**If any NO -> Find alternative or build minimal version**
 
 ---
 
@@ -283,7 +283,7 @@ with trace_context(task_id="T-100"):
 
 ### Anti-Pattern 1: Hard-Coded Dependencies
 ```python
-# ❌ BAD
+# [FAIL] BAD
 from openai import OpenAI
 client = OpenAI(api_key="...")
 ```
@@ -292,7 +292,7 @@ client = OpenAI(api_key="...")
 
 ### Anti-Pattern 2: Synchronous Blocking
 ```python
-# ❌ BAD
+# [FAIL] BAD
 result = expensive_llm_call()  # Blocks for 30 seconds
 ```
 
@@ -300,7 +300,7 @@ result = expensive_llm_call()  # Blocks for 30 seconds
 
 ### Anti-Pattern 3: Untestable Code
 ```python
-# ❌ BAD
+# [FAIL] BAD
 # No tests for this function
 def critical_logic():
     ...
@@ -310,10 +310,10 @@ def critical_logic():
 
 ### Anti-Pattern 4: Direct LLM for Deterministic Tasks
 ```python
-# ❌ BAD
+# [FAIL] BAD
 result = llm.invoke("Calculate 2+2")
 
-# ✅ GOOD
+# [OK] GOOD
 result = calculator.add(2, 2)
 ```
 
@@ -321,15 +321,15 @@ result = calculator.add(2, 2)
 
 ---
 
-## 📊 Success Metrics
+## [CHART] Success Metrics
 
 **Architecture health indicators:**
-- ✅ Core code <500 lines (minimal)
-- ✅ 90%+ functionality in plugins
-- ✅ Zero proprietary dependencies in core
-- ✅ 100% tool call observability
-- ✅ All AI code has tests
-- ✅ CI/CD passes (tests + verification)
+- [OK] Core code <500 lines (minimal)
+- [OK] 90%+ functionality in plugins
+- [OK] Zero proprietary dependencies in core
+- [OK] 100% tool call observability
+- [OK] All AI code has tests
+- [OK] CI/CD passes (tests + verification)
 
 **Quality gates:**
 - Pre-commit: Emoji check, test coverage

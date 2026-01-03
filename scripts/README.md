@@ -1,4 +1,4 @@
-# 🛠️ The Toolbox (Scripts)
+# [TOOLS]️ The Toolbox (Scripts)
 
 > **Zone:** Execution & Maintenance
 > **Access:** All Agents

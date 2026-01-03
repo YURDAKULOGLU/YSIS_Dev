@@ -12,16 +12,16 @@
 
 **Rule:** **NO EMOJIS OR UNICODE DECORATIONS IN CODE**
 
-### ❌ FORBIDDEN:
+### [FAIL] FORBIDDEN:
 ```python
 # BAD - Will crash on Windows console
-print("🎯 Task started")
-print("✅ Success!")
-print("→ Next step")
-print("📊 Results:")
+print("[TARGET] Task started")
+print("[OK] Success!")
+print("-> Next step")
+print("[CHART] Results:")
 ```
 
-### ✅ ALLOWED:
+### [OK] ALLOWED:
 ```python
 # GOOD - ASCII only
 print("[TASK] Task started")
@@ -39,7 +39,7 @@ print("[RESULTS] Results:")
 
 ### Exceptions:
 - **README.md and documentation FOR HUMANS ONLY** can use emojis (not parsed by Python)
-- **Task specification files** (.md in Knowledge/Tasks/) - use ASCII arrows `->` not `→`
+- **Task specification files** (.md in Knowledge/Tasks/) - use ASCII arrows `->` not `->`
 
 ---
 
@@ -47,13 +47,13 @@ print("[RESULTS] Results:")
 
 **Rule:** NEVER hardcode paths.
 
-### ❌ FORBIDDEN:
+### [FAIL] FORBIDDEN:
 ```python
 path = "C:/Projeler/YBIS_Dev/src"
 path = "../Knowledge/LocalDB"
 ```
 
-### ✅ ALLOWED:
+### [OK] ALLOWED:
 ```python
 from src.agentic.core.config import PROJECT_ROOT, DATA_DIR
 path = PROJECT_ROOT / "src"
@@ -66,12 +66,12 @@ path = DATA_DIR / "tasks.db"
 
 **Rule:** Long-running tasks MUST use auto_dispatcher.
 
-### ❌ FORBIDDEN:
+### [FAIL] FORBIDDEN:
 ```bash
 python run_stress_test.py  # Blocks shell
 ```
 
-### ✅ ALLOWED:
+### [OK] ALLOWED:
 ```bash
 python src/agentic/core/auto_dispatcher.py run_stress_test.py
 ```
@@ -82,13 +82,13 @@ python src/agentic/core/auto_dispatcher.py run_stress_test.py
 
 **Rule:** NO code commits without passing Sentinel verification.
 
-### ❌ FORBIDDEN:
+### [FAIL] FORBIDDEN:
 ```python
 # Commit without verification
 os.system("git add . && git commit -m 'fix'")
 ```
 
-### ✅ ALLOWED:
+### [OK] ALLOWED:
 ```python
 # Verify first
 verification = await sentinel.verify(code_result, sandbox_path)
@@ -134,7 +134,7 @@ adapter.run(...)
 
 **Rule:** **CODE FILES MUST CONTAIN ONLY VALID PYTHON - NO EDITING ARTIFACTS**
 
-### ❌ FORBIDDEN:
+### [FAIL] FORBIDDEN:
 
 ```python
 # BAD - Markdown code fence left in Python file
@@ -164,7 +164,7 @@ def foo():
 >>>>>>> branch
 ```
 
-### ✅ ALLOWED:
+### [OK] ALLOWED:
 
 ```python
 # GOOD - Clean Python code only

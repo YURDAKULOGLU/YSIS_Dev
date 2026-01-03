@@ -18,7 +18,7 @@
 
 ---
 
-## 🎯 Overview
+## [TARGET] Overview
 
 This system combines multiple AI-driven development methodologies into a unified workspace:
 
@@ -32,17 +32,17 @@ This system combines multiple AI-driven development methodologies into a unified
 
 ```
 .YBIS_Dev/Veriler/
-├── agents/          → AI agent definitions (PM, Architect, Dev, QA, etc.)
-├── workflows/       → Multi-step processes (brownfield, greenfield)
-├── templates/       → Document templates (PRD, spec, architecture)
-├── Commands/        → Executable command definitions
-├── data/            → Knowledge bases and reference material
-├── checklists/      → Validation checklists
-├── scripts/         → Automation scripts (if needed)
-└── utils/           → Utility files and helpers
+├── agents/          -> AI agent definitions (PM, Architect, Dev, QA, etc.)
+├── workflows/       -> Multi-step processes (brownfield, greenfield)
+├── templates/       -> Document templates (PRD, spec, architecture)
+├── Commands/        -> Executable command definitions
+├── data/            -> Knowledge bases and reference material
+├── checklists/      -> Validation checklists
+├── scripts/         -> Automation scripts (if needed)
+└── utils/           -> Utility files and helpers
 
 .claude/commands/YBIS/
-└── [command].md     → Claude Code slash commands (point to Veriler/Commands/)
+└── [command].md     -> Claude Code slash commands (point to Veriler/Commands/)
 ```
 
 **Path Structure Notes:**
@@ -259,7 +259,7 @@ Agents are specialized AI personas with:
 **Dependencies**:
 - Templates: `front-end-spec-tmpl.yaml`, `front-end-architecture-tmpl.yaml`
 
-#### ✅ **QA (Quality Assurance)** - `Veriler/agents/qa.md`
+#### [OK] **QA (Quality Assurance)** - `Veriler/agents/qa.md`
 **Persona**: Senior developer with review and refactoring ability
 
 **When to Use**:
@@ -283,7 +283,7 @@ Agents are specialized AI personas with:
 - Tasks: `review-story.md`, `qa-gate.md`, `apply-qa-fixes.md`
 - Templates: `qa-gate-tmpl.yaml`
 
-#### 📊 **PO (Product Owner)** - `Veriler/agents/po.md`
+#### [CHART] **PO (Product Owner)** - `Veriler/agents/po.md`
 **Persona**: Validation and oversight specialist
 
 **When to Use**:
@@ -302,7 +302,7 @@ Agents are specialized AI personas with:
 - Checklists: `po-master-checklist.md`
 - Tasks: `execute-checklist.md`, `shard-doc.md`
 
-#### 📝 **SM (Scrum Master)** - `Veriler/agents/sm.md`
+#### [DOC] **SM (Scrum Master)** - `Veriler/agents/sm.md`
 **Persona**: Story creation and management
 
 **When to Use**:
@@ -319,7 +319,7 @@ Agents are specialized AI personas with:
 - Tasks: `create-next-story.md`, `validate-next-story.md`
 - Templates: `story-tmpl.yaml`
 
-#### 🔍 **Analyst** - `Veriler/agents/analyst.md`
+#### [SEARCH] **Analyst** - `Veriler/agents/analyst.md`
 **Persona**: Research and analysis specialist
 
 **When to Use**:
@@ -387,17 +387,17 @@ dependencies:
 
 **Activation**:
 ```
-@pm        → Activate Product Manager
-@architect → Activate Architect
-@dev       → Activate Developer
-@qa        → Activate QA
+@pm        -> Activate Product Manager
+@architect -> Activate Architect
+@dev       -> Activate Developer
+@qa        -> Activate QA
 ```
 
 **Command Execution**:
 ```
-*help              → List available commands
-*create-prd        → Execute PRD creation
-*shard-doc         → Shard large document
+*help              -> List available commands
+*create-prd        -> Execute PRD creation
+*shard-doc         -> Shard large document
 ```
 
 **Best Practices**:
@@ -429,19 +429,19 @@ Workflows are multi-step processes that orchestrate multiple agents to complete 
 **`brownfield-service.yaml`** - Service/API Enhancement
 - **Use When**: Enhancing existing backend services/APIs
 - **Project Types**: service-modernization, api-enhancement, microservice-extraction
-- **Flow**: architect → pm → architect → po → sm → dev → qa (loop)
+- **Flow**: architect -> pm -> architect -> po -> sm -> dev -> qa (loop)
 - **Creates**: prd.md, architecture.md, sharded docs, story.md, implementation
 
 **`brownfield-ui.yaml`** - UI Enhancement
 - **Use When**: Adding features to existing frontend
 - **Project Types**: ui-modernization, ux-improvement, design-system-integration
-- **Flow**: ux-expert → pm → architect → po → sm → dev → qa (loop)
+- **Flow**: ux-expert -> pm -> architect -> po -> sm -> dev -> qa (loop)
 - **Creates**: ui-spec.md, prd.md, architecture.md, stories, implementation
 
 **`brownfield-fullstack.yaml`** - Full-Stack Enhancement
 - **Use When**: Feature spans frontend + backend
 - **Project Types**: feature-expansion, integration-enhancement
-- **Flow**: analyst → pm → architect → ux-expert → po → sm → dev → qa (loop)
+- **Flow**: analyst -> pm -> architect -> ux-expert -> po -> sm -> dev -> qa (loop)
 - **Creates**: Complete documentation suite, full implementation
 
 #### Greenfield Workflows (New Systems)
@@ -449,19 +449,19 @@ Workflows are multi-step processes that orchestrate multiple agents to complete 
 **`greenfield-service.yaml`** - New Service/API
 - **Use When**: Building new backend service from scratch
 - **Project Types**: new-api, new-microservice, data-service
-- **Flow**: pm → architect → po → sm → dev → qa (loop)
+- **Flow**: pm -> architect -> po -> sm -> dev -> qa (loop)
 - **Creates**: prd.md, architecture.md, stories, new codebase
 
 **`greenfield-ui.yaml`** - New UI
 - **Use When**: Building new frontend application
 - **Project Types**: new-web-app, new-mobile-app, design-system
-- **Flow**: pm → ux-expert → architect → po → sm → dev → qa (loop)
+- **Flow**: pm -> ux-expert -> architect -> po -> sm -> dev -> qa (loop)
 - **Creates**: prd.md, ui-spec.md, architecture.md, new UI codebase
 
 **`greenfield-fullstack.yaml`** - New Full-Stack Application
 - **Use When**: Building complete application from scratch
 - **Project Types**: new-saas, new-product, mvp-development
-- **Flow**: pm → architect → ux-expert → po → sm → dev → qa (loop)
+- **Flow**: pm -> architect -> ux-expert -> po -> sm -> dev -> qa (loop)
 - **Creates**: Complete application with all documentation
 
 ### Workflow Structure
@@ -536,17 +536,17 @@ workflow:
 
 7. **Analyst/PM** reviews story (optional)
    - Updates: story.md
-   - Status: Draft → Approved
+   - Status: Draft -> Approved
 
 8. **Dev** implements story
    - Creates: implementation files
    - Updates: File List
-   - Status: Approved → Review
+   - Status: Approved -> Review
 
 9. **QA** reviews implementation (optional)
    - Fixes small issues
    - Leaves checklist for complex items
-   - Status: Review → Done
+   - Status: Review -> Done
 
 10. **Dev** addresses QA feedback (if needed)
     - Implements remaining checklist items
@@ -589,7 +589,7 @@ Choose workflow based on:
 
 ---
 
-## 📝 Template System
+## [DOC] Template System
 
 ### What Are Templates?
 
@@ -879,7 +879,7 @@ Located in `Veriler/commands/` - these are agent-specific executable workflows.
 [Expected output]
 
 ## Usage
-agent-id → *command-name
+agent-id -> *command-name
 ```
 
 **Examples**:
@@ -938,11 +938,11 @@ $ARGUMENTS
 
 Execution steps:
 
-1. **Step 1** → Description
+1. **Step 1** -> Description
    - Detail 1
    - Detail 2
 
-2. **Step 2** → Description
+2. **Step 2** -> Description
    - Detail 1
    - Detail 2
 
@@ -975,7 +975,7 @@ Description and details
 Description of output artifacts
 
 ## Usage
-@agent-name → *command-name [arguments]
+@agent-name -> *command-name [arguments]
 ```
 
 ---
@@ -1041,13 +1041,13 @@ Ask agent to consult KB:
 **Template Integration**:
 ```
 Templates reference KB files:
-prd-tmpl.yaml → checks technical-preferences.md
-architecture-tmpl.yaml → references technical-preferences.md
+prd-tmpl.yaml -> checks technical-preferences.md
+architecture-tmpl.yaml -> references technical-preferences.md
 ```
 
 ---
 
-## 🚀 Practical Usage
+## [LAUNCH] Practical Usage
 
 ### Complete Workflow Example: Brownfield API Enhancement
 
@@ -1073,7 +1073,7 @@ Creates: docs/existing-system-analysis.md
 
 **Step 2: Create PRD**
 ```
-New Chat → Activate: @pm
+New Chat -> Activate: @pm
 
 PM greeting and *help
 
@@ -1092,7 +1092,7 @@ Creates: docs/prd.md
 
 **Step 3: Create Architecture**
 ```
-New Chat → Activate: @architect
+New Chat -> Activate: @architect
 
 Architect greeting and *help
 
@@ -1110,7 +1110,7 @@ Creates: docs/architecture.md
 
 **Step 4: Validate Artifacts**
 ```
-New Chat → Activate: @po
+New Chat -> Activate: @po
 
 PO greeting and *help
 
@@ -1148,7 +1148,7 @@ Creates: docs/prd/ directory with sharded content
 
 **Step 6: Create First Story**
 ```
-New Chat → Activate: @sm
+New Chat -> Activate: @sm
 
 SM greeting and *help
 
@@ -1166,7 +1166,7 @@ Creates: story.md
 
 **Step 7: Review Story (Optional)**
 ```
-New Chat → Activate: @analyst
+New Chat -> Activate: @analyst
 
 Analyst greeting and *help
 
@@ -1176,12 +1176,12 @@ Analyst reviews:
   - Story clarity
   - Acceptance criteria coverage
   - Alignment with architecture
-  - Updates status: Draft → Approved
+  - Updates status: Draft -> Approved
 ```
 
 **Step 8: Implement Story**
 ```
-New Chat → Activate: @dev
+New Chat -> Activate: @dev
 
 Dev greeting and *help
 
@@ -1195,14 +1195,14 @@ Dev executes: *implement-story
   - Writes unit tests
   - Updates File List
 
-Marks story: Approved → Review
+Marks story: Approved -> Review
 
 Creates: Implementation files
 ```
 
 **Step 9: QA Review (Optional)**
 ```
-New Chat → Activate: @qa
+New Chat -> Activate: @qa
 
 QA greeting and *help
 
@@ -1219,23 +1219,23 @@ If checklist has items:
   - Return to @dev to address
   - Re-submit to QA
 Else:
-  - Mark story: Review → Done
+  - Mark story: Review -> Done
 ```
 
 **Step 10: Repeat for All Stories**
 ```
 For each remaining story:
-  SM → create story
-  Analyst → review (optional)
-  Dev → implement
-  QA → review (optional)
+  SM -> create story
+  Analyst -> review (optional)
+  Dev -> implement
+  QA -> review (optional)
 
 Continue until all epics complete
 ```
 
 **Step 11: Epic Retrospective (Optional)**
 ```
-New Chat → Activate: @po
+New Chat -> Activate: @po
 
 PO greeting and *help
 
@@ -1254,49 +1254,49 @@ Creates: docs/epic-1-retrospective.md
 #### Pattern 1: New Feature Spec (Specify Method)
 ```
 1. /specify Add user profile management
-   → Creates spec in new branch
+   -> Creates spec in new branch
 
 2. /clarify
-   → Identifies ambiguities, asks questions, updates spec
+   -> Identifies ambiguities, asks questions, updates spec
 
 3. /plan Use PostgreSQL for user data
-   → Creates implementation plan with artifacts
+   -> Creates implementation plan with artifacts
 
 4. /tasks
-   → Generates ordered task list
+   -> Generates ordered task list
 
 5. /implement
-   → Executes tasks, tracks progress
+   -> Executes tasks, tracks progress
 ```
 
 #### Pattern 2: Greenfield Full-Stack App
 ```
-1. @pm → *create-prd
-   → Interactive PRD creation for new app
+1. @pm -> *create-prd
+   -> Interactive PRD creation for new app
 
-2. @architect → *create-architecture
-   → System design for full stack
+2. @architect -> *create-architecture
+   -> System design for full stack
 
-3. @ux-expert → *create-frontend-spec
-   → UI/UX specification
+3. @ux-expert -> *create-frontend-spec
+   -> UI/UX specification
 
-4. @po → *validate-artifacts
-   → Check all docs
+4. @po -> *validate-artifacts
+   -> Check all docs
 
-5. @po → *shard-documents
-   → Break into focused pieces
+5. @po -> *shard-documents
+   -> Break into focused pieces
 
-6. Loop: @sm → @dev → @qa
-   → Story-by-story implementation
+6. Loop: @sm -> @dev -> @qa
+   -> Story-by-story implementation
 ```
 
 #### Pattern 3: Quick Document Creation
 ```
-@pm → *create-prd
-  → Specify use prd-tmpl.yaml
-  → Answer elicitation questions
-  → Review output
-  → Save to docs/prd.md
+@pm -> *create-prd
+  -> Specify use prd-tmpl.yaml
+  -> Answer elicitation questions
+  -> Review output
+  -> Save to docs/prd.md
 ```
 
 ### Common Scenarios
@@ -1355,10 +1355,10 @@ Output: Fixed issues, remaining checklist, updated story status
 | Architect | 🏗️ | architect | System design, tech selection |
 | Developer | 👨‍💻 | dev | Implementation, coding |
 | UX Expert | 🎨 | ux-expert | UI/UX design, frontend spec |
-| QA | ✅ | qa | Code review, quality checks |
-| Product Owner | 📊 | po | Validation, approval |
-| Scrum Master | 📝 | sm | Story creation, management |
-| Analyst | 🔍 | analyst | Research, analysis |
+| QA | [OK] | qa | Code review, quality checks |
+| Product Owner | [CHART] | po | Validation, approval |
+| Scrum Master | [DOC] | sm | Story creation, management |
+| Analyst | [SEARCH] | analyst | Research, analysis |
 
 ### Command Quick List
 
@@ -1434,58 +1434,58 @@ Output: Fixed issues, remaining checklist, updated story status
 
 ```
 Veriler/
-├── agents/           → Agent definitions (@pm, @architect, etc.)
-├── workflows/        → Multi-step process definitions
-├── templates/        → Document templates (PRD, architecture, etc.)
-├── Commands/         → Executable command definitions (*create-prd, etc.)
-├── data/             → Knowledge bases (bmad-kb.md, technical-preferences.md)
-├── scripts/          → Automation scripts
-├── tasks/            → Task definitions
-└── utils/            → Utility files
+├── agents/           -> Agent definitions (@pm, @architect, etc.)
+├── workflows/        -> Multi-step process definitions
+├── templates/        -> Document templates (PRD, architecture, etc.)
+├── Commands/         -> Executable command definitions (*create-prd, etc.)
+├── data/             -> Knowledge bases (bmad-kb.md, technical-preferences.md)
+├── scripts/          -> Automation scripts
+├── tasks/            -> Task definitions
+└── utils/            -> Utility files
 
-.claude/commands/     → Slash commands (/specify, /plan, /tasks)
+.claude/commands/     -> Slash commands (/specify, /plan, /tasks)
 ```
 
 ### Best Practices Checklist
 
 **Agent Usage**:
-- ✅ Use new chat for each agent activation
-- ✅ Let agent greet and show *help before proceeding
-- ✅ Keep agents in character throughout session
-- ✅ Save artifacts immediately after creation
-- ✅ Use handoff prompts between agents
+- [OK] Use new chat for each agent activation
+- [OK] Let agent greet and show *help before proceeding
+- [OK] Keep agents in character throughout session
+- [OK] Save artifacts immediately after creation
+- [OK] Use handoff prompts between agents
 
 **Workflow Execution**:
-- ✅ Select appropriate workflow (brownfield vs greenfield)
-- ✅ Follow sequence steps in order
-- ✅ Validate artifacts before handoff
-- ✅ Shard documents before story creation
-- ✅ Execute stories sequentially
+- [OK] Select appropriate workflow (brownfield vs greenfield)
+- [OK] Follow sequence steps in order
+- [OK] Validate artifacts before handoff
+- [OK] Shard documents before story creation
+- [OK] Execute stories sequentially
 
 **Document Creation**:
-- ✅ Create Project Brief before PRD
-- ✅ Use appropriate template for context
-- ✅ Answer elicitation questions completely
-- ✅ Review output before saving
-- ✅ Validate with PO agent
+- [OK] Create Project Brief before PRD
+- [OK] Use appropriate template for context
+- [OK] Answer elicitation questions completely
+- [OK] Review output before saving
+- [OK] Validate with PO agent
 
 **Story Implementation**:
-- ✅ Keep stories small and focused
-- ✅ One story per dev session
-- ✅ Update File List during implementation
-- ✅ Write tests with code
-- ✅ QA review before marking done
+- [OK] Keep stories small and focused
+- [OK] One story per dev session
+- [OK] Update File List during implementation
+- [OK] Write tests with code
+- [OK] QA review before marking done
 
 ### Common Pitfalls to Avoid
 
-❌ Activating multiple agents in same chat (context pollution)
-❌ Skipping PO validation step (quality issues)
-❌ Creating large stories (context overflow)
-❌ Implementing stories in parallel (dependency issues)
-❌ Skipping elicitation questions (incomplete specs)
-❌ Not sharding documents (context management)
-❌ Missing architecture before implementation (technical debt)
-❌ Bypassing QA review (quality shortcuts)
+[FAIL] Activating multiple agents in same chat (context pollution)
+[FAIL] Skipping PO validation step (quality issues)
+[FAIL] Creating large stories (context overflow)
+[FAIL] Implementing stories in parallel (dependency issues)
+[FAIL] Skipping elicitation questions (incomplete specs)
+[FAIL] Not sharding documents (context management)
+[FAIL] Missing architecture before implementation (technical debt)
+[FAIL] Bypassing QA review (quality shortcuts)
 
 ---
 
@@ -1586,8 +1586,8 @@ Execution:
 
 **Agent Help**:
 ```
-@[agent] → *help
-  → Shows available commands for that agent
+@[agent] -> *help
+  -> Shows available commands for that agent
 ```
 
 **File Inspection**:
@@ -1615,14 +1615,14 @@ All YBIS system files are located under `.YBIS_Dev/Veriler/`:
 
 ```
 .YBIS_Dev/Veriler/
-├── agents/              → Agent definitions
-├── workflows/           → Workflow orchestrations
-├── templates/           → Document templates
-├── commands/            → Executable commands
-├── data/                → Knowledge bases
-├── checklists/          → Validation checklists
-├── YBIS_PROJE_ANAYASASI.md → Project constitution
-└── core-config.yaml     → Core configuration (if exists)
+├── agents/              -> Agent definitions
+├── workflows/           -> Workflow orchestrations
+├── templates/           -> Document templates
+├── commands/            -> Executable commands
+├── data/                -> Knowledge bases
+├── checklists/          -> Validation checklists
+├── YBIS_PROJE_ANAYASASI.md -> Project constitution
+└── core-config.yaml     -> Core configuration (if exists)
 ```
 
 ### Common File References
@@ -1652,16 +1652,16 @@ All YBIS system files are located under `.YBIS_Dev/Veriler/`:
 ### Output Locations
 
 **Generated Specs and Plans:**
-- `specs/[feature-name]-spec.md` → Feature specifications
-- `specs/[feature-name]-plan.md` → Implementation plans
-- `specs/tasks.md` → Task lists
-- `specs/research.md`, `specs/data-model.md` → Design artifacts
+- `specs/[feature-name]-spec.md` -> Feature specifications
+- `specs/[feature-name]-plan.md` -> Implementation plans
+- `specs/tasks.md` -> Task lists
+- `specs/research.md`, `specs/data-model.md` -> Design artifacts
 
 **Generated Documentation:**
-- `docs/prd.md` → Product Requirements Document
-- `docs/architecture.md` → Architecture Document
-- `docs/prd/` → Sharded PRD pieces
-- `docs/architecture/` → Sharded architecture pieces
+- `docs/prd.md` -> Product Requirements Document
+- `docs/architecture.md` -> Architecture Document
+- `docs/prd/` -> Sharded PRD pieces
+- `docs/architecture/` -> Sharded architecture pieces
 
 **Stories:**
 - Location varies by project configuration

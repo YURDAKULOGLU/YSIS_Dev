@@ -6,7 +6,7 @@
 ---
 
 ## 🚫 1. THE MANDATORY EMOJI & UNICODE BAN
-**Issue:** Windows terminals (CP1254/Standard) crash when AI agents output emojis (🚀, ✅, 🔥). This stops the autonomous loop silently.
+**Issue:** Windows terminals (CP1254/Standard) crash when AI agents output emojis ([LAUNCH], [OK], 🔥). This stops the autonomous loop silently.
 
 **Enforcement Strategy:**
 - **Code Standards:** Added to `YBIS_CONSTITUTION`. Emojis are now a "Critical Security Violation."
@@ -15,7 +15,7 @@
 
 ---
 
-## 📉 2. SYSTEMIC ERROR LOGGING (For AI Analysis)
+## [DOWN] 2. SYSTEMIC ERROR LOGGING (For AI Analysis)
 Standard text logs are hard for agents to parse meta-systemically.
 
 **New Strategy:**
@@ -28,7 +28,7 @@ Standard text logs are hard for agents to parse meta-systemically.
 
 ---
 
-## 🧪 3. AGENT LOGIC REFLECTIONS (Stress Test 2.0)
+## [TEST] 3. AGENT LOGIC REFLECTIONS (Stress Test 2.0)
 
 ### 3.1 The Hallucination Pattern
 - **Observation:** Aider tried to edit `root/architecture.json` which does not exist. It assumed a standard structure instead of checking reality.

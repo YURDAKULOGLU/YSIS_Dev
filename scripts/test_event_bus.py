@@ -34,9 +34,9 @@ async def event_publisher():
     )
 
     if success:
-        print("[TEST] ✅ Event published successfully!")
+        print("[TEST] [OK] Event published successfully!")
     else:
-        print("[TEST] ❌ Event publication FAILED (is Redis running?)")
+        print("[TEST] [FAIL] Event publication FAILED (is Redis running?)")
 
 async def main():
     if not event_bus.available:

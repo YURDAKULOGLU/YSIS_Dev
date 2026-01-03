@@ -22,6 +22,6 @@ python scripts/smart_exec.py "pytest tests/unit/"
 ```
 
 ## Rules
-1. **New Feature?** → Add `tests/unit/test_feature.py`.
-2. **Bug Fix?** → Add regression test.
+1. **New Feature?** -> Add `tests/unit/test_feature.py`.
+2. **Bug Fix?** -> Add regression test.
 3. **Mocking:** Use mocks for LLM calls (Aider) to save money/tokens.

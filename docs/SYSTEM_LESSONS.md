@@ -28,7 +28,7 @@
 
 ---
 
-## 🛠️ 2. ELITE ENGINEERING PATTERNS
+## [TOOLS]️ 2. ELITE ENGINEERING PATTERNS
 
 ### 2.1 Pydantic-First State
 - **Rule:** Never pass raw dicts between core components.
@@ -42,7 +42,7 @@
 
 ### 2.3 Terminal Compatibility (Emoji Ban)
 - **Rule:** No emojis in `print()` or `logging` statements in the core engine.
-- **Why:** Windows terminals using `cp1254` or other non-UTF8 encodings will crash the entire factory on a single 🚀 or 🔥.
+- **Why:** Windows terminals using `cp1254` or other non-UTF8 encodings will crash the entire factory on a single [LAUNCH] or 🔥.
 
 ---
 

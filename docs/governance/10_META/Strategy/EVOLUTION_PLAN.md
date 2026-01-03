@@ -8,14 +8,14 @@
 
 ## Current State (MVP)
 
-✅ **What exists:**
+[OK] **What exists:**
 - File-based task queue (`Meta/Active/Tasks/{backlog,in_progress,done,blocked}`)
 - Artifact sandbox (`.sandbox_hybrid/<TASK_ID>/`)
 - Agent capability registry (`Meta/Active/agents.yaml`)
 - Contract (`CONTRACT.md`)
 - MVP README
 
-❌ **What's missing:**
+[FAIL] **What's missing:**
 - CLI implementation (`tools/ybis_dev_cli.py` - referenced but not written)
 - Integration with core Tier 3 system (`src/agentic/core/orchestrator_graph.py`)
 - Context management (agents have to explore from scratch every time)
@@ -149,12 +149,12 @@
    ```
 
 3. **Handoff Protocol:**
-   - If task says `suggested_agents: ["codex"]` → manual mode
-   - If task says `suggested_agents: ["orchestrator"]` → graph mode
+   - If task says `suggested_agents: ["codex"]` -> manual mode
+   - If task says `suggested_agents: ["orchestrator"]` -> graph mode
 
 **Acceptance:** Same task can be executed by:
 - Manual agent (Cursor, Claude, Codex)
-- Autonomous orchestrator (LangGraph → Aider → Sentinel)
+- Autonomous orchestrator (LangGraph -> Aider -> Sentinel)
 
 ---
 
@@ -265,7 +265,7 @@
 
 2. **Test with Real Task** (Priority: P0)
    - Use existing `T-002_P0_Fix_Random_Keys_In_MarkdownRenderer.md`
-   - Run full cycle: claim → execute → verify → finish
+   - Run full cycle: claim -> execute -> verify -> finish
 
 3. **Document Agent Onboarding** (Priority: P1)
    - File: `.YBIS_Dev/00_GENESIS/ONBOARDING.md`

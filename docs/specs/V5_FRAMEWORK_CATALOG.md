@@ -3,7 +3,7 @@
 
 **Status:** Draft  
 **Date:** 2025-01-03  
-**Constitution Compliance:** ✅ Free & Open-Source, ✅ Local-First, ✅ Plugin-First
+**Constitution Compliance:** [OK] Free & Open-Source, [OK] Local-First, [OK] Plugin-First
 
 ---
 
@@ -13,19 +13,19 @@
 
 **Task:** `V5-ROUTER-001` - Dynamic model selection based on task complexity, risk, and hardware
 
-**Recommended Framework:** **LiteLLM** ✅ (Already in requirements.txt)
+**Recommended Framework:** **LiteLLM** [OK] (Already in requirements.txt)
 
 **Why:**
-- ✅ **Free & Open-Source** (Apache 2.0)
-- ✅ **Local-First Support:** Works with Ollama, vLLM, local models
-- ✅ **Unified API:** Single interface for 100+ LLM providers
-- ✅ **Cost Optimization:** Automatic fallback chains, budget tracking
-- ✅ **Already Installed:** `litellm` in requirements.txt
+- [OK] **Free & Open-Source** (Apache 2.0)
+- [OK] **Local-First Support:** Works with Ollama, vLLM, local models
+- [OK] **Unified API:** Single interface for 100+ LLM providers
+- [OK] **Cost Optimization:** Automatic fallback chains, budget tracking
+- [OK] **Already Installed:** `litellm` in requirements.txt
 
 **Current Status:**
-- ✅ LiteLLM installed
-- ⚠️ Not fully integrated (model_router.py uses custom logic)
-- ❌ No dynamic routing based on complexity
+- [OK] LiteLLM installed
+- [WARN]️ Not fully integrated (model_router.py uses custom logic)
+- [FAIL] No dynamic routing based on complexity
 
 **Implementation Plan:**
 ```python
@@ -53,10 +53,10 @@ class LiteLLMRouter:
 ```
 
 **Additional Frameworks to Consider:**
-- ✅ **AutoGPT:** If available for autonomous task execution → **DIRECT INSTALL**
-- ✅ **vLLM:** For local model serving → **DIRECT INSTALL**
+- [OK] **AutoGPT:** If available for autonomous task execution -> **DIRECT INSTALL**
+- [OK] **vLLM:** For local model serving -> **DIRECT INSTALL**
 
-**Constitution Compliance:** ✅ ✅ ✅
+**Constitution Compliance:** [OK] [OK] [OK]
 
 ---
 
@@ -64,18 +64,18 @@ class LiteLLMRouter:
 
 **Task:** `V5-DEBATE-001` - Modernize debate system with real-time voting, Redis pub/sub
 
-**Recommended Framework:** **LangGraph** ✅ (Already in use) + **Redis** ✅
+**Recommended Framework:** **LangGraph** [OK] (Already in use) + **Redis** [OK]
 
 **Why:**
-- ✅ **LangGraph:** Already powering orchestrator_graph.py
-- ✅ **Redis:** Free & open-source, perfect for pub/sub
-- ✅ **Real-Time:** Redis Streams for event-driven debates
-- ✅ **State Management:** LangGraph checkpoints for debate state
+- [OK] **LangGraph:** Already powering orchestrator_graph.py
+- [OK] **Redis:** Free & open-source, perfect for pub/sub
+- [OK] **Real-Time:** Redis Streams for event-driven debates
+- [OK] **State Management:** LangGraph checkpoints for debate state
 
 **Current Status:**
-- ✅ LangGraph installed and used
-- ⚠️ Redis mentioned in legacy but not active
-- ❌ Debate system is file-based (slow, not real-time)
+- [OK] LangGraph installed and used
+- [WARN]️ Redis mentioned in legacy but not active
+- [FAIL] Debate system is file-based (slow, not real-time)
 
 **Implementation Plan:**
 ```python
@@ -108,12 +108,12 @@ class DebateOrchestrator:
 ```
 
 **Additional Frameworks to Install:**
-- ✅ **CrewAI:** Multi-agent coordination → **DIRECT INSTALL** (auth workaround exists)
-- ✅ **AutoGen:** Multi-agent conversations → **DIRECT INSTALL**
-- ✅ **Swarm:** Agent swarm orchestration → **DIRECT INSTALL**
-- ✅ **Redis Streams:** Already using Redis → **ENABLED**
+- [OK] **CrewAI:** Multi-agent coordination -> **DIRECT INSTALL** (auth workaround exists)
+- [OK] **AutoGen:** Multi-agent conversations -> **DIRECT INSTALL**
+- [OK] **Swarm:** Agent swarm orchestration -> **DIRECT INSTALL**
+- [OK] **Redis Streams:** Already using Redis -> **ENABLED**
 
-**Constitution Compliance:** ✅ ✅ ✅
+**Constitution Compliance:** [OK] [OK] [OK]
 
 ---
 
@@ -121,19 +121,19 @@ class DebateOrchestrator:
 
 **Task:** `V5-MULTIAGENT-001` - Implement multi-agent coordinator with parallel execution
 
-**Recommended Framework:** **LangGraph** ✅ (Multi-Agent Support)
+**Recommended Framework:** **LangGraph** [OK] (Multi-Agent Support)
 
 **Why:**
-- ✅ **Already Installed:** langgraph in requirements.txt
-- ✅ **Multi-Agent Built-In:** LangGraph supports agent teams
-- ✅ **Parallel Execution:** Async nodes run concurrently
-- ✅ **State Sharing:** Shared state between agents
-- ✅ **No New Dependencies:** Use existing LangGraph
+- [OK] **Already Installed:** langgraph in requirements.txt
+- [OK] **Multi-Agent Built-In:** LangGraph supports agent teams
+- [OK] **Parallel Execution:** Async nodes run concurrently
+- [OK] **State Sharing:** Shared state between agents
+- [OK] **No New Dependencies:** Use existing LangGraph
 
 **Current Status:**
-- ✅ LangGraph installed
-- ⚠️ Currently single-agent (orchestrator_graph.py)
-- ❌ No parallel agent execution
+- [OK] LangGraph installed
+- [WARN]️ Currently single-agent (orchestrator_graph.py)
+- [FAIL] No parallel agent execution
 
 **Implementation Plan:**
 ```python
@@ -174,32 +174,32 @@ class MultiAgentOrchestrator:
 ```
 
 **Additional Frameworks to Install:**
-- ✅ **CrewAI:** Role-based multi-agent → **DIRECT INSTALL**
-- ✅ **AutoGen:** Conversational multi-agent → **DIRECT INSTALL**
-- ✅ **Swarm:** Swarm intelligence → **DIRECT INSTALL**
-- ✅ **LangGraph Multi-Agent:** Native support, already installed → **USE**
+- [OK] **CrewAI:** Role-based multi-agent -> **DIRECT INSTALL**
+- [OK] **AutoGen:** Conversational multi-agent -> **DIRECT INSTALL**
+- [OK] **Swarm:** Swarm intelligence -> **DIRECT INSTALL**
+- [OK] **LangGraph Multi-Agent:** Native support, already installed -> **USE**
 
-**Constitution Compliance:** ✅ ✅ ✅
+**Constitution Compliance:** [OK] [OK] [OK]
 
 ---
 
-### 4. 📊 Redis Event Bus (Full Integration)
+### 4. [CHART] Redis Event Bus (Full Integration)
 
 **Task:** `V5-OBSERVE-001` - Full Redis Event Integration with Dashboard
 
-**Recommended Framework:** **Redis** ✅ + **Redis Streams** ✅
+**Recommended Framework:** **Redis** [OK] + **Redis Streams** [OK]
 
 **Why:**
-- ✅ **Free & Open-Source:** Redis is BSD licensed
-- ✅ **Self-Hostable:** Run locally or in Docker
-- ✅ **Event-Driven:** Perfect for pub/sub, streams
-- ✅ **Observability:** Real-time event distribution
-- ✅ **Already Mentioned:** Legacy code references Redis
+- [OK] **Free & Open-Source:** Redis is BSD licensed
+- [OK] **Self-Hostable:** Run locally or in Docker
+- [OK] **Event-Driven:** Perfect for pub/sub, streams
+- [OK] **Observability:** Real-time event distribution
+- [OK] **Already Mentioned:** Legacy code references Redis
 
 **Current Status:**
-- ⚠️ Redis mentioned in legacy/99_ARCHIVE
-- ❌ Not currently active
-- ❌ No event bus implementation
+- [WARN]️ Redis mentioned in legacy/99_ARCHIVE
+- [FAIL] Not currently active
+- [FAIL] No event bus implementation
 
 **Implementation Plan:**
 ```python
@@ -252,11 +252,11 @@ class RedisEventBus:
 ```
 
 **Additional Frameworks to Consider:**
-- ✅ **RabbitMQ:** If needed for advanced queuing → **DIRECT INSTALL**
-- ✅ **Kafka:** If needed for high-throughput → **DIRECT INSTALL**
-- ✅ **Redis:** Primary choice → **DIRECT INSTALL**
+- [OK] **RabbitMQ:** If needed for advanced queuing -> **DIRECT INSTALL**
+- [OK] **Kafka:** If needed for high-throughput -> **DIRECT INSTALL**
+- [OK] **Redis:** Primary choice -> **DIRECT INSTALL**
 
-**Constitution Compliance:** ✅ ✅ ✅
+**Constitution Compliance:** [OK] [OK] [OK]
 
 ---
 
@@ -264,19 +264,19 @@ class RedisEventBus:
 
 **Task:** `V5-LESSON-001` - Upgrade Lesson Engine with LLM-powered postmortem generation
 
-**Recommended Framework:** **Ollama** ✅ (Already in use) + **Instructor** ✅ (Already in requirements.txt)
+**Recommended Framework:** **Ollama** [OK] (Already in use) + **Instructor** [OK] (Already in requirements.txt)
 
 **Why:**
-- ✅ **Ollama:** Already configured, local-first
-- ✅ **Instructor:** Already in requirements.txt, structured outputs
-- ✅ **No New Dependencies:** Use existing stack
-- ✅ **Local-First:** No API keys needed
+- [OK] **Ollama:** Already configured, local-first
+- [OK] **Instructor:** Already in requirements.txt, structured outputs
+- [OK] **No New Dependencies:** Use existing stack
+- [OK] **Local-First:** No API keys needed
 
 **Current Status:**
-- ✅ Ollama configured
-- ✅ Instructor in requirements.txt
-- ⚠️ Lesson Engine exists but uses basic patterns
-- ❌ No LLM-powered postmortem generation
+- [OK] Ollama configured
+- [OK] Instructor in requirements.txt
+- [WARN]️ Lesson Engine exists but uses basic patterns
+- [FAIL] No LLM-powered postmortem generation
 
 **Implementation Plan:**
 ```python
@@ -327,28 +327,28 @@ class LLMPoweredLessonEngine:
 ```
 
 **Additional Frameworks to Consider:**
-- ✅ **AutoGPT:** Autonomous task execution → **DIRECT INSTALL** (if available)
-- ✅ **Ollama + Instructor:** Primary choice → **USE**
+- [OK] **AutoGPT:** Autonomous task execution -> **DIRECT INSTALL** (if available)
+- [OK] **Ollama + Instructor:** Primary choice -> **USE**
 
 **Note:** OpenAI/Anthropic only as optional fallback (not core dependency)
 
-**Constitution Compliance:** ✅ ✅ ✅
+**Constitution Compliance:** [OK] [OK] [OK]
 
 ---
 
-## 📊 Framework Summary
+## [CHART] Framework Summary
 
 | Task | Framework | Status | Constitution | Notes |
 |------|-----------|--------|--------------|-------|
-| Multi-Model Router | **LiteLLM** | ✅ Installed | ✅✅✅ | Just needs integration |
-| Debate System | **LangGraph + Redis** | ✅ LangGraph, ⚠️ Redis | ✅✅✅ | Redis needs setup |
-| Multi-Agent | **LangGraph** | ✅ Installed | ✅✅✅ | Native multi-agent support |
-| Event Bus | **Redis** | ⚠️ Mentioned | ✅✅✅ | Needs implementation |
-| Lesson Engine | **Ollama + Instructor** | ✅ Both installed | ✅✅✅ | Just needs LLM integration |
+| Multi-Model Router | **LiteLLM** | [OK] Installed | [OK][OK][OK] | Just needs integration |
+| Debate System | **LangGraph + Redis** | [OK] LangGraph, [WARN]️ Redis | [OK][OK][OK] | Redis needs setup |
+| Multi-Agent | **LangGraph** | [OK] Installed | [OK][OK][OK] | Native multi-agent support |
+| Event Bus | **Redis** | [WARN]️ Mentioned | [OK][OK][OK] | Needs implementation |
+| Lesson Engine | **Ollama + Instructor** | [OK] Both installed | [OK][OK][OK] | Just needs LLM integration |
 
 ---
 
-## 🎯 Implementation Priority
+## [TARGET] Implementation Priority
 
 1. **LiteLLM Router** (Easiest - already installed)
 2. **Redis Event Bus** (Foundation for others)
@@ -358,41 +358,41 @@ class LLMPoweredLessonEngine:
 
 ---
 
-## ✅ Constitution Compliance Check
+## [OK] Constitution Compliance Check
 
 All recommended frameworks:
-- ✅ **Free & Open-Source** (MIT/Apache/BSD licenses)
-- ✅ **Local-First** (Ollama, Redis self-hosted)
-- ✅ **Plugin-First** (All can be plugins)
-- ✅ **No Proprietary APIs** (No OpenAI/Anthropic required)
-- ✅ **Self-Hostable** (All run locally)
+- [OK] **Free & Open-Source** (MIT/Apache/BSD licenses)
+- [OK] **Local-First** (Ollama, Redis self-hosted)
+- [OK] **Plugin-First** (All can be plugins)
+- [OK] **No Proprietary APIs** (No OpenAI/Anthropic required)
+- [OK] **Self-Hostable** (All run locally)
 
 ---
 
 ---
 
-## 🚀 FRAMEWORK INSTALLATION RULE (MANDATORY)
+## [LAUNCH] FRAMEWORK INSTALLATION RULE (MANDATORY)
 
 ### Rule: "If It Exists, Install It"
 
 **Principle:** If a framework exists that solves a specific problem, we install it directly. No "too complex" excuses. No "we'll build it ourselves" when a ready-made solution exists.
 
 **Installation Checklist:**
-1. ✅ **Framework exists?** → Install it
-2. ✅ **Free & Open-Source?** → Install it
-3. ✅ **Can run locally?** → Install it
-4. ✅ **Documentation available?** → **AUTOMATIC DOWNLOAD** (see below)
+1. [OK] **Framework exists?** -> Install it
+2. [OK] **Free & Open-Source?** -> Install it
+3. [OK] **Can run locally?** -> Install it
+4. [OK] **Documentation available?** -> **AUTOMATIC DOWNLOAD** (see below)
 
 **Examples:**
-- AutoGPT exists for autonomous tasks? → **INSTALL**
-- CrewAI exists for multi-agent? → **INSTALL** (auth workaround exists)
-- Swarm exists for swarm intelligence? → **INSTALL**
-- AutoGen exists for conversations? → **INSTALL**
+- AutoGPT exists for autonomous tasks? -> **INSTALL**
+- CrewAI exists for multi-agent? -> **INSTALL** (auth workaround exists)
+- Swarm exists for swarm intelligence? -> **INSTALL**
+- AutoGen exists for conversations? -> **INSTALL**
 
 **NO REJECTION REASONS:**
-- ❌ "Too complex" → NOT ACCEPTED
-- ❌ "We can build it" → NOT ACCEPTED (if framework exists)
-- ❌ "It's overkill" → NOT ACCEPTED (if it solves the problem)
+- [FAIL] "Too complex" -> NOT ACCEPTED
+- [FAIL] "We can build it" -> NOT ACCEPTED (if framework exists)
+- [FAIL] "It's overkill" -> NOT ACCEPTED (if it solves the problem)
 
 ---
 
@@ -422,30 +422,30 @@ class FrameworkInstaller:
     def _download_docs(self, framework_name: str) -> dict:
         """Download all documentation from framework's docs site"""
         # Examples:
-        # - LangGraph: https://langchain-ai.github.io/langgraph/ → scrape all pages
-        # - LiteLLM: https://docs.litellm.ai/ → scrape all pages
-        # - CrewAI: https://docs.crewai.com/ → scrape all pages
-        # - AutoGPT: GitHub README + docs/ → download all
+        # - LangGraph: https://langchain-ai.github.io/langgraph/ -> scrape all pages
+        # - LiteLLM: https://docs.litellm.ai/ -> scrape all pages
+        # - CrewAI: https://docs.crewai.com/ -> scrape all pages
+        # - AutoGPT: GitHub README + docs/ -> download all
         pass
 ```
 
 **Documentation Sources (Auto-Download):**
-- ✅ **Official docs site** (scrape all pages)
-- ✅ **GitHub README** (if exists)
-- ✅ **GitHub docs/** folder (if exists)
-- ✅ **API reference** (if available)
-- ✅ **Examples** (if available)
+- [OK] **Official docs site** (scrape all pages)
+- [OK] **GitHub README** (if exists)
+- [OK] **GitHub docs/** folder (if exists)
+- [OK] **API reference** (if available)
+- [OK] **Examples** (if available)
 
 **Storage:**
-- `Knowledge/Frameworks/{framework_name}/docs/` → All markdown docs
+- `Knowledge/Frameworks/{framework_name}/docs/` -> All markdown docs
 - Auto-ingested into ChromaDB RAG
 - Available to all agents via RAG search
 
 **Benefits:**
-- ✅ No "silly errors" from missing context
-- ✅ Full framework knowledge in RAG
-- ✅ Agents can reference framework docs
-- ✅ Better code generation
+- [OK] No "silly errors" from missing context
+- [OK] Full framework knowledge in RAG
+- [OK] Agents can reference framework docs
+- [OK] Better code generation
 
 ---
 
@@ -454,17 +454,17 @@ class FrameworkInstaller:
 ### All Services in Docker
 
 **Current Docker Services:**
-- ✅ **Redis** → Event bus, pub/sub
-- ✅ **Neo4j** → Graph database
-- ✅ **ChromaDB** → Vector DB (RAG)
-- ✅ **Ollama** → Local LLM server
+- [OK] **Redis** -> Event bus, pub/sub
+- [OK] **Neo4j** -> Graph database
+- [OK] **ChromaDB** -> Vector DB (RAG)
+- [OK] **Ollama** -> Local LLM server
 
 **Benefits:**
-- ✅ Consistent environment
-- ✅ Easy setup (`docker-compose up`)
-- ✅ Data persistence (volumes)
-- ✅ Health checks
-- ✅ Local-first (all self-hosted)
+- [OK] Consistent environment
+- [OK] Easy setup (`docker-compose up`)
+- [OK] Data persistence (volumes)
+- [OK] Health checks
+- [OK] Local-first (all self-hosted)
 
 **See:** `docs/specs/V5_DOCKER_STRATEGY.md` for full Docker strategy
 
@@ -505,7 +505,7 @@ When installing these frameworks, automatically download their full documentatio
 ---
 
 **Next Steps:**
-1. ✅ **Install ALL recommended frameworks** (CrewAI, AutoGen, Swarm, AutoGPT if available)
-2. ✅ **Create framework installer** with auto-doc download
-3. ✅ **Download all framework docs** and ingest into RAG
-4. ✅ **Start implementation** with full framework knowledge
+1. [OK] **Install ALL recommended frameworks** (CrewAI, AutoGen, Swarm, AutoGPT if available)
+2. [OK] **Create framework installer** with auto-doc download
+3. [OK] **Download all framework docs** and ingest into RAG
+4. [OK] **Start implementation** with full framework knowledge

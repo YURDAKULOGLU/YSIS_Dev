@@ -8,7 +8,7 @@
 The system follows a cyclic graph defined in `workflow.py` (or `orchestrator_graph.py` in atomic mode).
 
 ### The Cycle
-`PLAN` → `EXECUTE` (Aider) → `VERIFY` (Sentinel) → `COMMIT` (Git)
+`PLAN` -> `EXECUTE` (Aider) -> `VERIFY` (Sentinel) -> `COMMIT` (Git)
 
 ## Nodes
 

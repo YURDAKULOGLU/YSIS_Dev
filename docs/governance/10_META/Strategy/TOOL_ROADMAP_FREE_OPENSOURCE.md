@@ -7,15 +7,15 @@
 
 ---
 
-## 🎯 Framework Selection (Already Installed)
+## [TARGET] Framework Selection (Already Installed)
 
 | Framework | License | Purpose | Status |
 |-----------|---------|---------|--------|
-| **LangGraph** | MIT | Workflow orchestration | ✅ Installed |
-| **LangChain** | MIT | Tool ecosystem | ✅ Installed |
-| **CrewAI** | MIT | Multi-agent | ✅ Installed |
-| **ChromaDB** | Apache 2.0 | Vector store | ✅ Installed |
-| **FastMCP** | MIT | MCP server | ✅ Installed |
+| **LangGraph** | MIT | Workflow orchestration | [OK] Installed |
+| **LangChain** | MIT | Tool ecosystem | [OK] Installed |
+| **CrewAI** | MIT | Multi-agent | [OK] Installed |
+| **ChromaDB** | Apache 2.0 | Vector store | [OK] Installed |
+| **FastMCP** | MIT | MCP server | [OK] Installed |
 
 ---
 
@@ -37,7 +37,7 @@
 #### 1.2 LangFuse (Observability)
 **Alternative to:** LangSmith (proprietary)
 **License:** MIT
-**Self-hosted:** ✅ Yes (Docker)
+**Self-hosted:** [OK] Yes (Docker)
 
 **What:**
 - Trace all tool calls
@@ -69,7 +69,7 @@ async def invoke_tool(name, **kwargs):
 
 #### 1.3 LiteLLM (LLM Proxy)
 **License:** MIT
-**Self-hosted:** ✅ Yes
+**Self-hosted:** [OK] Yes
 
 **What:**
 - Universal LLM interface (Ollama, OpenAI, Anthropic)
@@ -111,7 +111,7 @@ model_list:
 - DuckDuckGo search (free!)
 - Git operations
 
-**Already installed:** ✅ Yes
+**Already installed:** [OK] Yes
 **Count:** 50+ tools
 
 **Integration:**
@@ -137,7 +137,7 @@ ToolRegistry.register("@langchain/search", DuckDuckGoSearchRun())
 
 #### 2.2 MCP Servers (Anthropic)
 **License:** MIT
-**Self-hosted:** ✅ Yes (local processes)
+**Self-hosted:** [OK] Yes (local processes)
 
 **Available servers:**
 - `@modelcontextprotocol/server-filesystem` (file ops)
@@ -173,7 +173,7 @@ for tool in mcp.list_tools():
 
 #### 3.1 CrewAI Tools
 **License:** MIT
-**Already installed:** ✅ Yes
+**Already installed:** [OK] Yes
 
 **Tools included:**
 - Code analysis
@@ -203,7 +203,7 @@ ToolRegistry.register("@crewai/web-scrape", WebsiteSearchTool())
 
 #### 3.2 Aider as Plugin
 **License:** Apache 2.0
-**Already used:** ✅ Yes (hard-coded)
+**Already used:** [OK] Yes (hard-coded)
 
 **Refactor:**
 ```python
@@ -264,7 +264,7 @@ ToolRegistry.register("@playwright/scrape", PlaywrightTool())
 #### 4.2 SearxNG (Privacy Search)
 **Alternative to:** Tavily (proprietary)
 **License:** AGPLv3
-**Self-hosted:** ✅ Yes (Docker)
+**Self-hosted:** [OK] Yes (Docker)
 
 **What:**
 - Meta-search engine
@@ -337,7 +337,7 @@ ToolRegistry.register("@docker/sandbox", DockerSandbox())
 
 #### 5.1 mem0 (Memory Management)
 **License:** Apache 2.0
-**Self-hosted:** ✅ Yes
+**Self-hosted:** [OK] Yes
 
 **What:**
 - Long-term agent memory
@@ -366,11 +366,11 @@ ToolRegistry.register("@mem0/recall", MemoryTool(memory, action="search"))
 
 #### 5.2 Weights & Biases (Experiment Tracking)
 **License:** Apache 2.0 (client)
-**Self-hosted:** ⚠️ Partial (client open-source, server proprietary)
+**Self-hosted:** [WARN]️ Partial (client open-source, server proprietary)
 
 **Alternative:** **MLflow** (fully open-source)
 **License:** Apache 2.0
-**Self-hosted:** ✅ Yes
+**Self-hosted:** [OK] Yes
 
 **What:**
 - Experiment tracking
@@ -453,21 +453,21 @@ with mlflow.start_run():
 
 ---
 
-## 📊 Tool Inventory (Free & Open-Source)
+## [CHART] Tool Inventory (Free & Open-Source)
 
 | Tool | Type | License | Self-Hosted | Deterministic | Cost |
 |------|------|---------|-------------|---------------|------|
-| **LangChain Tools** | Utilities | MIT | ✅ | ✅ | Free |
-| **MCP Servers** | External | MIT | ✅ | ✅ | Free |
-| **CrewAI Tools** | AI | MIT | ✅ | ⚠️ | Free |
-| **Aider** | Code Gen | Apache 2.0 | ✅ | ❌ | Free |
-| **LangFuse** | Observability | MIT | ✅ | ✅ | Free |
-| **LiteLLM** | LLM Proxy | MIT | ✅ | ✅ | Free |
-| **Playwright** | Web | Apache 2.0 | ✅ | ✅ | Free |
-| **SearxNG** | Search | AGPLv3 | ✅ | ⚠️ | Free |
-| **Docker** | Sandbox | Apache 2.0 | ✅ | ✅ | Free |
-| **mem0** | Memory | Apache 2.0 | ✅ | ⚠️ | Free |
-| **MLflow** | Tracking | Apache 2.0 | ✅ | ✅ | Free |
+| **LangChain Tools** | Utilities | MIT | [OK] | [OK] | Free |
+| **MCP Servers** | External | MIT | [OK] | [OK] | Free |
+| **CrewAI Tools** | AI | MIT | [OK] | [WARN]️ | Free |
+| **Aider** | Code Gen | Apache 2.0 | [OK] | [FAIL] | Free |
+| **LangFuse** | Observability | MIT | [OK] | [OK] | Free |
+| **LiteLLM** | LLM Proxy | MIT | [OK] | [OK] | Free |
+| **Playwright** | Web | Apache 2.0 | [OK] | [OK] | Free |
+| **SearxNG** | Search | AGPLv3 | [OK] | [WARN]️ | Free |
+| **Docker** | Sandbox | Apache 2.0 | [OK] | [OK] | Free |
+| **mem0** | Memory | Apache 2.0 | [OK] | [WARN]️ | Free |
+| **MLflow** | Tracking | Apache 2.0 | [OK] | [OK] | Free |
 
 **Total Tools:** 100+ (via LangChain + MCP + CrewAI)
 **Total Cost:** $0
@@ -475,16 +475,16 @@ with mlflow.start_run():
 
 ---
 
-## 🎯 Success Metrics
+## [TARGET] Success Metrics
 
-- ✅ Zero proprietary dependencies
-- ✅ All tools self-hostable
-- ✅ 100+ tools available via plugins
-- ✅ Full observability (LangFuse)
-- ✅ LLM abstraction (LiteLLM)
-- ✅ Safe execution (Docker sandbox)
-- ✅ Long-term memory (mem0)
-- ✅ Experiment tracking (MLflow)
+- [OK] Zero proprietary dependencies
+- [OK] All tools self-hostable
+- [OK] 100+ tools available via plugins
+- [OK] Full observability (LangFuse)
+- [OK] LLM abstraction (LiteLLM)
+- [OK] Safe execution (Docker sandbox)
+- [OK] Long-term memory (mem0)
+- [OK] Experiment tracking (MLflow)
 
 ---
 

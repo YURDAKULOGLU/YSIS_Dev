@@ -9,7 +9,7 @@
 
 ## 🐳 Current Docker Services
 
-### ✅ Already in Docker
+### [OK] Already in Docker
 
 | Service | Image | Port | Purpose |
 |---------|-------|------|---------|
@@ -18,38 +18,38 @@
 | **ChromaDB** | `chromadb/chroma:latest` | 8000 | Vector DB (RAG) |
 | **Ollama** | `ollama/ollama:latest` | 11434 | Local LLM server |
 
-### 📦 Application Services
+### [PKG] Application Services
 
 | Service | Purpose | Status |
 |---------|---------|--------|
-| **worker** | Main orchestrator worker | ✅ Docker |
-| **dashboard** | Streamlit dashboard | ✅ Docker |
-| **viz** | Neo4j visualization | ✅ Docker |
-| **sandbox** | Code execution sandbox | ✅ Docker |
+| **worker** | Main orchestrator worker | [OK] Docker |
+| **dashboard** | Streamlit dashboard | [OK] Docker |
+| **viz** | Neo4j visualization | [OK] Docker |
+| **sandbox** | Code execution sandbox | [OK] Docker |
 
 ---
 
-## 🎯 Docker-First Benefits
+## [TARGET] Docker-First Benefits
 
 ### 1. **Consistency**
-- ✅ Same environment everywhere (dev, staging, prod)
-- ✅ No "works on my machine" issues
-- ✅ Reproducible setups
+- [OK] Same environment everywhere (dev, staging, prod)
+- [OK] No "works on my machine" issues
+- [OK] Reproducible setups
 
 ### 2. **Isolation**
-- ✅ Services don't conflict with host
-- ✅ Easy cleanup (just `docker-compose down`)
-- ✅ Resource limits per service
+- [OK] Services don't conflict with host
+- [OK] Easy cleanup (just `docker-compose down`)
+- [OK] Resource limits per service
 
 ### 3. **Portability**
-- ✅ Run anywhere Docker runs
-- ✅ Easy deployment
-- ✅ Version control for infrastructure
+- [OK] Run anywhere Docker runs
+- [OK] Easy deployment
+- [OK] Version control for infrastructure
 
 ### 4. **Local-First Compliance**
-- ✅ All services self-hosted (no cloud required)
-- ✅ Data stays local (volumes)
-- ✅ No external dependencies
+- [OK] All services self-hosted (no cloud required)
+- [OK] Data stays local (volumes)
+- [OK] No external dependencies
 
 ---
 
@@ -153,14 +153,14 @@ CHROMA_HOST = "chromadb"  # Service name
 ```
 
 **Benefits:**
-- ✅ Services always available (no manual start)
-- ✅ Consistent networking
-- ✅ Health checks ensure readiness
-- ✅ Easy scaling
+- [OK] Services always available (no manual start)
+- [OK] Consistent networking
+- [OK] Health checks ensure readiness
+- [OK] Easy scaling
 
 ---
 
-## 🚀 Quick Start
+## [LAUNCH] Quick Start
 
 ### 1. Start All Services
 ```bash
@@ -183,14 +183,14 @@ docker-compose logs -f ollama
 docker-compose down
 ```
 
-### 5. Clean Everything (⚠️ deletes data)
+### 5. Clean Everything ([WARN]️ deletes data)
 ```bash
 docker-compose down -v
 ```
 
 ---
 
-## 📊 Service Dependencies
+## [CHART] Service Dependencies
 
 ```
 ┌─────────┐
@@ -213,7 +213,7 @@ docker-compose down -v
 
 ---
 
-## 🔧 Environment Variables
+## [TOOL] Environment Variables
 
 All services use environment variables for configuration:
 
@@ -252,14 +252,14 @@ docker run --rm -v ybis_redis_data:/data -v $(pwd):/backup alpine tar czf /backu
 
 ---
 
-## 🎯 Future Docker Services
+## [TARGET] Future Docker Services
 
 ### Potential Additions:
-- ✅ **PostgreSQL** (if needed for structured data)
-- ✅ **MinIO** (S3-compatible object storage)
-- ✅ **Prometheus** (metrics collection)
-- ✅ **Grafana** (metrics visualization)
-- ✅ **Elasticsearch** (if needed for advanced search)
+- [OK] **PostgreSQL** (if needed for structured data)
+- [OK] **MinIO** (S3-compatible object storage)
+- [OK] **Prometheus** (metrics collection)
+- [OK] **Grafana** (metrics visualization)
+- [OK] **Elasticsearch** (if needed for advanced search)
 
 **Rule:** If a service can run in Docker and benefits the system, add it to `docker-compose.yml`.
 
@@ -294,7 +294,7 @@ docker run --rm -v ybis_redis_data:/data -v $(pwd):/backup alpine tar czf /backu
 
 ---
 
-## ✅ Checklist
+## [OK] Checklist
 
 - [x] Redis in Docker
 - [x] Neo4j in Docker
@@ -309,5 +309,5 @@ docker run --rm -v ybis_redis_data:/data -v $(pwd):/backup alpine tar czf /backu
 
 ---
 
-**Status:** ✅ All infrastructure services containerized and ready!
+**Status:** [OK] All infrastructure services containerized and ready!
 

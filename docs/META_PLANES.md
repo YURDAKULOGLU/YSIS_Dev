@@ -1,12 +1,12 @@
-# META PLANES — Drift-Proof Bootstrap Factory
+# META PLANES - Drift-Proof Bootstrap Factory
 
-Bu doküman, YBIS’in “agentic software factory” çekirdeğini **drift’e dayanıklı** şekilde büyütmek için gereken meta-katmanları (planes), zorunlu kapıları (gates), protokolleri (contracts), ve bootstrap çalışma ritüellerini tanımlar.
+Bu doküman, YBIS'in "agentic software factory" çekirdeğini **drift'e dayanıklı** şekilde büyütmek için gereken meta-katmanları (planes), zorunlu kapıları (gates), protokolleri (contracts), ve bootstrap çalışma ritüellerini tanımlar.
 
 ## 0) Sözlük ve amaç
 
 ### Amaç
 * **Core sabit** kalsın.
-* Framework’ler / ajanlar / modeller **değiştirilebilir** olsun.
+* Framework'ler / ajanlar / modeller **değiştirilebilir** olsun.
 * Sistem, **kendi kendini büyütürken** drift üretmesin.
 * Her run **kanıtlı** (artifacts) ve **geri alınabilir** (rollback) olsun.
 * Sistem **tek modele bağlı** kalmasın; local + API sağlayıcılarla çalışsın.
@@ -15,11 +15,11 @@ Bu doküman, YBIS’in “agentic software factory” çekirdeğini **drift’e 
 * **Truth drift:** Doküman / config / kod farklı şey söylüyor.
 * **Path drift:** Relative path / cwd kayması / duplicate root / ".YBIS_Dev" gibi hardcode.
 * **Scope drift:** Agent yanlış alana yazar (legacy/.venv/.git/sandbox).
-* **Dependency drift:** Lock yok → ortam kayar → “bende çalışıyor”.
+* **Dependency drift:** Lock yok -> ortam kayar -> "bende çalışıyor".
 * **Behavior drift:** Framework eklenince core davranışı değişir.
-* **Evidence drift:** Plan/runbook/log/diff yok → ne olduğu bilinmez.
+* **Evidence drift:** Plan/runbook/log/diff yok -> ne olduğu bilinmez.
 
-Bu dokümanın hedefi: drift’in tekrarını **otomatik engellemek**.
+Bu dokümanın hedefi: drift'in tekrarını **otomatik engellemek**.
 
 ---
 
@@ -35,25 +35,25 @@ Core, framework bilmez. Sadece:
 * **Artifact System** (PLAN/RUNBOOK/EVIDENCE/DIFF)
 
 ### 1.2 Planes (meta katmanlar)
-Planes, “framework eklemekten” daha üst bir kavramdır: aynı problemi farklı açıdan çözer.
+Planes, "framework eklemekten" daha üst bir kavramdır: aynı problemi farklı açıdan çözer.
 
 * **Knowledge Plane:** RAG, failure memory, repo map, decision memory
 * **Spec Plane:** spec-first, contract-first, golden tasks, ADR
-* **Policy Plane:** policy-as-code, izinler, tool erişimi, sandbox rule’ları
+* **Policy Plane:** policy-as-code, izinler, tool erişimi, sandbox rule'ları
 * **Verification Plane:** test + semantic verification + risk scanner + replay
-* **Evolution Plane:** postmortem → gate update, model router kalibrasyonu, self-heal
+* **Evolution Plane:** postmortem -> gate update, model router kalibrasyonu, self-heal
 
-Her plane bir “plugin” değildir; plane = sistemin davranışını stabilize eden meta-mekanizmalar setidir.
+Her plane bir "plugin" değildir; plane = sistemin davranışını stabilize eden meta-mekanizmalar setidir.
 
 ---
 
 ## 2) Değişmez Invariants (Anayasa)
-Bu maddeler “opsiyon” değil. İhlal = fail.
+Bu maddeler "opsiyon" değil. İhlal = fail.
 
 ### I-1: Single Source of Truth
 * Tüm path/config sadece **CoreConfig** üzerinden türetilir.
 * Kod içinde hardcoded root / ".YBIS_Dev" / "../" / "C:\" / "~" yasak.
-* Orchestrator çalışırken `cwd` git root’a sabitlenir.
+* Orchestrator çalışırken `cwd` git root'a sabitlenir.
 
 ### I-2: Active/Archive ayrımı
 * Agent yalnızca **ACTIVE allowlist** alanlara yazar.
@@ -61,7 +61,7 @@ Bu maddeler “opsiyon” değil. İhlal = fail.
 
 ### I-3: Containment (Executor izolasyonu)
 * Executor (Aider/SWE agent) yalnız izinli file setini görür.
-* İzin kuralları “config/allowlist + ignore file” ile enforce edilir.
+* İzin kuralları "config/allowlist + ignore file" ile enforce edilir.
 * Ignore/settings dosyaları yoksa **hard fail**.
 
 ### I-4: Evidence First (Artifacts zorunlu)
@@ -72,7 +72,7 @@ Her run (başarılı/başarısız) şu çıktıları üretir:
 * `CHANGES/*` (diff, changed_files.json)
 * `META.json` (model/router/env hash)
 
-Artifacts yoksa “done” yok.
+Artifacts yoksa "done" yok.
 
 ### I-5: Contract Over Framework
 * Core, framework import etmez.
@@ -87,15 +87,15 @@ Artifacts yoksa “done” yok.
 
 ---
 
-## 3) Plane-1: Knowledge Plane (RAG’in doğru hali)
-RAG burada üç şeye hizmet eder: **hata tekrarını azaltmak**, **kararları stabilize etmek**, **repo’yu doğru anlamak**.
+## 3) Plane-1: Knowledge Plane (RAG'in doğru hali)
+RAG burada üç şeye hizmet eder: **hata tekrarını azaltmak**, **kararları stabilize etmek**, **repo'yu doğru anlamak**.
 
-### 3.1 Failure-RAG (Hata Hafızası) — en yüksek ROI
-**Problem:** Aynı failure pattern’leri tekrar ediyor.
-**Çözüm:** Her failure artifacts’ı otomatik indexlenir; planner/verifier’a “benzer olay + çözüm” enjekte edilir.
+### 3.1 Failure-RAG (Hata Hafızası) - en yüksek ROI
+**Problem:** Aynı failure pattern'leri tekrar ediyor.
+**Çözüm:** Her failure artifacts'ı otomatik indexlenir; planner/verifier'a "benzer olay + çözüm" enjekte edilir.
 
-#### Zorunlu “Error Signature” standardı
-Sentinel her fail’e bir signature verir:
+#### Zorunlu "Error Signature" standardı
+Sentinel her fail'e bir signature verir:
 * `SENTINEL_FAIL:FORBIDDEN_DIR_WRITE`
 * `SENTINEL_FAIL:HARDCODED_PATH`
 * `EXECUTOR_FAIL:AIDER_ARTIFACT_CODE_FENCE`
@@ -105,33 +105,33 @@ Sentinel her fail’e bir signature verir:
 
 Bu signature:
 * `artifacts/<task_id>/META.json` içine yazılır,
-* indexer tarafından memory store’a atılır,
+* indexer tarafından memory store'a atılır,
 * bir sonraki benzer durumda retrieve edilir.
 
 #### Injection kuralı
-Planner’a (ve gerekirse executor/verifier’a) şu “minimum” kontekst eklenir:
-* Son 5 benzer failure’ın “root cause + fix summary”si
-* Bu repo için “yasak alanlar ve doğru path sistemi”
-* “Benzer çözümde yapılan yanlışlar” listesi
+Planner'a (ve gerekirse executor/verifier'a) şu "minimum" kontekst eklenir:
+* Son 5 benzer failure'ın "root cause + fix summary"si
+* Bu repo için "yasak alanlar ve doğru path sistemi"
+* "Benzer çözümde yapılan yanlışlar" listesi
 
 ### 3.2 Decision-RAG (Karar Hafızası / ADR)
 **Problem:** Mimari kararlar drift ediyor.
 **Çözüm:** ADR (Architecture Decision Record) standardı + index.
 * `docs/adr/ADR-YYYYMMDD-<title>.md`
-* Her ADR: Context → Decision → Consequences → Alternatives → Rollback/Exit
+* Her ADR: Context -> Decision -> Consequences -> Alternatives -> Rollback/Exit
 
-Planner plan çıkarırken ilgili ADR’leri görür.
+Planner plan çıkarırken ilgili ADR'leri görür.
 
 ### 3.3 Repo-RAG (Semantic Map)
 **Problem:** Agent yanlış dosyayı seçiyor, aynı işi iki yerde yapıyor.
-**Çözüm:** Repo’nun “semantic haritası”:
+**Çözüm:** Repo'nun "semantic haritası":
 * Modül sınırları
 * Entry points
 * Protocol/adapter listesi
 * Forbidden dirs
 * Test coverage sinyalleri
 
-Bu map “best-effort” çalışır; çökerse sistem çalışmaya devam eder.
+Bu map "best-effort" çalışır; çökerse sistem çalışmaya devam eder.
 
 ---
 
@@ -150,24 +150,24 @@ Yeni capability eklemenin tek doğru yolu:
 Spec olmadan merge yok. Contract tests olmadan merge yok.
 
 ### 4.2 Golden Tasks (Altın görev seti)
-Bu sistem “orchestrator değişebilir” diyorsa, tek gerçek sigorta golden tasks’tır.
-* Her backend/agent/framework eklemesi golden suite’i koşar.
-* Golden tasks: pass/fail net, deterministik, drift’i yakalar.
+Bu sistem "orchestrator değişebilir" diyorsa, tek gerçek sigorta golden tasks'tır.
+* Her backend/agent/framework eklemesi golden suite'i koşar.
+* Golden tasks: pass/fail net, deterministik, drift'i yakalar.
 
 (Detay: `docs/GOLDEN_TASKS.md`)
 
 ---
 
 ## 5) Plane-3: Policy Plane (Policy-as-Code + Permissions)
-Bu plane drift’in çoğunu “başlamadan” öldürür.
+Bu plane drift'in çoğunu "başlamadan" öldürür.
 
 ### 5.1 Policy-as-Code (basit kural motoru)
 Policy bir doküman değil, **çalışan kural seti** olmalı.
 Minimum policy maddeleri:
-* Forbidden dirs’e yazma: deny
+* Forbidden dirs'e yazma: deny
 * Hardcoded path: deny
 * Tool izinleri: allowlist
-* Network: default deny (external agent’larda)
+* Network: default deny (external agent'larda)
 * Artifact zorunluluğu: enforce
 * Risk bazlı HITL: risk yüksekse onay checkpoint
 
@@ -181,21 +181,21 @@ Her step, sadece gereken izinleri alır:
 * `cap:memory:read`
 * `cap:memory:write`
 
-External agent’lar için default minimum = `cap:plan` bile olmayabilir; görevine göre verilir.
+External agent'lar için default minimum = `cap:plan` bile olmayabilir; görevine göre verilir.
 
 ### 5.3 Tool Registry + Audit
 Tool çağrıları:
 * argümanlarıyla birlikte loglanır
 * result summary kaydedilir
 * rate limit uygulanır
-* policy check’ten geçer
+* policy check'ten geçer
 
 ---
 
 ## 6) Plane-4: Verification Plane (Test + Semantik + Replay)
 
 ### 6.1 Sentinel: kalite + drift gate
-Sentinel “unit test runner” değil, “factory gate”tir.
+Sentinel "unit test runner" değil, "factory gate"tir.
 Zorunlu gate kategorileri:
 * Repo hygiene gate (forbidden dirs touched?)
 * Path drift gate (hardcoded/relative/duplicate root?)
@@ -205,10 +205,10 @@ Zorunlu gate kategorileri:
 * Dependency drift gate (lock + env hash)
 
 ### 6.2 Risk Scanner (değişiklik sınıflandırma)
-ChangeSet risk flag’leri:
-* `risk:high` → auth/infra/config/core touched
-* `risk:medium` → new dependency, broad refactor
-* `risk:low` → docs/tests only
+ChangeSet risk flag'leri:
+* `risk:high` -> auth/infra/config/core touched
+* `risk:medium` -> new dependency, broad refactor
+* `risk:low` -> docs/tests only
 
 Risk yüksekse:
 * daha sıkı verification
@@ -228,9 +228,9 @@ Replay komutu:
 ---
 
 ## 7) Plane-5: Evolution Plane (Self-Improvement)
-Bu plane “koltuğa oturma”nın gerçek motoru.
+Bu plane "koltuğa oturma"nın gerçek motoru.
 
-### 7.1 Auto-Postmortem → Gate Update
+### 7.1 Auto-Postmortem -> Gate Update
 Her fail sonrası sistem:
 * postmortem çıkarır (template)
 * root cause kategoriler
@@ -240,11 +240,11 @@ Her fail sonrası sistem:
   * prompt update
   * golden task ekleme
 
-Kural: “Aynı root cause 2 kez olduysa” → otomatik “kalıcı önlem PR” önerisi.
+Kural: "Aynı root cause 2 kez olduysa" -> otomatik "kalıcı önlem PR" önerisi.
 
 ### 7.2 Model Router Calibration (tek modele bağlı kalmama)
-Sistem periyodik kalibrasyon suite’i koşar:
-* 20–50 mini görev
+Sistem periyodik kalibrasyon suite'i koşar:
+* 20-50 mini görev
 * provider/model denemeleri
 * latency/başarı/cost skorları
 * router policy güncelleme önerisi
@@ -267,7 +267,7 @@ External agent şu dosyalarla gelir:
 * `runbook.md`
 * `policy_requirements.md`
 
-Core asla direct import yapmaz; registry → adapter.
+Core asla direct import yapmaz; registry -> adapter.
 
 ### 8.2 Sandbox + Permissions
 External agent:
@@ -288,14 +288,14 @@ Merge için:
 
 ## 9) Operasyonel workflow (Agent çalışma ritüeli)
 
-### 9.1 Her task için “Definition of Done”
+### 9.1 Her task için "Definition of Done"
 * artifacts var
 * sentinel pass
 * rollback var
 * contract suite pass (gerekliyse)
 * scope rules ihlal edilmedi
 
-### 9.2 Her framework ekleme için “Definition of Done”
+### 9.2 Her framework ekleme için "Definition of Done"
 * adapter + contracts + tests_contract + runbook + policy_requirements
 * fallback tanımlı
 * golden tasks + plugin contract suite pass

@@ -27,18 +27,18 @@ def calculate_hash(filepath: Path) -> Optional[str]:
         with open(filepath, "rb") as f:
             return hashlib.md5(f.read()).hexdigest()
     except Exception as e:
-        print(f"⚠️ Error reading {filepath}: {e}")
+        print(f"[WARN]️ Error reading {filepath}: {e}")
         return None
 
 def load_lock_file() -> Optional[Dict]:
     if not LOCK_FILE_PATH.exists():
-        print(f"⚠️  Lock file not found at {LOCK_FILE_PATH}")
+        print(f"[WARN]️  Lock file not found at {LOCK_FILE_PATH}")
         return None
     try:
         with open(LOCK_FILE_PATH, "r", encoding="utf-8") as f:
             return yaml.safe_load(f) or {{}}
     except Exception as e:
-        print(f"❌ Error loading lock file: {e}")
+        print(f"[FAIL] Error loading lock file: {e}")
         return None
 
 def save_lock_file(data: Dict):
@@ -47,7 +47,7 @@ def save_lock_file(data: Dict):
             yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
         print("💾 Lock file updated.")
     except Exception as e:
-        print(f"❌ Error saving lock file: {e}")
+        print(f"[FAIL] Error saving lock file: {e}")
 
 import rag_memory
 
@@ -58,7 +58,7 @@ def verify_chain():
     print(f"🔗 YBIS Global Integrity Checker (v2.0 - File Tracking)")
     print(f"📂 Project Root: {PROJECT_ROOT}")
     if force_update:
-        print("🚨 Running in --force-update mode.")
+        print("[ALERT] Running in --force-update mode.")
     print("---------------------------------------------")
 
     config = load_lock_file()
@@ -67,7 +67,7 @@ def verify_chain():
 
     dependencies = config.get("dependencies", [])
     if not dependencies:
-        print("⚠️ No dependencies found in lock file.")
+        print("[WARN]️ No dependencies found in lock file.")
         sys.exit(0)
 
     violations = []
@@ -120,7 +120,7 @@ def verify_chain():
                     print(f"🆕 Added: {rel_path}")
                 else:
                     violations.append(f"Untracked file found: {rel_path}")
-                    print(f"❌ UNTRACKED: {rel_path} (Run with --force-update to add)")
+                    print(f"[FAIL] UNTRACKED: {rel_path} (Run with --force-update to add)")
 
             elif stored_hash != current_hash:
                 # MODIFIED FILE
@@ -130,7 +130,7 @@ def verify_chain():
                     print(f"🔄 Updated: {rel_path}")
                 else:
                     violations.append(f"Hash mismatch: {rel_path}")
-                    print(f"❌ CHANGED: {rel_path}")
+                    print(f"[FAIL] CHANGED: {rel_path}")
                     print(f"   └── Target '{target}' may be stale.")
 
         # Check for DELETED files
@@ -143,7 +143,7 @@ def verify_chain():
                     print(f"🗑️ Removed: {rel_path}")
                 else:
                     violations.append(f"Missing file: {rel_path}")
-                    print(f"❌ MISSING: {rel_path} (Run with --force-update to remove)")
+                    print(f"[FAIL] MISSING: {rel_path} (Run with --force-update to remove)")
 
         # Update RAG Memory with current files and hashes
         rag.update_memory(current_files_map)
@@ -174,7 +174,7 @@ if __name__ == "__main__":
     print(f"🔗 YBIS Global Integrity Checker (v2.0 - File Tracking)")
     print(f"📂 Project Root: {PROJECT_ROOT}")
     if force_update:
-        print("🚨 Running in --force-update mode.")
+        print("[ALERT] Running in --force-update mode.")
     print("---------------------------------------------")
 
     config = load_lock_file()
@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
     dependencies = config.get("dependencies", [])
     if not dependencies:
-        print("⚠️ No dependencies found in lock file.")
+        print("[WARN]️ No dependencies found in lock file.")
         sys.exit(0)
 
     violations = []
@@ -236,7 +236,7 @@ if __name__ == "__main__":
                     print(f"🆕 Added: {rel_path}")
                 else:
                     violations.append(f"Untracked file found: {rel_path}")
-                    print(f"❌ UNTRACKED: {rel_path} (Run with --force-update to add)")
+                    print(f"[FAIL] UNTRACKED: {rel_path} (Run with --force-update to add)")
 
             elif stored_hash != current_hash:
                 # MODIFIED FILE
@@ -246,7 +246,7 @@ if __name__ == "__main__":
                     print(f"🔄 Updated: {rel_path}")
                 else:
                     violations.append(f"Hash mismatch: {rel_path}")
-                    print(f"❌ CHANGED: {rel_path}")
+                    print(f"[FAIL] CHANGED: {rel_path}")
                     print(f"   └── Target '{target}' may be stale.")
 
         # Check for DELETED files
@@ -259,7 +259,7 @@ if __name__ == "__main__":
                     print(f"🗑️ Removed: {rel_path}")
                 else:
                     violations.append(f"Missing file: {rel_path}")
-                    print(f"❌ MISSING: {rel_path} (Run with --force-update to remove)")
+                    print(f"[FAIL] MISSING: {rel_path} (Run with --force-update to remove)")
 
     # Save changes if any
     if modifications and force_update:

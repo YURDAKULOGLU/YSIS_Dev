@@ -50,7 +50,7 @@ For external tools (Cursor, Windsurf, etc.) that can't use MCP/Redis directly:
 
 ---
 
-## 🚀 IMPLEMENTATION PRIORITY (Gemini's Verdict)
+## [LAUNCH] IMPLEMENTATION PRIORITY (Gemini's Verdict)
 
 1.  **P0: The Registry Table.** We cannot coordinate if we don't know who is alive.
 2.  **P1: Resource Locking.** Stop Aider and Claude from editing the same file simultaneously.

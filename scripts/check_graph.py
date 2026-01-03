@@ -77,14 +77,14 @@ with driver.session() as session:
     refs_count = result.single()['count']
     print(f"  REFERENCES relationships: {refs_count}")
     if refs_count == 0:
-        print("  ⚠️ NO REFERENCES! Doc-to-code links missing!")
+        print("  [WARN]️ NO REFERENCES! Doc-to-code links missing!")
     
     # Check if USES exists  
     result = session.run('MATCH ()-[r:USES]->() RETURN count(r) as count')
     uses_count = result.single()['count']
     print(f"  USES relationships: {uses_count}")
     if uses_count == 0:
-        print("  ⚠️ NO USES! Function call tracking missing!")
+        print("  [WARN]️ NO USES! Function call tracking missing!")
 
 driver.close()
 print('\n[DONE]')

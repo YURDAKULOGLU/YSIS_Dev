@@ -6,7 +6,7 @@
 
 ---
 
-## 🌟 TIER -1: STRATEGIC LAYER (The "Why")
+## [*] TIER -1: STRATEGIC LAYER (The "Why")
 *The guiding stars. Changes here ripple through the entire system.*
 
 *   **Scope:** Product Vision, Business Goals, Market Strategy.
@@ -63,7 +63,7 @@
 ---
 
 ## 🔗 The Dependency Chain
-`TIER -1` → `TIER 0` → `TIER 1` → `TIER 2` → `Code`
+`TIER -1` -> `TIER 0` -> `TIER 1` -> `TIER 2` -> `Code`
 
 *   **Violation:** Writing code based on Tier 2 without checking Tier 1 is a violation.
 *   **Enforcement:** `verify-doc-integrity.py` checks these links.

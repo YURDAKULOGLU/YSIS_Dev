@@ -39,7 +39,7 @@ Successfully installed fastmcp-0.2.0 gitignore-parser-0.1.11 ...
 copy .env.example .env
 
 # Edit .env (optional - defaults work fine)
-# PROJECT_ROOT=C:\Projeler\YBIS  ← Already correct
+# PROJECT_ROOT=C:\Projeler\YBIS  <- Already correct
 ```
 
 ---
@@ -74,9 +74,9 @@ python Agentic\server.py
 
 **Expected output:**
 ```
-🚀 YBIS_Dev MCP Server - Tier 1
+[LAUNCH] YBIS_Dev MCP Server - Tier 1
 📂 Project: C:\Projeler\YBIS
-📝 Logs: C:\Projeler\YBIS\.YBIS_Dev\logs\session_2025-12-14_21-45-00.log
+[DOC] Logs: C:\Projeler\YBIS\.YBIS_Dev\logs\session_2025-12-14_21-45-00.log
 
 ⚡ Server running. Use @YBIS_Dev in Cursor to interact.
 ```
@@ -85,7 +85,7 @@ python Agentic\server.py
 
 ---
 
-## 🎯 Cursor Integration
+## [TARGET] Cursor Integration
 
 ### Method 1: Cursor Settings (Recommended)
 
@@ -123,7 +123,7 @@ If Cursor doesn't auto-start the server:
 
 ---
 
-## 🧪 Test in Cursor
+## [TEST] Test in Cursor
 
 Once Cursor is configured, try these commands:
 
@@ -148,7 +148,7 @@ Test 5 - Log something:
 
 ---
 
-## 🔍 Troubleshooting
+## [SEARCH] Troubleshooting
 
 ### Server won't start
 
@@ -174,7 +174,7 @@ python Agentic\server.py
 1. Check server is running (terminal should show "Server running")
 2. Verify MCP config path is correct (no typos)
 3. Restart Cursor completely
-4. Check Cursor MCP logs: `Ctrl+Shift+P` → "MCP: Show Logs"
+4. Check Cursor MCP logs: `Ctrl+Shift+P` -> "MCP: Show Logs"
 
 ---
 
@@ -203,16 +203,16 @@ Then restart server.
 
 ```
 .YBIS_Dev/
-├── .venv/                    ← Python virtual environment
-├── .env                      ← Your config (created from .env.example)
-├── logs/                     ← Session logs (auto-created)
+├── .venv/                    <- Python virtual environment
+├── .env                      <- Your config (created from .env.example)
+├── logs/                     <- Session logs (auto-created)
 │   └── session_*.log
 ├── Agentic/
-│   ├── server.py            ← Main MCP server
-│   └── utils.py             ← Scanner & Logger
+│   ├── server.py            <- Main MCP server
+│   └── utils.py             <- Scanner & Logger
 ├── requirements.txt
 ├── test_tier1.py
-└── SETUP.md                 ← You are here
+└── SETUP.md                 <- You are here
 ```
 
 ---
@@ -262,7 +262,7 @@ YBIS_Dev calls: get_recent_logs(20)
 
 ---
 
-## 🚀 Next Steps
+## [LAUNCH] Next Steps
 
 After Tier 1 is working:
 
@@ -273,7 +273,7 @@ After Tier 1 is working:
 
 ---
 
-## 📝 Logs Location
+## [DOC] Logs Location
 
 Session logs are saved to:
 ```
@@ -295,7 +295,7 @@ Each server start creates a new log file.
 
 ---
 
-## ✅ Success Criteria
+## [OK] Success Criteria
 
 Tier 1 is working if:
 - [ ] Server starts without errors
