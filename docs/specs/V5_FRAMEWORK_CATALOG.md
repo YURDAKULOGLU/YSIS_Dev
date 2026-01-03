@@ -449,6 +449,27 @@ class FrameworkInstaller:
 
 ---
 
+## 🐳 Docker Integration
+
+### All Services in Docker
+
+**Current Docker Services:**
+- ✅ **Redis** → Event bus, pub/sub
+- ✅ **Neo4j** → Graph database
+- ✅ **ChromaDB** → Vector DB (RAG)
+- ✅ **Ollama** → Local LLM server
+
+**Benefits:**
+- ✅ Consistent environment
+- ✅ Easy setup (`docker-compose up`)
+- ✅ Data persistence (volumes)
+- ✅ Health checks
+- ✅ Local-first (all self-hosted)
+
+**See:** `docs/specs/V5_DOCKER_STRATEGY.md` for full Docker strategy
+
+---
+
 ## 📚 Framework Documentation URLs (Auto-Download List)
 
 When installing these frameworks, automatically download their full documentation:
