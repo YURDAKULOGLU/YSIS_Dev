@@ -60,4 +60,3 @@ Replace all legacy `.sandbox*` references with constitutional `workspaces/active
 - [ ] Changes committed
 
 **Constitutional Alignment:** §3 (Execution Protocol)
-

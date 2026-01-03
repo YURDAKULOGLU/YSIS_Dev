@@ -42,7 +42,9 @@ z3-solver
 
 # Testing
 pytest
+pytest-asyncio
 selenium
+testcontainers
 
 # System Monitoring
 psutil

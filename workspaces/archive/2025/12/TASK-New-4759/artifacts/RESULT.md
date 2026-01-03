@@ -46,4 +46,3 @@ python scripts/protocol_check.py --task-id TASK-New-4759 --mode lite
 - Section 4 (Artifacts): Directly implements tiered artifact requirements
 - Section 1 (MCP-First): protocol_check.py callable via MCP
 - Token reduction serves constitutional efficiency goals
-

@@ -170,4 +170,3 @@ This is Phase 0 (URGENT) from DEBATE-20251228174942 to stop cost bleeding.
 - [ ] Verify thinking logs captured and readable
 - [ ] Verify models are Claude 4.5 (check API response)
 - [ ] Generate cost comparison report showing 70%+ savings
-

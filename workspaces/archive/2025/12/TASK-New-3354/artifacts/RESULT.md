@@ -45,4 +45,3 @@ grep -A 20 "RUNBOOK Format Spec" docs/governance/YBIS_CONSTITUTION.md
 - Section 4 (Artifacts): RUNBOOK format now constitutionally defined
 - Token efficiency: 250 tokens saved per task (87% reduction combined with tier system)
 - Auditability: Optional .sh enables automated replay verification
-

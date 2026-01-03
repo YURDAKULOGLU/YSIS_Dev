@@ -1,0 +1,27 @@
+# Aider configuration (no secrets here)
+# This file helps keep CLI calls consistent. Secrets go in your shell env or a local .env (NOT committed).
+#
+# Aider loads .aider.conf.yml from:
+# home dir -> git root -> current dir (later wins)
+#
+# If you use this, your CLI can be shorter:
+# aider --model-settings-file config/aider_model_settings.yml --aiderignore config/.sandbox_aiderignore --model openai/gpt-4o
+
+# Safety / reproducibility
+no-auto-commits: true
+dirty-commits: false
+pretty: false
+
+# Repo map controls (tune if repo is huge)
+use-repo-map: true
+map-refresh: auto
+map-tokens: 1024
+
+# Ignore file (we still pass --aiderignore from executor, but having it here is convenient)
+aiderignore: config/.sandbox_aiderignore
+
+# Optional aliases (so you can do: aider --model fast)
+alias:
+  fast: openai/gpt-4o-mini
+  smart: openai/gpt-4o
+  local: ollama/llama3.1

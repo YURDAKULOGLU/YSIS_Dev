@@ -1,0 +1,1 @@
+AgentRunResult(output='// filename: error_parser.js\n```javascript\nfunction parsePlan(plan) {\n    try {\n        JSON.parse(plan);\n    } catch (e) {\n        console.error(`Error parsing plan: ${e.message}`);\n    }\n}\n```')

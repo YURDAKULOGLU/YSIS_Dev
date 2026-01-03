@@ -405,4 +405,3 @@ test_spec_kit.py::TestIntegration ... 2 passed
 - Feature-flagged ✅
 
 **Ready for:** Gradual rollout (Phase 2)
-

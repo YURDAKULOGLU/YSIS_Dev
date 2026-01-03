@@ -1,0 +1,55 @@
+# Core
+langgraph
+langchain
+langchain_ollama
+pydantic
+chromadb
+sentence-transformers
+colorama
+
+# Agent Frameworks
+mem0ai
+crewai
+mcp
+
+# Intelligence Layer (Hive Architecture)
+dspy-ai
+instructor
+httpx
+
+# Universal AI Providers (LiteLLM + SDKs)
+litellm
+anthropic
+openai
+google-generativeai
+tiktoken
+
+# Graph Database & Dependency Analysis
+neo4j
+grimp
+markdown-it-py
+python-frontmatter
+
+# Web Interface
+streamlit
+fastapi
+uvicorn
+
+# Multi-modality & Advanced Reasoning
+transformers
+sympy
+z3-solver
+
+# Testing
+pytest
+selenium
+
+# System Monitoring
+psutil
+aiosqlite
+loguru
+langfuse
+tree-sitter-language-pack
+tree-sitter==0.24.0
+open-interpreter
+ruff

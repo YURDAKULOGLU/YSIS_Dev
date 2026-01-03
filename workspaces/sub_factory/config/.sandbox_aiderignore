@@ -1,0 +1,99 @@
+# Aider ignore patterns (gitignore-style)
+# Amaç: drift/scope kaymasını azaltmak + büyük/gürültü dosyaları map’ten çıkarmak
+
+legacy/
+**/legacy/**
+archive/
+**/archive/**
+.venv/
+venv/
+.env
+.git/
+.sandbox*/
+site-packages/
+dist-info/
+
+# --- Secrets / credentials ---
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
+**/*secret*
+**/*secrets*
+**/*credential*
+**/*credentials*
+**/*apikey*
+**/*api_key*
+**/*token*
+
+# --- Big / generated / build artifacts ---
+node_modules/
+dist/
+build/
+out/
+.coverage/
+coverage/
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+**pycache**/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/*.so
+**/*.dylib
+**/*.dll
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# --- Jupyter / data dumps ---
+.ipynb_checkpoints/
+**/*.ipynb
+**/*.parquet
+**/*.feather
+**/*.pkl
+**/*.pickle
+**/*.csv
+**/*.tsv
+
+# --- Archives / media ---
+**/*.zip
+**/*.7z
+**/*.rar
+**/*.tar
+**/*.gz
+**/*.bz2
+**/*.xz
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.webp
+**/*.mp4
+**/*.mov
+
+# --- Aider / chat history clutter ---
+.aider.chat.history.md
+.aider.input.history
+.aider*
+!.aider.conf.yml
+!.aiderignore
+!.aider.model.settings.yml
+!.aider.model.metadata.json
+
+# --- Artifacts (factory evidence) should not be edited by Aider ---
+artifacts/
+**/artifacts/
+
+# --- Local DB / embeddings / vector stores ---
+Knowledge/LocalDB/
+**/*chroma*/
+**/*.sqlite
+**/*.sqlite3
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
