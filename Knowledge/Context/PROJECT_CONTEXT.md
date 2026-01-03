@@ -6,7 +6,7 @@
 ### Available Providers
 - **Ollama (LOCAL)** - Primary provider, always available
   - Models: qwen2.5-coder:32b, qwen2.5-coder:7b
-  - Base URL: http://localhost:11434
+  - Base URL: localhost:11434 (OLLAMA_BASE_URL env var)
   - NO API KEY REQUIRED
 
 ### NOT Available (DO NOT USE)
@@ -19,7 +19,7 @@
 # CORRECT - Use Ollama via requests
 import requests
 response = requests.post(
-    "http://localhost:11434/api/generate",
+    "{ollama_url}/api/generate",  # Use OLLAMA_BASE_URL env var
     json={"model": "qwen2.5-coder:7b", "prompt": "..."}
 )
 
@@ -73,12 +73,12 @@ from anthropic import Anthropic  # ❌ NO API KEY
 # Good pattern - local with fallback
 class MyService:
     def __init__(self):
-        self.ollama_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+        self.ollama_url = os.getenv("OLLAMA_BASE_URL", "localhost:11434")
         self.model = "qwen2.5-coder:7b"
-    
+
     def call_llm(self, prompt: str) -> str:
         try:
-            resp = requests.post(f"{self.ollama_url}/api/generate", 
+            resp = requests.post(f"{self.ollama_url}/api/generate",
                 json={"model": self.model, "prompt": prompt, "stream": False})
             return resp.json().get("response", "")
         except Exception:
@@ -96,4 +96,3 @@ file_path.parent.mkdir(parents=True, exist_ok=True)
 ---
 *Last updated: 2026-01-03*
 *This context is injected by aider_executor_enhanced.py*
-
