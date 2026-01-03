@@ -146,6 +146,8 @@ Thumbs.db
 Knowledge/LocalDB/chroma_db/
 Knowledge/LocalDB/tasks.db
 Knowledge/VectorDB/
+**/VectorDB/**
+**/*chroma*/**
 
 # Workspaces (task execution directories)
 workspaces/active/
