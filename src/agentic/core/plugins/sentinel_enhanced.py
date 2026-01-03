@@ -1,11 +1,15 @@
-import os
-import subprocess
-import logging
 import ast
+import json
+import logging
+import os
 import re
-from typing import Dict, List, Tuple, Any
+import subprocess
+from datetime import datetime
+from pathlib import Path
+
 from src.agentic.core.config import REQUIRE_TESTS
-from src.agentic.core.protocols import VerifierProtocol, VerificationResult, CodeResult
+from src.agentic.core.protocols import CodeResult, VerificationResult, VerifierProtocol
+
 
 class SentinelVerifierEnhanced(VerifierProtocol):
     """
@@ -58,11 +62,11 @@ class SentinelVerifierEnhanced(VerifierProtocol):
                 # If we are here, Aider reported it as modified.
                 errors.append(f"SECURITY VIOLATION: Unauthorized write attempt to {file}")
 
-        # 2. AST Analysis & Emoji Ban (Only for real Python files)
+        # 2. AST Analysis & Emoji Ban & Type Hints Check (Only for real Python files)
         py_files = [f for f in files_modified if f.endswith(".py")]
         for file_path in py_files:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 # Emoji Ban
@@ -70,8 +74,36 @@ class SentinelVerifierEnhanced(VerifierProtocol):
                     if re.search(r'[^\x00-\x7F]+', content):
                         warnings.append(f"Non-ASCII characters in {os.path.basename(file_path)}.")
 
-                # AST Syntax Check
-                ast.parse(content)
+                # AST Syntax Check & Type Hints Verification
+                tree = ast.parse(content)
+
+                # Check for missing type hints (Constitution requirement)
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.FunctionDef):
+                        # Skip private methods and __init__ if they're just pass
+                        if node.name.startswith('_') and node.name != '__init__':
+                            continue
+
+                        # Check return type annotation
+                        if node.returns is None:
+                            file_name = os.path.basename(file_path)
+                            errors.append(
+                                f"MISSING TYPE HINT: {file_name}:{node.lineno} - "
+                                f"Function '{node.name}' missing return type annotation"
+                            )
+
+                        # Check parameter type annotations
+                        for arg in node.args.args:
+                            if arg.annotation is None:
+                                # Skip 'self' and 'cls' parameters
+                                if arg.arg not in ('self', 'cls'):
+                                    file_name = os.path.basename(file_path)
+                                    errors.append(
+                                        f"MISSING TYPE HINT: {file_name}:{node.lineno} - "
+                                        f"Function '{node.name}' parameter '{arg.arg}' "
+                                        f"missing type annotation"
+                                    )
+
             except SyntaxError as e:
                 errors.append(f"SYNTAX ERROR in {file_path}: {e}")
             except Exception as e:
@@ -84,18 +116,39 @@ class SentinelVerifierEnhanced(VerifierProtocol):
             env["PYTHONPATH"] = "."
             try:
                 # Step 1: Check for linting errors
-                result = subprocess.run(f"ruff check {target}", shell=True, capture_output=True, text=True, env=env)
+                result = subprocess.run(
+                    f"ruff check {target}",
+                    check=False,
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                    env=env
+                )
 
                 if result.returncode != 0 and result.stdout.strip():
                     self.logger.info("[Sentinel] Linting errors detected. Attempting auto-fix...")
                     logs["ruff_initial_errors"] = result.stdout
 
                     # Step 2: Try auto-fix
-                    fix_result = subprocess.run(f"ruff check --fix {target}", shell=True, capture_output=True, text=True, env=env)
+                    fix_result = subprocess.run(
+                        f"ruff check --fix {target}",
+                        check=False,
+                        shell=True,
+                        capture_output=True,
+                        text=True,
+                        env=env
+                    )
                     logs["ruff_fix_output"] = fix_result.stdout
 
                     # Step 3: Re-check after auto-fix
-                    recheck = subprocess.run(f"ruff check {target}", shell=True, capture_output=True, text=True, env=env)
+                    recheck = subprocess.run(
+                        f"ruff check {target}",
+                        check=False,
+                        shell=True,
+                        capture_output=True,
+                        text=True,
+                        env=env
+                    )
 
                     if recheck.returncode != 0 and recheck.stdout.strip():
                         # Auto-fix didn't resolve all issues - provide feedback to Aider
@@ -135,7 +188,7 @@ class SentinelVerifierEnhanced(VerifierProtocol):
 
             if task_tests:
                 cmd = f"pytest {' '.join([f'"{t}"' for t in task_tests])}"
-                test_result = subprocess.run(cmd, shell=True, capture_output=True, text=True, env=env)
+                test_result = subprocess.run(cmd, check=False, shell=True, capture_output=True, text=True, env=env)
                 logs["pytest_stdout"] = test_result.stdout
                 if test_result.returncode != 0:
                     error_summary = "\n".join(test_result.stdout.splitlines()[-5:])
@@ -160,18 +213,18 @@ class SentinelVerifierEnhanced(VerifierProtocol):
             logs=logs
         )
 
-    def _check_runtime_imports(self, file_path: str, sandbox_path: str) -> List[str]:
+    def _check_runtime_imports(self, file_path: str, sandbox_path: str) -> list[str]:
         """
         Check if a Python file can be imported without runtime errors.
         Catches issues like missing API keys, unavailable packages, etc.
         """
         errors = []
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
-            
+
             tree = ast.parse(content)
-            
+
             # Extract all imports
             imports = []
             for node in ast.walk(tree):
@@ -181,22 +234,18 @@ class SentinelVerifierEnhanced(VerifierProtocol):
                 elif isinstance(node, ast.ImportFrom):
                     if node.module:
                         imports.append(node.module)
-            
+
             # Check for problematic external API dependencies
             external_apis = {
                 "openai": "OpenAI API requires OPENAI_API_KEY - use Ollama/LiteLLM for local-first",
                 "anthropic": "Anthropic API requires API key - use Ollama for local-first",
                 "google.generativeai": "Google AI requires API key - use Ollama for local-first",
             }
-            
+
             for imp in imports:
                 if imp in external_apis:
                     errors.append(f"CONSTITUTION VIOLATION: {external_apis[imp]}")
-            
-            # Try to actually import the module to catch runtime errors
-            module_name = os.path.basename(file_path).replace(".py", "")
-            parent_dir = os.path.dirname(file_path)
-            
+
             # Quick instantiation test for classes
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef):
@@ -208,19 +257,15 @@ class SentinelVerifierEnhanced(VerifierProtocol):
                                 errors.append(f"Class {node.name}.__init__ will crash without API key")
                             if "os.getenv" in init_code and "raise" in init_code:
                                 errors.append(f"Class {node.name} requires environment variable that may not exist")
-            
+
         except Exception as e:
             self.logger.warning(f"Runtime import check failed: {e}")
-        
+
         return errors
 
-    def _save_linting_errors(self, ruff_output: str, files: List[str]) -> None:
+    def _save_linting_errors(self, ruff_output: str, files: list[str]) -> None:
         """Save linting errors for future learning (RAG/Mem-0)."""
         try:
-            from datetime import datetime
-            import json
-            from pathlib import Path
-
             # Create errors directory
             errors_dir = Path("Knowledge/Errors/Linting")
             errors_dir.mkdir(parents=True, exist_ok=True)

@@ -1,5 +1,6 @@
 import asyncio
 import os
+import subprocess
 from collections import deque
 from pathlib import Path
 from src.agentic.core.utils.logging_utils import log_event
@@ -325,20 +326,32 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         prompt = "### YBIS ENHANCED EXECUTION PROTOCOL ###\n"
         prompt += "You are an elite autonomous developer in the YBIS Software Factory.\n\n"
 
-        # CRITICAL: Inject project context FIRST so Aider knows what's available
+        # CRITICAL: CODE STANDARDS FIRST - Most important rules at the top
+        prompt += "## ⚠️ CODE STANDARDS (MANDATORY - READ FIRST) ⚠️\n"
+        prompt += "These rules are NON-NEGOTIABLE and will be verified:\n"
+        prompt += "1. **TYPING: MANDATORY type hints for ALL parameters and return types.**\n"
+        prompt += "   Example: def add(a: int, b: int) -> int:\n"
+        prompt += "2. **DOCUMENTATION: Google-style docstrings for all classes and functions.**\n"
+        prompt += "   Example:\n"
+        prompt += "   \"\"\"Add two numbers.\n\n"
+        prompt += "   Args:\n"
+        prompt += "       a: First number.\n"
+        prompt += "       b: Second number.\n\n"
+        prompt += "   Returns:\n"
+        prompt += "       Sum of a and b.\n"
+        prompt += "   \"\"\"\n"
+        prompt += "3. **STYLE: PEP8, snake_case for functions and variables.**\n"
+        prompt += "4. **QUALITY: Code must pass 'ruff check' with zero errors.**\n\n"
+        prompt += "⚠️ VERIFICATION WILL FAIL IF TYPE HINTS OR GOOGLE-STYLE DOCSTRINGS ARE MISSING ⚠️\n\n"
+
+        # CRITICAL: Inject project context so Aider knows what's available
         if project_context:
-            prompt += "## PROJECT CONTEXT (READ THIS FIRST - CRITICAL INFO):\n"
+            prompt += "## PROJECT CONTEXT (READ THIS - CRITICAL INFO):\n"
             prompt += project_context + "\n\n"
 
         if constitution:
             prompt += "## CONSTITUTIONAL MANDATES (FOLLOW STRICTLY):\n"
             prompt += constitution + "\n\n"
-
-        prompt += "## CODE STANDARDS:\n"
-        prompt += "- Style: PEP8, snake_case for functions and variables.\n"
-        prompt += "- Documentation: Google-style docstrings for all classes and functions.\n"
-        prompt += "- Typing: MANDATORY type hints for all parameters and return types.\n"
-        prompt += "- Quality: Ensure the code passes 'ruff check' with zero errors.\n\n"
         prompt += "## EXECUTION RULES:\n"
         prompt += "- Do not ask clarifying questions. Make reasonable assumptions and proceed.\n"
         prompt += "- Provide only actionable edits. No meta commentary.\n\n"
@@ -526,7 +539,7 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                         normalized_cmd.append(arg)
                 else:
                     normalized_cmd.append(arg)
-            
+
             process = await asyncio.create_subprocess_exec(
                 *normalized_cmd,
                 stdout=asyncio.subprocess.PIPE,
