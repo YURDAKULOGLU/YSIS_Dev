@@ -64,6 +64,7 @@ class SentinelVerifierEnhanced(VerifierProtocol):
 
         # 2. AST Analysis & Emoji Ban & Type Hints Check (Only for real Python files)
         py_files = [f for f in files_modified if f.endswith(".py")]
+        type_hint_errors = []  # Collect type hint errors separately for Aider feedback
         for file_path in py_files:
             try:
                 with open(file_path, encoding="utf-8") as f:
@@ -87,10 +88,12 @@ class SentinelVerifierEnhanced(VerifierProtocol):
                         # Check return type annotation
                         if node.returns is None:
                             file_name = os.path.basename(file_path)
-                            errors.append(
+                            error_msg = (
                                 f"MISSING TYPE HINT: {file_name}:{node.lineno} - "
                                 f"Function '{node.name}' missing return type annotation"
                             )
+                            errors.append(error_msg)
+                            type_hint_errors.append(error_msg)
 
                         # Check parameter type annotations
                         for arg in node.args.args:
@@ -98,11 +101,13 @@ class SentinelVerifierEnhanced(VerifierProtocol):
                                 # Skip 'self' and 'cls' parameters
                                 if arg.arg not in ('self', 'cls'):
                                     file_name = os.path.basename(file_path)
-                                    errors.append(
+                                    error_msg = (
                                         f"MISSING TYPE HINT: {file_name}:{node.lineno} - "
                                         f"Function '{node.name}' parameter '{arg.arg}' "
                                         f"missing type annotation"
                                     )
+                                    errors.append(error_msg)
+                                    type_hint_errors.append(error_msg)
 
             except SyntaxError as e:
                 errors.append(f"SYNTAX ERROR in {file_path}: {e}")
@@ -164,6 +169,20 @@ class SentinelVerifierEnhanced(VerifierProtocol):
 
             except Exception as e:
                 errors.append(f"Ruff system error: {e}")
+
+        # Add type hint errors to feedback if any were found
+        if type_hint_errors:
+            type_hint_feedback = "TYPE HINT ERRORS (Constitution Requirement):\n"
+            type_hint_feedback += "All functions MUST have type hints for parameters and return types.\n"
+            type_hint_feedback += "Example: def merge_dicts(dict1: dict, dict2: dict) -> dict:\n\n"
+            type_hint_feedback += "\n".join(type_hint_errors)
+
+            # Combine with existing ruff feedback or create new feedback entry
+            if logs.get("ruff_feedback"):
+                logs["ruff_feedback"] = logs["ruff_feedback"] + "\n\n" + type_hint_feedback
+            else:
+                logs["ruff_feedback"] = type_hint_feedback
+                logs["ruff_needs_feedback"] = True
 
         # 4. RUNTIME IMPORT TEST (NEW - Catches broken imports like OpenAI without key)
         for file_path in py_files:
