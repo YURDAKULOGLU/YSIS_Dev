@@ -508,11 +508,27 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             env = os.environ.copy()
             env["PYTHONUTF8"] = "1"
             env["AIDER_ENCODING"] = AIDER_ENCODING
+            # Windows fix: Ensure cwd is a string with proper path format
+            cwd_path = str(git_root.resolve())
+            # Windows fix: Normalize cmd paths to forward slashes for subprocess compatibility
+            normalized_cmd = []
+            for arg in cmd:
+                if isinstance(arg, Path):
+                    normalized_cmd.append(arg.as_posix())
+                elif os.path.exists(arg) or (len(arg) > 1 and arg[1] == ':'):  # Looks like a path
+                    # Try to normalize if it's a path-like string
+                    try:
+                        normalized_cmd.append(Path(arg).as_posix())
+                    except Exception:
+                        normalized_cmd.append(arg)
+                else:
+                    normalized_cmd.append(arg)
+            
             process = await asyncio.create_subprocess_exec(
-                *cmd,
+                *normalized_cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-                cwd=str(git_root),
+                cwd=cwd_path,
                 env=env
             )
             log_event("=== LIVE OUTPUT START ===", component="aider_executor")
