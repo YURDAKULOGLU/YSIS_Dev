@@ -160,3 +160,7 @@ worker_test.err
 .aider.tags.cache.v4nul
 **/.venv/
 **/site-packages/
+
+# Ignore large directories
+tools/
+.aider*/
