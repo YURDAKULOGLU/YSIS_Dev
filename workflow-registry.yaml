@@ -1,0 +1,23 @@
+version: 1
+workflows:
+  orchestrator_spine_v1:
+    description: MCP-first single entrypoint workflow
+    entrypoint: scripts/run_orchestrator.py
+    brain: src/agentic/core/graphs/orchestrator_graph.py
+    steps:
+      - claim_task
+      - plan
+      - execute
+      - verify
+      - artifacts
+      - update_task_status
+    artifacts_required:
+      - PLAN.md
+      - RUNBOOK.md
+      - EVIDENCE/*
+      - CHANGES/*
+      - META.json
+    policies:
+      - coreconfig_paths_only
+      - forbidden_dirs_deny
+      - mcp_first
