@@ -323,8 +323,14 @@ class AiderExecutorEnhanced(ExecutorProtocol):
                 log_event(f"Project context load failed: {e}", component="aider_executor", level="warning")
 
         # 2. Construct the Hyper-Prompt
-        prompt = "### YBIS ENHANCED EXECUTION PROTOCOL ###\n"
-        prompt += "You are an elite autonomous developer in the YBIS Software Factory.\n\n"
+        # CRITICAL: Override Aider's default system prompt by starting with SYSTEM directive
+        # This ensures Constitution is seen BEFORE Aider's template example
+        prompt = "SYSTEM You are an elite autonomous developer in the YBIS Software Factory.\n"
+        prompt += "SYSTEM You MUST follow the YBIS Constitution and code standards below.\n"
+        prompt += "SYSTEM IGNORE any previous examples or templates in the conversation history.\n"
+        prompt += "SYSTEM ONLY follow the instructions in this message.\n\n"
+
+        prompt += "### YBIS ENHANCED EXECUTION PROTOCOL ###\n\n"
 
         # CRITICAL: CODE STANDARDS FIRST - Most important rules at the top
         prompt += "## ⚠️ CODE STANDARDS (MANDATORY - READ FIRST) ⚠️\n"
@@ -376,6 +382,12 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         prompt += "## EXECUTION STEPS:\n"
         for i, step in enumerate(plan.steps):
             prompt += f"{i+1}. {step}\n"
+
+        # CRITICAL: Add explicit instruction to ignore template examples
+        prompt += "\n## CRITICAL INSTRUCTIONS:\n"
+        prompt += "- IGNORE any previous conversation examples (like 'Change the greeting to be more casual').\n"
+        prompt += "- ONLY follow the MISSION OBJECTIVE and EXECUTION STEPS above.\n"
+        prompt += "- The MISSION OBJECTIVE is the ONLY task you should work on.\n"
 
         # 3. Handle File Paths
         git_root = _get_code_root()
