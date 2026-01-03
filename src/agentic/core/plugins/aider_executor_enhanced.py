@@ -311,9 +311,24 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             except Exception:
                 pass
 
+        # 1b. Load Project Context (CRITICAL for project-aware code generation)
+        project_context = ""
+        project_context_path = Path("Knowledge/Context/PROJECT_CONTEXT.md")
+        if project_context_path.exists():
+            try:
+                project_context = project_context_path.read_text(encoding="utf-8")
+                log_event("Project context loaded for injection", component="aider_executor")
+            except Exception as e:
+                log_event(f"Project context load failed: {e}", component="aider_executor", level="warning")
+
         # 2. Construct the Hyper-Prompt
         prompt = "### YBIS ENHANCED EXECUTION PROTOCOL ###\n"
         prompt += "You are an elite autonomous developer in the YBIS Software Factory.\n\n"
+
+        # CRITICAL: Inject project context FIRST so Aider knows what's available
+        if project_context:
+            prompt += "## PROJECT CONTEXT (READ THIS FIRST - CRITICAL INFO):\n"
+            prompt += project_context + "\n\n"
 
         if constitution:
             prompt += "## CONSTITUTIONAL MANDATES (FOLLOW STRICTLY):\n"
@@ -653,9 +668,23 @@ class AiderExecutorEnhanced(ExecutorProtocol):
             except Exception:
                 pass
 
+        # Load project context for ACI mode as well
+        project_context = ""
+        project_context_path = Path("Knowledge/Context/PROJECT_CONTEXT.md")
+        if project_context_path.exists():
+            try:
+                project_context = project_context_path.read_text(encoding="utf-8")
+            except Exception:
+                pass
+
         # Construct prompt (same as direct mode)
         prompt = "### YBIS ENHANCED EXECUTION PROTOCOL ###\n"
         prompt += "You are an elite autonomous developer in the YBIS Software Factory.\n\n"
+
+        # CRITICAL: Inject project context FIRST so Aider knows what's available
+        if project_context:
+            prompt += "## PROJECT CONTEXT (READ THIS FIRST - CRITICAL INFO):\n"
+            prompt += project_context + "\n\n"
 
         if constitution:
             prompt += "## CONSTITUTIONAL MANDATES (FOLLOW STRICTLY):\n"
