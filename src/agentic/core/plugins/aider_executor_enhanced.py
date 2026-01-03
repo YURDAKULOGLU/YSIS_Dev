@@ -380,11 +380,11 @@ class AiderExecutorEnhanced(ExecutorProtocol):
         for i, step in enumerate(plan.steps):
             prompt += f"{i+1}. {step}\n"
 
-        # CRITICAL: Add explicit instruction to ignore template examples
-        prompt += "\n## CRITICAL INSTRUCTIONS:\n"
-        prompt += "- IGNORE any previous conversation examples (like 'Change the greeting to be more casual').\n"
-        prompt += "- ONLY follow the MISSION OBJECTIVE and EXECUTION STEPS above.\n"
-        prompt += "- The MISSION OBJECTIVE is the ONLY task you should work on.\n"
+        # Industry best practice: Clear task boundary without aggressive "IGNORE" commands
+        # This is more natural and follows prompt engineering best practices
+        prompt += "\n## TASK CONTEXT:\n"
+        prompt += "The MISSION OBJECTIVE above is your primary task. "
+        prompt += "Focus on implementing the requested functionality according to the EXECUTION STEPS.\n"
 
         # 3. Handle File Paths
         git_root = _get_code_root()
