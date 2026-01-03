@@ -247,7 +247,7 @@ def main():
         path = Path(f)
         if path.suffix in code_extensions and path.exists():
             valid_files.append(f)
-    
+
     files = valid_files
 
     if not files:

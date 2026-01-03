@@ -37,16 +37,16 @@ def get_debate_stats():
 
 def render_health_dashboard():
     st.header("🏢 Global System Health")
-    
+
     # 1. High Level Metrics
     col1, col2, col3, col4 = st.columns(4)
-    
+
     tasks = get_task_stats()
     debates = get_debate_stats()
-    
+
     col1.metric("Active Tasks", tasks.get("IN_PROGRESS", 0))
     col2.metric("Open Debates", debates["open"])
-    
+
     cpu = psutil.cpu_percent()
     ram = psutil.virtual_memory().percent
     col3.metric("CPU Load", f"{cpu}%")
@@ -56,14 +56,14 @@ def render_health_dashboard():
 
     # 2. Integrity Checklist
     st.subheader("[INFO] Factory Integrity Gate")
-    
+
     checks = {
         "Database Sync": DB_PATH.exists(),
         "Knowledge Graph": Path("Knowledge/Reports/lessons.jsonl").exists(),
         "Architecture Enforcer": Path("scripts/enforce_architecture.py").exists(),
         "Ollama Local Engine": os.getenv("OLLAMA_BASE_URL") is not None or True # Mock for now
     }
-    
+
     for label, ok in checks.items():
         if ok:
             st.success(f"[OK] {label}: Online")

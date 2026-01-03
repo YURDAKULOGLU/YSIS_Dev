@@ -19,7 +19,7 @@ class LessonEngine:
     def load_lessons(self) -> List[Dict]:
         if not LESSONS_FILE.exists():
             return []
-        
+
         lessons = []
         with open(LESSONS_FILE, "r", encoding="utf-8") as f:
             for line in f:

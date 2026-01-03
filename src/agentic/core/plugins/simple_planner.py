@@ -120,13 +120,13 @@ class SimplePlanner:
             if CONSTITUTION_PATH.exists():
                 with open(CONSTITUTION_PATH, "r", encoding="utf-8") as f:
                     context += f"### CONSTITUTION:\n{f.read()}\n\n"
-            
+
             # Add Auto Rules if they exist
             auto_rules_path = CONSTITUTION_PATH.parent.parent / "AUTO_RULES.md"
             if auto_rules_path.exists():
                 with open(auto_rules_path, "r", encoding="utf-8") as f:
                     context += f"### AUTOMATED LESSONS & RULES:\n{f.read()}\n\n"
-            
+
             return context if context else "Constitution not found. Follow standard best practices."
         except Exception:
             return "Error reading constitution or rules."

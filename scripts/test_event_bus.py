@@ -9,7 +9,7 @@ from src.agentic.infrastructure.redis_queue import event_bus, Events
 
 async def event_listener():
     print("[TEST] Listener started... Waiting for events.")
-    
+
     def on_event(event):
         print(f"[TEST] 🔔 EVENT RECEIVED: {event['type']} | Sender: {event['sender']}")
         print(f"[TEST] Payload: {event['data']}")
@@ -27,12 +27,12 @@ async def event_listener():
 async def event_publisher():
     await asyncio.sleep(1) # Give listener a head start
     print("[TEST] Publisher sending event...")
-    
+
     success = event_bus.publish(
-        Events.TASK_CREATED, 
+        Events.TASK_CREATED,
         {"task_id": "TASK-E2E-TEST", "goal": "Verify Event Bus"}
     )
-    
+
     if success:
         print("[TEST] ✅ Event published successfully!")
     else:

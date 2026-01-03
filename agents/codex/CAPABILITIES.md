@@ -70,7 +70,7 @@ When to delegate TO Codex:
 
 When Codex delegates:
 - Backend/Infrastructure → Claude
-- Strategic decisions → Gemini  
+- Strategic decisions → Gemini
 - Database work → Claude
 - MCP server → Claude
 

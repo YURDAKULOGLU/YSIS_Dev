@@ -44,11 +44,11 @@ class EventBus:
         self._port = int(os.getenv("REDIS_PORT", "6379"))
         self._db = int(os.getenv("REDIS_DB", "0"))
         self._password = os.getenv("REDIS_PASSWORD", None)
-        
+
         self.redis_client: Optional[redis.StrictRedis] = None
         self._available = False
         self._connect()
-        
+
         self._initialized = True
 
     def _connect(self):
@@ -112,7 +112,7 @@ class EventBus:
     async def subscribe_async(self, event_types: List[str], callback: Callable, namespace: str = "ybis"):
         """
         Asynchronously subscribe to event types.
-        
+
         Args:
             event_types: List of event types (or ['*'] for all)
             callback: Async or sync function to handle events
@@ -125,7 +125,7 @@ class EventBus:
         channels = [f"{namespace}:{et}" for et in event_types]
         pubsub = self.redis_client.pubsub()
         pubsub.subscribe(*channels)
-        
+
         log_event(f"Subscribed to {channels}", component="event_bus")
 
         try:
@@ -141,7 +141,7 @@ class EventBus:
                             callback(event)
                     except Exception as e:
                         log_event(f"Error in event callback: {e}", component="event_bus", level="error")
-                
+
                 await asyncio.sleep(0.1)
         except asyncio.CancelledError:
             pubsub.unsubscribe()
@@ -202,7 +202,7 @@ event_bus = EventBus()
 class RedisQueue:
     def __init__(self, host=None, port=None, db=0):
         self._bus = event_bus
-    
+
     def publish(self, channel: str, message: str):
         # Map legacy channel to event_type if possible
         event_type = channel.split(':')[-1] if ':' in channel else channel

@@ -32,7 +32,7 @@ PROJECT NEO: Visualization strategy for large graphs
 - Status: COMPLETED/SUCCESS
 
 ### DOC-TOOL-001 (DONE)
-Document tool-based protocol + frontmatter standard  
+Document tool-based protocol + frontmatter standard
 - Priority: HIGH
 - Updated AI_START_HERE.md and SYSTEM_STATE.md
 - Documented tool-based workflow
@@ -53,7 +53,7 @@ Onboarding/docs alignment
 - Subgraph fetch skeleton
 - Performance optimized for 5k+ nodes
 
-### Messaging Infrastructure  
+### Messaging Infrastructure
 - ybis.py message commands (send/read/ack)
 - Backward-compatible validation
 - MCP integration

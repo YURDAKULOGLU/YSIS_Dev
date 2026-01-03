@@ -64,7 +64,7 @@ from src.agentic.core.config import (
     VALIDATE_PLAN,
 )
 from src.agentic.core.utils.logging_utils import log_event
-from src.agentic.core.graphs.orchestrator_graph import OrchestratorGraph        
+from src.agentic.core.graphs.orchestrator_graph import OrchestratorGraph
 from src.agentic.core.plugins.aider_executor_enhanced import AiderExecutorEnhanced
 from src.agentic.core.plugins.artifact_generator import ArtifactGenerator
 from src.agentic.core.plugins.git_manager import GitWorktreeManager
@@ -605,9 +605,9 @@ def _enrich_context_with_rag(task_description: str) -> dict:
     return context
 
 
-def _build_task_context(task_description: str, base_root: Path) -> dict:        
+def _build_task_context(task_description: str, base_root: Path) -> dict:
     context = _enrich_context_with_rag(task_description)
-    if context.get("rag_context") and len(context["rag_context"]) > 2000:       
+    if context.get("rag_context") and len(context["rag_context"]) > 2000:
         context["rag_context"] = context["rag_context"][:2000].rstrip() + "\n... [truncated]"
     repo_tree = _build_repo_tree(base_root)
     if repo_tree:

@@ -49,13 +49,13 @@ def check_ollama():
         pass
 
     log("Ollama is NOT running.", "warning")
-    
+
     # Try to start Ollama
     if shutil.which("ollama"):
         log("Attempting to start Ollama in background...", "wait")
         try:
             subprocess.Popen(["ollama", "serve"], creationflags=subprocess.CREATE_NEW_CONSOLE)
-            
+
             # Wait for it to come up
             for _ in range(10):
                 time.sleep(2)
@@ -69,7 +69,7 @@ def check_ollama():
             log(f"Failed to auto-start Ollama: {e}", "error")
     else:
         log("Ollama executable not found in PATH.", "error")
-    
+
     return False
 
 def check_docker():
@@ -80,7 +80,7 @@ def check_docker():
         return True
     except subprocess.CalledProcessError:
         log("Docker daemon is NOT running.", "warning")
-        
+
         # Try to start Docker Desktop on Windows
         docker_path = r"C:\Program Files\Docker\Docker\Docker Desktop.exe"
         if os.path.exists(docker_path):
@@ -88,7 +88,7 @@ def check_docker():
             try:
                 subprocess.Popen([docker_path])
                 log("Docker Desktop launch signal sent. Waiting for daemon (this may take a minute)...", "wait")
-                
+
                 # Wait up to 60 seconds for Docker to be ready
                 for i in range(12):
                     time.sleep(5)
@@ -103,18 +103,18 @@ def check_docker():
                 log(f"Failed to launch Docker Desktop: {e}", "error")
         else:
             log(f"Docker Desktop not found at default location: {docker_path}", "warning")
-    
+
     return False
 
 def main():
     print(f"{Colors.HEADER}[TOOLS]️  YBIS DEPENDENCY AUTO-FIXER [TOOLS]️{Colors.ENDC}")
     print("---------------------------------------")
-    
+
     ollama_ok = check_ollama()
     print("---------------------------------------")
     docker_ok = check_docker()
     print("---------------------------------------")
-    
+
     if ollama_ok and docker_ok:
         log("ALL SYSTEMS GO! [LAUNCH]", "success")
         sys.exit(0)

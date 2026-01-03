@@ -20,15 +20,15 @@ class CCPMManager:
         """Create a new git worktree for a specific task"""
         target_path = self.worktree_base / task_id
         print(f"🚜 Creating worktree at: {target_path}")
-        
+
         try:
             # 1. Create branch
             subprocess.run(["git", "checkout", "-b", branch_name], capture_output=True)
-            
+
             # 2. Add worktree
             cmd = ["git", "worktree", "add", str(target_path), branch_name]
             result = subprocess.run(cmd, capture_output=True, text=True)
-            
+
             return {
                 "success": result.returncode == 0,
                 "path": str(target_path),

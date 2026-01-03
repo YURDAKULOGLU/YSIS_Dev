@@ -90,7 +90,7 @@ TASK_POLICIES: dict[TaskType, TestPolicy] = {
 def classify_task(task_id: str, goal: str) -> TaskType:
     """
     Classify task type based on ID prefix and goal keywords.
-    
+
     Convention:
     - FEATURE-*, feat:, add: -> FEATURE
     - FIX-*, fix:, bugfix: -> BUGFIX
@@ -102,7 +102,7 @@ def classify_task(task_id: str, goal: str) -> TaskType:
     """
     id_lower = task_id.lower()
     goal_lower = goal.lower()
-    
+
     # Check ID prefix first
     if id_lower.startswith("feature-") or id_lower.startswith("feat-"):
         return TaskType.FEATURE
@@ -118,7 +118,7 @@ def classify_task(task_id: str, goal: str) -> TaskType:
         return TaskType.TEST
     if id_lower.startswith("chore-") or id_lower.startswith("maint-"):
         return TaskType.CHORE
-    
+
     # Check goal keywords
     if any(kw in goal_lower for kw in ["add ", "implement ", "create ", "new "]):
         return TaskType.FEATURE
@@ -132,7 +132,7 @@ def classify_task(task_id: str, goal: str) -> TaskType:
         return TaskType.CONFIG
     if any(kw in goal_lower for kw in ["test", "spec", "coverage"]):
         return TaskType.TEST
-    
+
     # Default to FEATURE (strictest policy)
     return TaskType.FEATURE
 
@@ -162,7 +162,7 @@ def enforce_gate(
 ) -> GateResult:
     """
     Enforce test policy gate for a task.
-    
+
     Args:
         task_id: Task identifier
         goal: Task goal/description
@@ -170,7 +170,7 @@ def enforce_gate(
         tests_passed: Whether tests passed
         coverage: Test coverage (0.0-1.0)
         skip_tests: If True and policy allows, skip test requirements
-        
+
     Returns:
         GateResult with pass/fail status and details
     """
@@ -182,13 +182,13 @@ def enforce_gate(
             violations=[],
             warnings=["Test enforcement disabled via REQUIRE_TESTS=false"]
         )
-    
+
     task_type = classify_task(task_id, goal)
     policy = get_policy(task_type)
-    
+
     violations = []
     warnings = []
-    
+
     # Check if skip is requested and allowed
     if skip_tests:
         if policy.allow_skip:
@@ -202,21 +202,21 @@ def enforce_gate(
             )
         else:
             violations.append(f"Cannot skip tests for {task_type.value} task (policy prohibits)")
-    
+
     # Check lint
     if policy.lint_required and not lint_passed:
         violations.append("Lint check failed (required by policy)")
-    
+
     # Check tests
     if policy.unit_tests_required and not tests_passed:
         violations.append("Unit tests failed or not run (required by policy)")
-    
+
     # Check coverage
     if policy.min_coverage > 0 and coverage < policy.min_coverage:
         violations.append(
             f"Coverage {coverage:.1%} below minimum {policy.min_coverage:.1%}"
         )
-    
+
     return GateResult(
         passed=len(violations) == 0,
         task_type=task_type,
