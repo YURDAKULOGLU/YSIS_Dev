@@ -112,6 +112,9 @@ All META.json files (Tier 2+) must include `constitution_tags` array:
 - No silent changes: every code change must be documented in RESULT and CHANGES.
 - Testing: add or run tests when behavior changes. If not possible, record a
   clear manual verification in RESULT and explain the limitation in META.
+- **Non-Testable Artifacts:** Test yazılamayacak şeylerin kalitesi de kontrol edilecek.
+  Documentation, configuration, and design decisions must undergo quality verification
+  even if automated tests are not possible. See VERIFICATION_STANDARDS.md §4 for details.
 - Safety: avoid destructive commands unless explicitly approved.
 - Observability: tracing hooks must be preserved or extended, never removed.
 
