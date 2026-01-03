@@ -55,3 +55,8 @@ tree-sitter-language-pack
 tree-sitter==0.24.0
 open-interpreter
 ruff
+
+# Framework Documentation Download
+markdownify
+beautifulsoup4
+requests
