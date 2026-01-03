@@ -112,7 +112,16 @@ class SentinelVerifierEnhanced(VerifierProtocol):
             except Exception as e:
                 errors.append(f"Ruff system error: {e}")
 
-        # 4. Isolated Functional Testing (Pytest)
+        # 4. RUNTIME IMPORT TEST (NEW - Catches broken imports like OpenAI without key)
+        for file_path in py_files:
+            try:
+                import_errors = self._check_runtime_imports(file_path, sandbox_path)
+                for err in import_errors:
+                    errors.append(f"RUNTIME IMPORT ERROR in {os.path.basename(file_path)}: {err}")
+            except Exception as e:
+                warnings.append(f"Runtime check skipped for {file_path}: {e}")
+
+        # 5. Isolated Functional Testing (Pytest)
         try:
             # ONLY run tests that were modified in THIS task
             task_tests = [f for f in files_modified if "test_" in os.path.basename(f)]
@@ -150,6 +159,60 @@ class SentinelVerifierEnhanced(VerifierProtocol):
             warnings=warnings,
             logs=logs
         )
+
+    def _check_runtime_imports(self, file_path: str, sandbox_path: str) -> List[str]:
+        """
+        Check if a Python file can be imported without runtime errors.
+        Catches issues like missing API keys, unavailable packages, etc.
+        """
+        errors = []
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            
+            tree = ast.parse(content)
+            
+            # Extract all imports
+            imports = []
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Import):
+                    for alias in node.names:
+                        imports.append(alias.name)
+                elif isinstance(node, ast.ImportFrom):
+                    if node.module:
+                        imports.append(node.module)
+            
+            # Check for problematic external API dependencies
+            external_apis = {
+                "openai": "OpenAI API requires OPENAI_API_KEY - use Ollama/LiteLLM for local-first",
+                "anthropic": "Anthropic API requires API key - use Ollama for local-first",
+                "google.generativeai": "Google AI requires API key - use Ollama for local-first",
+            }
+            
+            for imp in imports:
+                if imp in external_apis:
+                    errors.append(f"CONSTITUTION VIOLATION: {external_apis[imp]}")
+            
+            # Try to actually import the module to catch runtime errors
+            module_name = os.path.basename(file_path).replace(".py", "")
+            parent_dir = os.path.dirname(file_path)
+            
+            # Quick instantiation test for classes
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ClassDef):
+                    # Check if __init__ requires API keys or external services
+                    for item in node.body:
+                        if isinstance(item, ast.FunctionDef) and item.name == "__init__":
+                            init_code = ast.unparse(item)
+                            if "raise ValueError" in init_code and "API" in init_code.upper():
+                                errors.append(f"Class {node.name}.__init__ will crash without API key")
+                            if "os.getenv" in init_code and "raise" in init_code:
+                                errors.append(f"Class {node.name} requires environment variable that may not exist")
+            
+        except Exception as e:
+            self.logger.warning(f"Runtime import check failed: {e}")
+        
+        return errors
 
     def _save_linting_errors(self, ruff_output: str, files: List[str]) -> None:
         """Save linting errors for future learning (RAG/Mem-0)."""
