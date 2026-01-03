@@ -142,16 +142,19 @@ class GraphDB:
         Returns nodes that depend on (import/reference) this file.
         """
         with self.driver.session() as session:
-            result = session.run("""
-                MATCH (source {path: $path})
-                MATCH path = (source)<-[:IMPORTS|REFERENCES|USES*1..$depth]-(affected)
+            # Neo4j 5.x doesn't allow parameter in relationship depth
+            # Use fixed depth ranges instead
+            query = f"""
+                MATCH (source {{path: $path}})
+                MATCH path = (source)<-[:IMPORTS|REFERENCES|USES*1..{max_depth}]-(affected)
                 WITH DISTINCT affected,
                      length(shortestPath((source)<-[*]-(affected))) as distance
                 RETURN affected.path as path,
                        labels(affected)[0] as type,
                        distance
                 ORDER BY distance, path
-            """, path=file_path, depth=max_depth)
+            """
+            result = session.run(query, path=file_path)
 
             return [dict(record) for record in result]
 
