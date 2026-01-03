@@ -485,6 +485,11 @@ When installing these frameworks, automatically download their full documentatio
 | **AutoGPT** | GitHub README + docs/ | Download all |
 | **Instructor** | GitHub README + docs/ | Download all |
 | **Ollama** | https://ollama.ai/docs/ | Scrape all pages |
+| **Temporal** | https://docs.temporal.io/ | Scrape all pages |
+| **Ray** | https://docs.ray.io/ | Scrape all pages |
+| **Prefect** | https://docs.prefect.io/ | Scrape all pages |
+| **SPADE** | https://spadeagents.eu/docs/ | Scrape all pages |
+| **Celery** | https://docs.celeryproject.org/ | Scrape all pages |
 
 **Implementation:** Create `scripts/download_framework_docs.py` that:
 1. Takes framework name
