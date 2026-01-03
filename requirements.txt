@@ -60,3 +60,10 @@ ruff
 markdownify
 beautifulsoup4
 requests
+
+# Task Management & Orchestration Frameworks
+temporalio
+ray[default]
+prefect
+spade
+celery[redis]
