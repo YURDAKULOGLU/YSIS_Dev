@@ -1,0 +1,47 @@
+profile: strict
+sandbox:
+  type: docker
+  enabled: true
+  network: false
+exec:
+  allowlist:
+    - "python"
+    - "pytest"
+    - "ruff"
+paths:
+  protected:
+    - "src/ybis/"
+gates:
+  require_approval_on_protected_paths: true
+  max_patch_lines_without_approval: 150
+  require_verifier_pass: true
+event_bus:
+  enabled: false
+  adapter: "redis"
+adapters:
+  local_coder:
+    enabled: true
+  aider:
+    enabled: false
+  e2b_sandbox:
+    enabled: false
+  chroma_vector_store:
+    enabled: false
+  qdrant_vector_store:
+    enabled: false
+  neo4j_graph:
+    enabled: false
+  llamaindex_adapter:
+    enabled: false
+  # Vendor adapters (experimental, disabled for strict profile)
+  evoagentx:
+    enabled: false
+  reactive_agents:
+    enabled: false
+  llm_council:
+    enabled: false
+  aiwaves_agents:
+    enabled: false
+  self_improve_swarms:
+    enabled: false
+

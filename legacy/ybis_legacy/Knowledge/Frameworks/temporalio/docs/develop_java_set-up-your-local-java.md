@@ -1,0 +1,416 @@
+Set up your local with the Java SDK | Temporal Platform Documentation
+
+
+
+[Skip to main content](#__docusaurus_skipToContent_fallback)
+
+Configure your local development environment to get started developing with Temporal.
+
+## Install the Java JDK[​](#install-the-java-jdk "Direct link to Install the Java JDK")
+
+Make sure you have the Java JDK installed.
+You can either download a copy directly from Oracle or select an OpenJDK distribution from your preferred vendor.
+
+You'll also need either Maven or Gradle installed.
+
+**If you don't have Maven:** [Download](https://maven.apache.org/download.cgi) and [install](https://maven.apache.org/install.html) from Apache.org, or use Homebrew: `brew install maven`.
+
+**If you don't have Gradle:** [Download](https://gradle.org/install/) from Gradle.org, use [IntelliJ IDEA](https://www.jetbrains.com/idea/) (bundled), or use Homebrew: `brew install gradle`.
+
+```
+java -version
+```
+
+## Create a Project[​](#create-a-project "Direct link to Create a Project")
+
+Now that you have your build tool installed, create a project to manage your dependencies and build your Temporal application.
+
+Choose your build tool to create the appropriate project structure. For Maven, this creates a standard project with the necessary directories and a basic pom.xml file. For Gradle, this creates a project with build.gradle and the standard Gradle directory structure.
+
+* Maven* Gradle
+
+```
+mkdir temporal-java-project
+```
+
+```
+cd temporal-java-project
+```
+
+```
+mvn archetype:generate -DgroupId=helloworkflow -DartifactId=temporal-hello-world -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+```
+
+```
+cd temporal-hello-world
+```
+
+```
+mkdir temporal-hello-world
+```
+
+```
+cd temporal-hello-world
+```
+
+```
+gradle init --type java-application --project-name temporal-hello-world --package helloworkflow
+```
+
+## Add Temporal Java SDK Dependencies[​](#add-temporal-java-sdk-dependencies "Direct link to Add Temporal Java SDK Dependencies")
+
+Now add the Temporal SDK dependencies to your project configuration file.
+
+For Maven, add the following dependencies to your `pom.xml` file. For Gradle, add the following lines to your `build.gradle` file.
+
+Next, you'll configure a local Temporal Service for development.
+
+* Maven* Gradle
+
+```
+<dependencies>  
+<!--  
+  Temporal dependencies needed to compile, build,  
+  test, and run Temporal's Java SDK  
+-->  
+  
+<!--  
+  SDK  
+-->  
+<dependency>  
+  <groupId>io.temporal</groupId>  
+  <artifactId>temporal-sdk</artifactId>  
+  <version>1.24.1</version>  
+</dependency>  
+  
+<dependency>  
+  <!--  
+    Testing  
+  -->  
+  <groupId>io.temporal</groupId>  
+  <artifactId>temporal-testing</artifactId>  
+  <version>1.24.1</version>  
+  <scope>test</scope>  
+</dependency>  
+</dependencies>
+```
+
+```
+plugins {  
+  id 'application'  
+}  
+  
+repositories {  
+  mavenCentral()  
+}  
+  
+dependencies {  
+  implementation 'io.temporal:temporal-sdk:1.24.1'  
+  testImplementation 'io.temporal:temporal-testing:1.24.1'  
+}  
+  
+application {  
+  // Define the main class for the application  
+  mainClass = 'helloworkflow.Starter'  
+}  
+  
+// Helper tasks to run the worker and the starter  
+tasks.register('runWorker', JavaExec) {  
+  group = 'application'  
+  description = 'Run the Temporal worker'  
+  classpath = sourceSets.main.runtimeClasspath  
+  mainClass = 'helloworkflow.SayHelloWorker'  
+}  
+  
+tasks.register('runStarter', JavaExec) {  
+  group = 'application'  
+  description = 'Run the workflow starter'  
+  classpath = sourceSets.main.runtimeClasspath  
+  mainClass = 'helloworkflow.Starter'  
+}
+```
+
+```
+./gradlew build
+```
+
+## Install Temporal CLI and start the development server[​](#install-temporal-cli-and-start-the-development-server "Direct link to Install Temporal CLI and start the development server")
+
+The fastest way to get a development version of the Temporal Service running on your local machine is to use [Temporal CLI](https://docs.temporal.io/cli).
+
+Choose your operating system to install Temporal CLI:
+
+* macOS* Windows* Linux
+
+Install the Temporal CLI using Homebrew:
+
+```
+brew install temporal
+```
+
+Download the Temporal CLI archive for your architecture:
+
+* [Windows amd64](https://temporal.download/cli/archive/latest?platform=windows&arch=amd64)* [Windows arm64](https://temporal.download/cli/archive/latest?platform=windows&arch=arm64)
+
+Extract it and add `temporal.exe` to your PATH.
+
+Download the Temporal CLI for your architecture:
+
+* [Linux amd64](https://temporal.download/cli/archive/latest?platform=linux&arch=amd64)* [Linux arm64](https://temporal.download/cli/archive/latest?platform=linux&arch=arm64)
+
+Extract the archive and move the `temporal` binary into your PATH, for example:
+
+```
+sudo mv temporal /usr/local/bin
+```
+
+## Start the development server[​](#start-the-development-server "Direct link to Start the development server")
+
+Once you've installed Temporal CLI and added it to your PATH, open a new Terminal window and run the following command.
+
+This command starts a local Temporal Service. It starts the Web UI, creates the default Namespace, and uses an in-memory database.
+
+The Temporal Service will be available on localhost:7233.
+The Temporal Web UI will be available at <http://localhost:8233>.
+
+Leave the local Temporal Service running as you work through tutorials and other projects. You can stop the Temporal Service at any time by pressing CTRL+C.
+
+Once you have everything installed, you're ready to build apps with Temporal on your local machine.
+
+After installing, open a new Terminal. Keep this running in the background:
+
+```
+temporal server start-dev
+```
+
+#### Change the Web UI port
+
+The Temporal Web UI may be on a different port in some examples or tutorials. To change the port for the Web UI, use the `--ui-port` option when starting the server:
+
+```
+temporal server start-dev --ui-port 8080
+```
+
+The Temporal Web UI will now be available at http://localhost:8080.
+
+## Run Hello World: Test Your Installation[​](#run-hello-world-test-your-installation "Direct link to Run Hello World: Test Your Installation")
+
+Now let's verify your setup is working by creating and running a complete Temporal application with both a Workflow and Activity.
+
+This test will confirm that:
+
+* The Temporal Java SDK is properly installed
+* Your local Temporal Service is running
+* You can successfully create and execute Workflows and Activities
+* The communication between components is functioning correctly
+
+### 1. Create the Activity Interface[​](#1-create-the-activity-interface "Direct link to 1. Create the Activity Interface")
+
+Create an Activity interface file (GreetActivities.java):
+
+*Note that all files for this quickstart will be created under src/main/java/helloworkflow.*
+
+```
+package helloworkflow;  
+  
+import io.temporal.activity.ActivityInterface;  
+import io.temporal.activity.ActivityMethod;  
+  
+@ActivityInterface  
+public interface GreetActivities {  
+  
+    @ActivityMethod  
+    String greet(String name);  
+  
+}
+```
+
+An Activity is a method that executes a single, well-defined action (either short or long running), which often involve interacting with the outside world, such as sending emails, making network requests, writing to a database, or calling an API, which are prone to failure. If an Activity fails, Temporal automatically retries it based on your configuration.
+
+You define Activities in Java as an annotated interface, and its implementation.
+
+### 2. Create the Activity Implementation[​](#2-create-the-activity-implementation "Direct link to 2. Create the Activity Implementation")
+
+Create an Activity implementation file (GreetActivitiesImpl.java):
+
+```
+package helloworkflow;  
+  
+public class GreetActivitiesImpl implements GreetActivities {  
+  
+    @Override  
+    public String greet(String name) {  
+      return "Hello " + name;  
+    }  
+  
+}
+```
+
+### 3. Create the Workflow[​](#3-create-the-workflow "Direct link to 3. Create the Workflow")
+
+Create a Workflow file (SayHelloWorkflow.java):
+
+```
+package helloworkflow;  
+  
+import io.temporal.workflow.WorkflowInterface;  
+import io.temporal.workflow.WorkflowMethod;  
+  
+@WorkflowInterface  
+public interface SayHelloWorkflow {  
+  
+    @WorkflowMethod  
+    String sayHello(String name);  
+  
+}
+```
+
+Workflows orchestrate Activities and contain the application logic.
+Temporal Workflows are resilient.
+They can run and keep running for years, even if the underlying infrastructure fails. If the application itself crashes, Temporal will automatically recreate its pre-failure state so it can continue right where it left off.
+
+You define Workflows in Java as an annotated interface, and its implementation.
+
+### 4. Create the Workflow Implementation[​](#4-create-the-workflow-implementation "Direct link to 4. Create the Workflow Implementation")
+
+Create a Workflow implementation file (SayHelloWorkflowImpl.java):
+
+```
+package helloworkflow;  
+  
+import io.temporal.activity.ActivityOptions;  
+import io.temporal.workflow.Workflow;  
+  
+import java.time.Duration;  
+  
+public class SayHelloWorkflowImpl implements SayHelloWorkflow {  
+  
+    private final GreetActivities activities = Workflow.newActivityStub(  
+      GreetActivities.class,  
+      ActivityOptions.newBuilder()  
+        .setStartToCloseTimeout(Duration.ofSeconds(5))  
+        .build()  
+    );  
+  
+    @Override  
+    public String sayHello(String name) {  
+      return activities.greet(name);  
+    }  
+  
+}
+```
+
+### 5. Create and Run the Worker[​](#5-create-and-run-the-worker "Direct link to 5. Create and Run the Worker")
+
+Create a Worker file (SayHelloWorker.java):
+
+```
+package helloworkflow;  
+  
+import io.temporal.client.WorkflowClient;  
+import io.temporal.serviceclient.WorkflowServiceStubs;  
+import io.temporal.worker.Worker;  
+import io.temporal.worker.WorkerFactory;  
+  
+public class SayHelloWorker {  
+  
+    public static void main(String[] args) {  
+  
+      WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();  
+      WorkflowClient client = WorkflowClient.newInstance(service);  
+      WorkerFactory factory = WorkerFactory.newInstance(client);  
+  
+      Worker worker = factory.newWorker("my-task-queue");  
+      worker.registerWorkflowImplementationTypes(SayHelloWorkflowImpl.class);  
+      worker.registerActivitiesImplementations(new GreetActivitiesImpl());  
+  
+      System.out.println("Starting SayHelloWorker for task queue 'my-task-queue'...");  
+  
+      factory.start();  
+          
+    }  
+  
+}
+```
+
+With your Activity and Workflow defined, you need a Worker to execute them.
+
+Open a new terminal and run the Worker:
+
+* Maven* Gradle
+
+```
+cd temporal-hello-world  
+mvn compile exec:java -Dexec.mainClass="helloworkflow.SayHelloWorker"
+```
+
+```
+./gradlew runWorker
+```
+
+A Worker polls a Task Queue, that you configure it to poll, looking for work to do.
+Once the Worker dequeues a Workflow or Activity task from the Task Queue, it then executes that task.
+
+Workers are a crucial part of your Temporal application as they're what actually execute the tasks defined in your Workflows and Activities.
+For more information on Workers, see [Understanding Temporal](/evaluate/understanding-temporal#workers) and a [deep dive into Workers](/workers).
+
+### 6. Execute the Workflow[​](#6-execute-the-workflow "Direct link to 6. Execute the Workflow")
+
+Now that your Worker is running, it's time to start a Workflow Execution.
+
+This final step will validate that everything is working correctly with your file labeled `Starter.java`.
+
+Create a separate file called `Starter.java`:
+
+```
+package helloworkflow;  
+  
+import io.temporal.client.WorkflowClient;  
+import io.temporal.client.WorkflowOptions;  
+import io.temporal.serviceclient.WorkflowServiceStubs;  
+  
+public class Starter {  
+    public static void main(String[] args) {  
+        WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();  
+        WorkflowClient client = WorkflowClient.newInstance(service);  
+  
+        SayHelloWorkflow workflow = client.newWorkflowStub(  
+            SayHelloWorkflow.class,  
+            WorkflowOptions.newBuilder()  
+                .setTaskQueue("my-task-queue")  
+                .setWorkflowId("say-hello-workflow-id")  
+                .build()  
+        );  
+  
+        String result = workflow.sayHello("Temporal");  
+        System.out.println("Workflow result: " + result);  
+    }  
+}
+```
+
+While your worker is still running, open a new terminal and run:
+
+* Maven* Gradle
+
+```
+cd temporal-hello-world  
+mvn compile exec:java -Dexec.mainClass="helloworkflow.Starter"
+```
+
+```
+./gradlew runStarter
+```
+
+### Verify Success[​](#verify-success "Direct link to Verify Success")
+
+If everything is working correctly, you should see:
+
+* Worker processing the workflow and activity
+* Output: `Workflow result: Hello Temporal`
+* Workflow Execution details in the [Temporal Web UI](http://localhost:8233)
+
+[### Next: Run your first Temporal Application
+
+Create a basic Workflow and run it with the Temporal Java SDK
+
+→](https://learn.temporal.io/getting_started/java/first_program_in_java/)

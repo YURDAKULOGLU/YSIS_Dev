@@ -1,0 +1,34 @@
+Temporal Go SDK multithreading | Temporal Platform Documentation
+
+
+
+[Skip to main content](#__docusaurus_skipToContent_fallback)
+
+On this page
+
+The Temporal Go SDK allows you to create additional goroutines (threads) in your Workflows by calling `workflow.Go()`.
+Native Go threading is never allowed in Workflow code, as it would create determinism errors.
+
+You might sometimes need to execute multiple Activities or Child Workflows in parallel and then await the result of all of them.
+Normally, this would require a lock or [mutex](https://en.wikipedia.org/wiki/Lock_(computer_science)) around some shared data structure to avoid race conditions that could occur when multiple asynchronous operations try to modify the data structure.
+
+Although Temporal Workflows run Asynchronously in Go, there is a control in place that ensures only one thread can access at the time.
+
+## How multithreading works[​](#how-multithreading-works "Direct link to How multithreading works")
+
+Temporal's Go SDKs contains a deterministic runner to control the thread execution.
+This deterministic runner will decide which Workflow thread to run in the right order, and one at a time.
+Each task will execute in a loop until all threads are blocked.
+
+`workflow.Go()` creates a new thread and adds it to this runner.
+This significantly minimizes the likelihood of race conditions, and eliminates the need to use a mutex.
+
+For a complex example, refer to the [Go Particle Swarm Operation Sample](https://github.com/temporalio/samples-go/tree/main/pso).
+
+For an example using Signals, refer to the [Go Await Signal Sample](https://github.com/temporalio/samples-go/tree/main/await-signals)
+
+## Static analysis with the workflowcheck tool[​](#static-analysis-with-the-workflowcheck-tool "Direct link to Static analysis with the workflowcheck tool")
+
+The Temporal Go SDK also provides a command line tool called [`workflowcheck`](https://github.com/temporalio/sdk-go/blob/master/contrib/tools/workflowcheck/README.md) to statically analyze Workflow Definitions. This can help eliminate potential instances of non-determinism.
+
+* [How multithreading works](#how-multithreading-works)* [Static analysis with the workflowcheck tool](#static-analysis-with-the-workflowcheck-tool)

@@ -1,0 +1,17 @@
+{
+  "name": "celery",
+  "version": "5.6.2",
+  "description": "Distributed Task Queue.",
+  "home_page": "https://docs.celeryq.dev/",
+  "documentation_url": "https://docs.celeryq.dev/en/stable/",
+  "github_url": "https://github.com/celery/celery",
+  "project_urls": {
+    "Changelog": "https://docs.celeryq.dev/en/stable/changelog.html",
+    "Code": "https://github.com/celery/celery",
+    "Documentation": "https://docs.celeryq.dev/en/stable/",
+    "Funding": "https://opencollective.com/celery",
+    "Homepage": "https://docs.celeryq.dev/",
+    "Tracker": "https://github.com/celery/celery/issues"
+  },
+  "scraped_at": "2026-01-05T02:03:10.719659"
+}

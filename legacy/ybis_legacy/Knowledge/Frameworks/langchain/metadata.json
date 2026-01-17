@@ -1,0 +1,18 @@
+{
+  "name": "langchain",
+  "version": "1.2.0",
+  "description": "Building applications with LLMs through composability",
+  "home_page": "https://pypi.org/project/langchain/",
+  "documentation_url": "https://reference.langchain.com/python/langchain/langchain/",
+  "github_url": "https://github.com/langchain-ai/langchain/tree/master/libs/langchain",
+  "project_urls": {
+    "Changelog": "https://github.com/langchain-ai/langchain/releases?q=tag%3A%22langchain%3D%3D1%22",
+    "Documentation": "https://reference.langchain.com/python/langchain/langchain/",
+    "Homepage": "https://docs.langchain.com/",
+    "Reddit": "https://www.reddit.com/r/LangChain/",
+    "Slack": "https://www.langchain.com/join-community",
+    "Source": "https://github.com/langchain-ai/langchain/tree/master/libs/langchain",
+    "Twitter": "https://x.com/LangChainAI"
+  },
+  "scraped_at": "2026-01-05T00:52:53.782996"
+}

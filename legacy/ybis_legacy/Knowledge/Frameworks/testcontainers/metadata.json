@@ -1,0 +1,13 @@
+{
+  "name": "testcontainers",
+  "version": "4.13.3",
+  "description": "Python library for throwaway instances of anything that can run in a Docker container",
+  "home_page": "https://pypi.org/project/testcontainers/",
+  "documentation_url": null,
+  "github_url": "https://github.com/testcontainers/testcontainers-python",
+  "project_urls": {
+    "GitHub": "https://github.com/testcontainers/testcontainers-python",
+    "Issue Tracker": "https://github.com/testcontainers/testcontainers-python/issues"
+  },
+  "scraped_at": "2026-01-05T01:15:41.265082"
+}

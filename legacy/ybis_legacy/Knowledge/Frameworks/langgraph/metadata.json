@@ -1,0 +1,18 @@
+{
+  "name": "langgraph",
+  "version": "1.0.5",
+  "description": "Building stateful, multi-actor applications with LLMs",
+  "home_page": "https://pypi.org/project/langgraph/",
+  "documentation_url": "https://reference.langchain.com/python/langgraph/",
+  "github_url": "https://github.com/langchain-ai/langgraph/tree/main/libs/langgraph",
+  "project_urls": {
+    "Changelog": "https://github.com/langchain-ai/langgraph/releases",
+    "Documentation": "https://reference.langchain.com/python/langgraph/",
+    "Homepage": "https://docs.langchain.com/oss/python/langgraph/overview",
+    "Reddit": "https://www.reddit.com/r/LangChain/",
+    "Slack": "https://www.langchain.com/join-community",
+    "Source": "https://github.com/langchain-ai/langgraph/tree/main/libs/langgraph",
+    "Twitter": "https://x.com/LangChainAI"
+  },
+  "scraped_at": "2026-01-04T19:36:13.921550"
+}

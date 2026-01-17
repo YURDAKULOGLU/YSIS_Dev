@@ -1,0 +1,18 @@
+{
+  "name": "streamlit",
+  "version": "1.52.2",
+  "description": "A faster way to build and share data apps",
+  "home_page": "https://streamlit.io",
+  "documentation_url": "https://docs.streamlit.io/",
+  "github_url": "https://github.com/streamlit/streamlit",
+  "project_urls": {
+    "Bug Tracker": "https://github.com/streamlit/streamlit/issues",
+    "Community": "https://discuss.streamlit.io/",
+    "Documentation": "https://docs.streamlit.io/",
+    "Homepage": "https://streamlit.io",
+    "Release notes": "https://docs.streamlit.io/develop/quick-reference/changelog",
+    "Source Code": "https://github.com/streamlit/streamlit",
+    "Twitter": "https://twitter.com/streamlit"
+  },
+  "scraped_at": "2026-01-04T23:47:49.624328"
+}

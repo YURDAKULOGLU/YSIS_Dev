@@ -1,0 +1,68 @@
+{
+  "name": "ybis-integration",
+  "version": "1.0.0",
+  "description": "YBIS Platform deep integration plugin - task management, workflows, artifacts",
+  "author": "YBIS Team",
+  "license": "MIT",
+  
+  "type": "tool",
+  "entrypoint": "index.py",
+  
+  "permissions": [
+    "read",
+    "write",
+    "network",
+    "subprocess"
+  ],
+  
+  "config": {
+    "ybis_db_path": "${PROJECT_ROOT}/platform_data/control_plane.db",
+    "workspace_root": "${PROJECT_ROOT}/workspaces",
+    "default_workflow": "ybis_native",
+    "auto_claim": false,
+    "max_retries": 3
+  },
+  
+  "tools": [
+    "ybis_quick_task",
+    "ybis_workspace_status",
+    "ybis_artifact_search",
+    "ybis_workflow_visualize"
+  ],
+  
+  "commands": [
+    "ybis-status",
+    "ybis-dashboard"
+  ],
+  
+  "hooks": {
+    "PreToolUse": ["validate_ybis_context"],
+    "PostToolUse": ["track_ybis_changes"]
+  },
+  
+  "dependencies": {
+    "python": ">=3.10",
+    "packages": ["aiosqlite", "pydantic"]
+  },
+  
+  "settings_schema": {
+    "type": "object",
+    "properties": {
+      "auto_claim": {
+        "type": "boolean",
+        "default": false,
+        "description": "Automatically claim pending tasks"
+      },
+      "notify_on_complete": {
+        "type": "boolean", 
+        "default": true,
+        "description": "Send notification when task completes"
+      },
+      "workspace_cleanup_days": {
+        "type": "integer",
+        "default": 30,
+        "description": "Days before archiving completed workspaces"
+      }
+    }
+  }
+}

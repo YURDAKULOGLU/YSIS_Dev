@@ -1,0 +1,15 @@
+{
+  "name": "python-docx",
+  "version": "1.2.0",
+  "description": "Create, read, and update Microsoft Word .docx files.",
+  "home_page": "https://pypi.org/project/python-docx/",
+  "documentation_url": "https://python-docx.readthedocs.org/en/latest/",
+  "github_url": null,
+  "project_urls": {
+    "Changelog": "https://github.com/python-openxml/python-docx/blob/master/HISTORY.rst",
+    "Documentation": "https://python-docx.readthedocs.org/en/latest/",
+    "Homepage": "https://github.com/python-openxml/python-docx",
+    "Repository": "https://github.com/python-openxml/python-docx"
+  },
+  "scraped_at": "2026-01-05T07:53:20.212897"
+}

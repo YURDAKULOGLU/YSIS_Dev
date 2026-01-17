@@ -1,0 +1,116 @@
+name: example_dynamic
+version: 1
+description: "Example workflow with dynamic conditions and node config"
+
+nodes:
+  - id: spec
+    type: spec_generator
+    config:
+      model: "ollama/llama3.2:3b"
+      temperature: 0.7
+      max_tokens: 2000
+  
+  - id: plan
+    type: planner
+    config:
+      max_steps: 10
+      allow_parallel: false
+  
+  - id: execute
+    type: executor
+    config:
+      adapter: "local_coder"
+      timeout: 300
+      retry_count: 3
+  
+  - id: verify
+    type: verifier
+    config:
+      run_pytest: true
+      check_coverage: true
+      min_coverage: 0.80
+  
+  - id: gate
+    type: gate
+    config:
+      require_approval: false
+      risk_threshold: 50
+
+connections:
+  - from: START
+    to: spec
+  
+  - from: spec
+    to: plan
+  
+  - from: plan
+    to: execute
+  
+  - from: execute
+    to: verify
+  
+  # Dynamic condition: Check if retries < 3
+  - from: verify
+    to: repair
+    condition:
+      type: state_check
+      field: retries
+      operator: lt
+      value: 3
+      routes:
+        true: repair
+        false: gate
+    route: repair
+  
+  - from: verify
+    to: gate
+    condition:
+      type: state_check
+      field: retries
+      operator: lt
+      value: 3
+      routes:
+        true: repair
+        false: gate
+    route: gate
+  
+  - from: repair
+    to: execute
+  
+  # Dynamic condition: Check if artifact exists
+  - from: gate
+    to: END
+    condition:
+      type: artifact_check
+      artifact: gate_report.json
+      check: exists
+      routes:
+        true: END
+        false: gate
+    route: end
+  
+  - from: gate
+    to: gate
+    condition:
+      type: artifact_check
+      artifact: gate_report.json
+      check: exists
+      routes:
+        true: END
+        false: gate
+    route: retry
+
+requirements:
+  modules:
+    - spec_generator
+    - planner
+    - executor
+    - verifier
+    - gate
+  artifacts:
+    - spec.md
+    - plan.json
+    - executor_report.json
+    - verifier_report.json
+    - gate_report.json
+

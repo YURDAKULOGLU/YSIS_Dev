@@ -176,5 +176,38 @@ worker_test.err
 **/.venv/
 **/site-packages/
 
-# Large directories
-tools/
+# Large directories (organs - Frankenstein's harvest)
+organs/
+
+# ============================================================================
+# New Architecture (YBIS Platform)
+# ============================================================================
+
+# Policy profiles (may contain sensitive config)
+# configs/profiles/*.yaml  # Keep profiles in git, but ignore local overrides
+configs/profiles/*.local.yaml
+configs/profiles/*.override.yaml
+
+# Platform data volumes
+platform_data/
+
+# New workspace structure (immutable runs)
+workspaces/*/runs/
+
+# ============================================================================
+# Root Junk Files (moved to legacy/orphaned_root_files/)
+# ============================================================================
+/code
+/nul
+/path
+
+# Root log files (moved to logs/archive/)
+/*.log
+/*.err
+/worker.out
+/listener.err
+/listener.log
+/production.log
+/scraper_run.log
+/worker_test.err
+/worker_test.log

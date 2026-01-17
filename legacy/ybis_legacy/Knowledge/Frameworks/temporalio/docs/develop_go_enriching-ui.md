@@ -1,0 +1,154 @@
+Enriching the User Interface - Go SDK | Temporal Platform Documentation
+
+
+
+[Skip to main content](#__docusaurus_skipToContent_fallback)
+
+On this page
+
+Temporal supports adding context to Workflows and Events with metadata.
+This helps users identify and understand Workflows and their operations.
+
+## Adding Summary and Details to Workflows[​](#adding-summary-and-details-to-workflows "Direct link to Adding Summary and Details to Workflows")
+
+### Starting a Workflow[​](#starting-a-workflow "Direct link to Starting a Workflow")
+
+When starting a Workflow, you can provide a static summary and details to help identify the Workflow in the UI:
+
+```
+import (  
+    "context"  
+    "go.temporal.io/sdk/client"  
+)  
+  
+func main() {  
+    // Create the client  
+    c, err := client.Dial(client.Options{})  
+    if err != nil {  
+        // Handle error  
+    }  
+    defer c.Close()  
+  
+    // Start workflow options with static summary and details  
+    workflowOptions := client.StartWorkflowOptions{  
+        ID:        "your-workflow-id",  
+        TaskQueue: "your-task-queue",  
+        StaticSummary: "Order processing for customer #12345",  
+        StaticDetails: "Processing premium order with expedited shipping",  
+    }  
+  
+    // Start the workflow  
+    we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, YourWorkflow, "workflow input")  
+    if err != nil {  
+        // Handle error  
+    }  
+}
+```
+
+`StaticSummary` is a single-line description that appears in the Workflow list view, limited to 200 bytes.
+`StaticDetails` can be multi-line and provides more comprehensive information that appears in the Workflow details view, with a larger limit of 20K bytes.
+
+The input format is standard Markdown excluding images, HTML, and scripts.
+
+### Inside the Workflow[​](#inside-the-workflow "Direct link to Inside the Workflow")
+
+Within a Workflow, you can get and set the *current workflow details*.
+Unlike static summary/details set at Workflow start, this value can be updated throughout the life of the Workflow.
+Current Workflow details also takes Markdown format (excluding images, HTML, and scripts) and can span multiple lines.
+
+```
+import (  
+    "go.temporal.io/sdk/workflow"  
+)  
+  
+func YourWorkflow(ctx workflow.Context, input string) (string, error) {  
+    // Get the current details  
+    currentDetails := workflow.GetCurrentDetails(ctx)  
+    workflow.GetLogger(ctx).Info("Current details", "details", currentDetails)  
+      
+    // Set/update the current details  
+    workflow.SetCurrentDetails(ctx, "Updated workflow details with new status")  
+      
+    return "Workflow completed", nil  
+}
+```
+
+### Adding Summary to Activities and Timers[​](#adding-summary-to-activities-and-timers "Direct link to Adding Summary to Activities and Timers")
+
+You can attach a metadata parameter `Summary` to Activities when starting them from within a Workflow:
+
+```
+import (  
+    "time"  
+    "go.temporal.io/sdk/workflow"  
+)  
+  
+func YourWorkflow(ctx workflow.Context, input string) (string, error) {  
+    // Activity options with summary  
+    ao := workflow.ActivityOptions{  
+        StartToCloseTimeout: 10 * time.Second,  
+        Summary: "Processing user data",  
+    }  
+    ctx = workflow.WithActivityOptions(ctx, ao)  
+  
+    // Execute the activity  
+    var result string  
+    err := workflow.ExecuteActivity(ctx, YourActivity, input).Get(ctx, &result)  
+    if err != nil {  
+        return "", err  
+    }  
+      
+    return result, nil  
+}
+```
+
+Similarly, you can attach a `Summary` to timers within a Workflow:
+
+```
+import (  
+    "time"  
+    "go.temporal.io/sdk/workflow"  
+)  
+  
+func YourWorkflow(ctx workflow.Context, input string) (string, error) {  
+    // Create a timer with options including summary  
+    timerFuture := workflow.NewTimerWithOptions(ctx, 5*time.Minute, workflow.TimerOptions{  
+        Summary: "Waiting for payment confirmation",  
+    })  
+      
+    // Wait for the timer  
+    err := timerFuture.Get(ctx, nil)  
+    if err != nil {  
+        return "", err  
+    }  
+      
+    return "Timer completed", nil  
+}
+```
+
+The input format for `Summary` is a string, and limited to 200 bytes.
+
+## Viewing Summary and Details in the UI[​](#viewing-summary-and-details-in-the-ui "Direct link to Viewing Summary and Details in the UI")
+
+Once you've added summaries and details to your workflows, activities, and timers, you can view this enriched information in the Temporal Web UI.
+Navigate to your Workflow's details page to see the metadata displayed in two key locations:
+
+### Workflow Overview Section[​](#workflow-overview-section "Direct link to Workflow Overview Section")
+
+At the top of the workflow details page, you'll find the workflow-level metadata:
+
+* **Summary & Details** - Displays the static summary and static details set when starting the workflow
+* **Current Details** - Displays the dynamic details that can be updated during workflow execution
+
+All Workflow details support standard Markdown formatting (excluding images, HTML, and scripts), allowing you to create rich, structured information displays.
+
+### Event History[​](#event-history "Direct link to Event History")
+
+Individual events in the Workflow's Event History display their associated summaries when available.
+
+Workflow, Activity and Timer summaries appear in purple text next to their corresponding events, providing immediate context without requiring you to expand the event details.
+When you do expand an event, the summary is also prominently displayed in the detailed view.
+
+* [Adding Summary and Details to Workflows](#adding-summary-and-details-to-workflows)
+  + [Starting a Workflow](#starting-a-workflow)+ [Inside the Workflow](#inside-the-workflow)+ [Adding Summary to Activities and Timers](#adding-summary-to-activities-and-timers)* [Viewing Summary and Details in the UI](#viewing-summary-and-details-in-the-ui)
+    + [Workflow Overview Section](#workflow-overview-section)+ [Event History](#event-history)

@@ -1,0 +1,10 @@
+{
+  "name": "langfuse",
+  "version": "3.11.2",
+  "description": "A client library for accessing langfuse",
+  "home_page": "https://pypi.org/project/langfuse/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {},
+  "scraped_at": "2026-01-05T01:16:05.822636"
+}

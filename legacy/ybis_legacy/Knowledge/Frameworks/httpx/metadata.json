@@ -1,0 +1,15 @@
+{
+  "name": "httpx",
+  "version": "0.28.1",
+  "description": "The next generation HTTP client.",
+  "home_page": "https://pypi.org/project/httpx/",
+  "documentation_url": "https://www.python-httpx.org",
+  "github_url": "https://github.com/encode/httpx",
+  "project_urls": {
+    "Changelog": "https://github.com/encode/httpx/blob/master/CHANGELOG.md",
+    "Documentation": "https://www.python-httpx.org",
+    "Homepage": "https://github.com/encode/httpx",
+    "Source": "https://github.com/encode/httpx"
+  },
+  "scraped_at": "2026-01-05T01:13:27.985705"
+}

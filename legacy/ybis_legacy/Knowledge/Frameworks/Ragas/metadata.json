@@ -1,0 +1,15 @@
+{
+  "name": "ragas",
+  "version": "0.4.2",
+  "description": "Evaluation framework for RAG and LLM applications",
+  "home_page": "https://pypi.org/project/ragas/",
+  "documentation_url": "https://docs.ragas.io",
+  "github_url": "https://github.com/vibrantlabsai/ragas",
+  "project_urls": {
+    "Code": "https://github.com/vibrantlabsai/ragas",
+    "Documentation": "https://docs.ragas.io",
+    "Homepage": "https://github.com/vibrantlabsai/ragas",
+    "Issues": "https://github.com/vibrantlabsai/ragas/issues"
+  },
+  "scraped_at": "2026-01-04T19:53:11.375688"
+}

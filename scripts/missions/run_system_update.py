@@ -11,7 +11,7 @@ from Agentic.Crews.planning_crew import PlanningCrew
 from Agentic.Crews.dev_crew import DevCrew
 
 def main():
-    print("🤖 MASTER ORCHESTRATOR: System Update Initiated...")
+    print(" MASTER ORCHESTRATOR: System Update Initiated...")
 
     # 1. PLAN PHASE
     print("\n[PHASE 1] Planning...")

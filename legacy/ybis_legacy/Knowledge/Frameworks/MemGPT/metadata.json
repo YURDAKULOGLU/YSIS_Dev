@@ -1,0 +1,10 @@
+{
+  "name": "memgpt",
+  "version": "0.2.0",
+  "description": "This package contains the code for training a memory-augmented GPT model on patient data. Please note that this is not the 'letta' company project with thehttps://github.com/letta-ai/letta; for use of their package, plsuse 'pymemgpt' instead.",
+  "home_page": "https://pypi.org/project/memgpt/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {},
+  "scraped_at": "2026-01-05T08:07:18.782862"
+}

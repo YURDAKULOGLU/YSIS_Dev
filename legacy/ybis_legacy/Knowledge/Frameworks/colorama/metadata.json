@@ -1,0 +1,12 @@
+{
+  "name": "colorama",
+  "version": "0.4.6",
+  "description": "Cross-platform colored terminal text.",
+  "home_page": "https://pypi.org/project/colorama/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Homepage": "https://github.com/tartley/colorama"
+  },
+  "scraped_at": "2026-01-04T19:36:22.623746"
+}

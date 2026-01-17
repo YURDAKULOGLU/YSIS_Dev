@@ -1,0 +1,15 @@
+{
+  "name": "temporalio",
+  "version": "1.21.1",
+  "description": "Temporal.io Python SDK",
+  "home_page": "https://pypi.org/project/temporalio/",
+  "documentation_url": "https://docs.temporal.io/docs/python",
+  "github_url": null,
+  "project_urls": {
+    "Bug Tracker": "https://github.com/temporalio/sdk-python/issues",
+    "Documentation": "https://docs.temporal.io/docs/python",
+    "Homepage": "https://github.com/temporalio/sdk-python",
+    "Repository": "https://github.com/temporalio/sdk-python"
+  },
+  "scraped_at": "2026-01-05T01:16:15.290728"
+}

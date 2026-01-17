@@ -1,0 +1,13 @@
+{
+  "name": "beautifulsoup4",
+  "version": "4.14.3",
+  "description": "Screen-scraping library",
+  "home_page": "https://pypi.org/project/beautifulsoup4/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Download": "https://www.crummy.com/software/BeautifulSoup/bs4/download/",
+    "Homepage": "https://www.crummy.com/software/BeautifulSoup/bs4/"
+  },
+  "scraped_at": "2026-01-05T00:02:39.359781"
+}

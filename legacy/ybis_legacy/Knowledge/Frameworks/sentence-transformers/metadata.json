@@ -1,0 +1,13 @@
+{
+  "name": "sentence-transformers",
+  "version": "5.2.0",
+  "description": "Embeddings, Retrieval, and Reranking",
+  "home_page": "https://pypi.org/project/sentence-transformers/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Homepage": "https://www.SBERT.net",
+    "Repository": "https://github.com/huggingface/sentence-transformers/"
+  },
+  "scraped_at": "2026-01-04T19:36:20.712750"
+}

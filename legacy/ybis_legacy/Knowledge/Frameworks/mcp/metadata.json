@@ -1,0 +1,14 @@
+{
+  "name": "mcp",
+  "version": "1.25.0",
+  "description": "Model Context Protocol SDK",
+  "home_page": "https://pypi.org/project/mcp/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Homepage": "https://modelcontextprotocol.io",
+    "Issues": "https://github.com/modelcontextprotocol/python-sdk/issues",
+    "Repository": "https://github.com/modelcontextprotocol/python-sdk"
+  },
+  "scraped_at": "2026-01-04T23:42:03.617908"
+}

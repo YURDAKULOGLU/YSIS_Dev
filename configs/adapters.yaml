@@ -1,0 +1,418 @@
+# Adapter Catalog - Source of Truth for YBIS Adapters
+#
+# This catalog defines all available adapters in the YBIS platform.
+# Each adapter entry includes metadata for registration, policy, and lifecycle management.
+#
+# Last Updated: 2026-01-08
+
+adapters:
+  # ============================================================================
+  # EXECUTOR ADAPTERS
+  # ============================================================================
+  
+  local_coder:
+    name: "local_coder"
+    type: "executor"
+    module_path: "src.ybis.adapters.local_coder.LocalCoderExecutor"
+    description: "Native Ollama-based code executor. Default executor for all tasks."
+    maturity: "stable"
+    owner: "ybis-core"
+    default_enabled: true
+    dependencies:
+      - "litellm>=0.1.0"
+      - "ollama>=0.1.0"
+    capabilities:
+      - "code_generation"
+      - "file_editing"
+      - "error_correction"
+    health_check: "is_available()"
+    policy_key: "adapters.local_coder.enabled"
+    
+  aider:
+    name: "aider"
+    type: "executor"
+    module_path: "src.ybis.adapters.aider.AiderExecutor"
+    description: "Aider-based code executor with advanced editing capabilities."
+    maturity: "beta"
+    owner: "ybis-core"
+    default_enabled: false
+    dependencies:
+      - "aider-chat>=0.1.0"
+    capabilities:
+      - "code_generation"
+      - "file_editing"
+      - "search_replace"
+    health_check: "is_available()"
+    policy_key: "adapters.aider.enabled"
+    notes: "Requires Aider to be installed separately. Optional executor."
+
+  openhands:
+    name: "openhands"
+    type: "executor"
+    module_path: "src.ybis.adapters.openhands.OpenHandsAdapter"
+    description: "OpenHands autonomous coding agent (SWE-bench SOTA)."
+    maturity: "beta"
+    owner: "ybis-core"
+    default_enabled: false
+    dependencies:
+      - "openhands-ai==1.2.1"
+    capabilities:
+      - "code_generation"
+      - "code_editing"
+      - "test_fixing"
+      - "refactoring"
+    health_check: "is_available()"
+    policy_key: "adapters.openhands.enabled"
+    notes: "Requires OpenHands to be installed. Uses OpenHands CLI/Python API."
+
+  # ============================================================================
+  # SANDBOX ADAPTERS
+  # ============================================================================
+  
+  e2b_sandbox:
+    name: "e2b_sandbox"
+    type: "sandbox"
+    module_path: "src.ybis.adapters.e2b_sandbox.E2BSandboxAdapter"
+    description: "E2B cloud sandbox for isolated code execution with network access."
+    maturity: "stable"
+    owner: "ybis-core"
+    default_enabled: false
+    dependencies:
+      - "e2b>=1.0.0"
+      - "e2b-code-interpreter>=1.0.0"
+    capabilities:
+      - "isolated_execution"
+      - "network_access"
+      - "file_system"
+    health_check: "is_available()"
+    policy_key: "adapters.e2b_sandbox.enabled"
+    environment_variables:
+      - "E2B_API_KEY"
+    notes: "Requires E2B API key. Falls back to local execution if unavailable."
+
+  # ============================================================================
+  # VECTOR STORE ADAPTERS
+  # ============================================================================
+  
+  chroma_vector_store:
+    name: "chroma_vector_store"
+    type: "vector_store"
+    module_path: "src.ybis.adapters.vector_store_chroma.ChromaVectorStoreAdapter"
+    description: "ChromaDB vector store for semantic search and RAG."
+    maturity: "beta"
+    owner: "ybis-core"
+    default_enabled: false
+    dependencies:
+      - "chromadb>=0.4.0"
+      - "litellm>=0.1.0"
+    capabilities:
+      - "document_storage"
+      - "semantic_search"
+      - "embeddings"
+    health_check: "is_available()"
+    policy_key: "adapters.chroma_vector_store.enabled"
+    notes: "Local persistent storage. Uses Ollama embeddings by default."
+
+  qdrant_vector_store:
+    name: "qdrant_vector_store"
+    type: "vector_store"
+    module_path: "src.ybis.adapters.vector_store_qdrant.QdrantVectorStoreAdapter"
+    description: "Qdrant vector store for scalable semantic search."
+    maturity: "beta"
+    owner: "ybis-core"
+    default_enabled: false
+    dependencies:
+      - "qdrant-client>=1.0.0"
+      - "litellm>=0.1.0"
+    capabilities:
+      - "document_storage"
+      - "semantic_search"
+      - "embeddings"
+      - "scalable"
+    health_check: "is_available()"
+    policy_key: "adapters.qdrant_vector_store.enabled"
+    environment_variables:
+      - "QDRANT_URL"
+      - "QDRANT_API_KEY"
+    notes: "Can use local Qdrant or Qdrant Cloud. Requires Qdrant server."
+
+  # ============================================================================
+  # GRAPH STORE ADAPTERS
+  # ============================================================================
+  
+  neo4j_graph:
+    name: "neo4j_graph"
+    type: "graph_store"
+    module_path: "src.ybis.adapters.graph_store_neo4j.Neo4jGraphStoreAdapter"
+    description: "Neo4j graph database for code dependency tracking and analysis."
+    maturity: "beta"
+    owner: "ybis-core"
+    default_enabled: false
+    dependencies:
+      - "neo4j>=5.0.0"
+    capabilities:
+      - "dependency_tracking"
+      - "impact_analysis"
+      - "circular_dependency_detection"
+      - "critical_file_identification"
+    health_check: "is_available()"
+    policy_key: "adapters.neo4j_graph.enabled"
+    environment_variables:
+      - "NEO4J_URI"
+      - "NEO4J_USER"
+      - "NEO4J_PASSWORD"
+    notes: "Requires Neo4j server. Used by dependency analysis tools."
+
+  # ============================================================================
+  # LLM ADAPTERS
+  # ============================================================================
+  
+  llamaindex_adapter:
+    name: "llamaindex_adapter"
+    type: "llm_adapter"
+    module_path: "src.ybis.adapters.llamaindex_adapter.LlamaIndexAdapter"
+    description: "LlamaIndex integration for advanced RAG and context management."
+    maturity: "beta"
+    owner: "ybis-core"
+    default_enabled: false
+    dependencies:
+      - "llama-index>=0.10.0"
+      - "llama-index-core>=0.10.0"
+    capabilities:
+      - "rag"
+      - "context_management"
+      - "document_indexing"
+    health_check: "is_available()"
+    policy_key: "adapters.llamaindex_adapter.enabled"
+    notes: "Optional LLM framework integration. Can be used with vector stores."
+
+  # ============================================================================
+  # EVENT BUS ADAPTERS
+  # ============================================================================
+  
+  redis_event_bus:
+    name: "redis_event_bus"
+    type: "event_bus"
+    module_path: "src.ybis.services.event_bus.RedisEventBusAdapter"
+    description: "Redis-based event bus for system-wide event publishing and subscription."
+    maturity: "stable"
+    owner: "ybis-core"
+    default_enabled: false
+    dependencies:
+      - "redis>=5.0.0"
+    capabilities:
+      - "event_publishing"
+      - "event_subscription"
+      - "pub_sub"
+    health_check: "is_available()"
+    policy_key: "event_bus.enabled"
+    environment_variables:
+      - "REDIS_HOST"
+      - "REDIS_PORT"
+      - "REDIS_PASSWORD"
+    notes: "Requires Redis server. Used by event bus service and health monitor."
+
+  # ============================================================================
+  # OBSERVABILITY ADAPTERS
+  # ============================================================================
+  
+  langfuse_observability:
+    name: "langfuse_observability"
+    type: "observability"
+    module_path: "src.ybis.adapters.observability_langfuse.LangfuseObservabilityAdapter"
+    description: "Langfuse integration for LLM call tracing and workflow observability."
+    maturity: "beta"
+    owner: "ybis-core"
+    default_enabled: false
+    dependencies:
+      - "langfuse>=2.0.0"
+    capabilities:
+      - "llm_tracing"
+      - "workflow_observability"
+      - "metrics_collection"
+    health_check: "is_available()"
+    policy_key: "adapters.langfuse_observability.enabled"
+    environment_variables:
+      - "LANGFUSE_PUBLIC_KEY"
+      - "LANGFUSE_SECRET_KEY"
+      - "LANGFUSE_HOST"
+    notes: "Requires Langfuse account. Provides LLM call tracing and metrics."
+
+  opentelemetry_observability:
+    name: "opentelemetry_observability"
+    type: "observability"
+    module_path: "src.ybis.adapters.observability_opentelemetry.OpenTelemetryObservabilityAdapter"
+    description: "OpenTelemetry integration for distributed tracing."
+    maturity: "beta"
+    owner: "ybis-core"
+    default_enabled: false
+    dependencies:
+      - "opentelemetry-api>=1.20.0"
+      - "opentelemetry-sdk>=1.20.0"
+      - "opentelemetry-exporter-otlp>=1.20.0"
+    capabilities:
+      - "distributed_tracing"
+      - "span_tracking"
+      - "trace_correlation"
+    health_check: "is_available()"
+    policy_key: "adapters.opentelemetry_observability.enabled"
+    environment_variables:
+      - "OTEL_SERVICE_NAME"
+      - "OTEL_EXPORTER"
+      - "OTEL_EXPORTER_OTLP_ENDPOINT"
+      - "JAEGER_ENDPOINT"
+    notes: "Supports OTLP, Jaeger, and console exporters. Used for distributed tracing."
+
+  # ============================================================================
+  # WORKFLOW EVOLUTION ADAPTERS
+  # ============================================================================
+  
+  evoagentx:
+    name: "evoagentx"
+    type: "workflow_evolution"
+    module_path: "src.ybis.adapters.evoagentx.EvoAgentXAdapter"
+    description: "EvoAgentX integration for workflow evolution and optimization."
+    maturity: "experimental"
+    owner: "ybis-vendor"
+    default_enabled: false
+    dependencies:
+      - "EvoAgentX (vendors/EvoAgentX)"
+    capabilities:
+      - "workflow_evolution"
+      - "workflow_optimization"
+      - "workflow_scoring"
+    health_check: "is_available()"
+    policy_key: "adapters.evoagentx.enabled"
+    notes: "Requires EvoAgentX in vendors/EvoAgentX. Workflow evolution not yet implemented."
+
+  agent0:
+    name: "agent0"
+    type: "workflow_evolution"
+    module_path: "src.ybis.adapters.evoagentx.EvoAgentXAdapter"
+    description: "Agent0 alias for EvoAgentX workflow evolution."
+    maturity: "experimental"
+    owner: "ybis-vendor"
+    default_enabled: false
+    dependencies:
+      - "EvoAgentX (vendors/EvoAgentX)"
+    capabilities:
+      - "workflow_evolution"
+      - "workflow_optimization"
+    health_check: "is_available()"
+    policy_key: "adapters.agent0.enabled"
+    notes: "Alias for EvoAgentX. Use for Agent0 branding in workflows."
+
+  # ============================================================================
+  # AGENT RUNTIME ADAPTERS
+  # ============================================================================
+  
+  reactive_agents:
+    name: "reactive_agents"
+    type: "agent_runtime"
+    module_path: "src.ybis.adapters.reactive_agents.ReactiveAgentsAdapter"
+    description: "Reactive-agents integration for tool-using agent execution with MCP support."
+    maturity: "experimental"
+    owner: "ybis-vendor"
+    default_enabled: false
+    dependencies:
+      - "reactive-agents (to be installed)"
+    capabilities:
+      - "agent_execution"
+      - "tool_usage"
+      - "mcp_support"
+    health_check: "is_available()"
+    policy_key: "adapters.reactive_agents.enabled"
+    notes: "Requires reactive-agents package. Agent runtime not yet implemented."
+
+  # ============================================================================
+  # COUNCIL REVIEW ADAPTERS
+  # ============================================================================
+  
+  llm_council:
+    name: "llm_council"
+    type: "council_review"
+    module_path: "src.ybis.adapters.llm_council.LLMCouncilAdapter"
+    description: "LLM-council integration for multi-model review and ranking."
+    maturity: "experimental"
+    owner: "ybis-vendor"
+    default_enabled: false
+    dependencies:
+      - "llm-council (to be installed)"
+    capabilities:
+      - "multi_model_review"
+      - "candidate_ranking"
+      - "consensus_analysis"
+    health_check: "is_available()"
+    policy_key: "adapters.llm_council.enabled"
+    notes: "Requires llm-council package. Multi-model review not yet implemented."
+
+  # ============================================================================
+  # AGENT LEARNING ADAPTERS
+  # ============================================================================
+  
+  aiwaves_agents:
+    name: "aiwaves_agents"
+    type: "agent_learning"
+    module_path: "src.ybis.adapters.aiwaves_agents.AIWavesAgentsAdapter"
+    description: "AIWaves-agents integration for symbolic learning and pipeline optimization."
+    maturity: "experimental"
+    owner: "ybis-vendor"
+    default_enabled: false
+    dependencies:
+      - "aiwaves-agents (to be installed)"
+    capabilities:
+      - "symbolic_learning"
+      - "pipeline_optimization"
+      - "trajectory_analysis"
+    health_check: "is_available()"
+    policy_key: "adapters.aiwaves_agents.enabled"
+    notes: "Requires aiwaves-agents package. Learning and optimization not yet implemented."
+
+  # ============================================================================
+  # SELF-IMPROVE LOOP ADAPTERS
+  # ============================================================================
+  
+  self_improve_swarms:
+    name: "self_improve_swarms"
+    type: "self_improve_loop"
+    module_path: "src.ybis.adapters.self_improve_swarms.SelfImproveSwarmsAdapter"
+    description: "Self-Improve-Swarms integration for reflection-based self-improvement loop."
+    maturity: "experimental"
+    owner: "ybis-vendor"
+    default_enabled: false
+    dependencies:
+      - "Self-Improve-Swarms (to be installed)"
+    capabilities:
+      - "reflection"
+      - "improvement_planning"
+      - "self_improvement"
+      - "integration"
+    health_check: "is_available()"
+    policy_key: "adapters.self_improve_swarms.enabled"
+    notes: "Requires Self-Improve-Swarms package. Self-improvement loop not yet implemented."
+
+# ============================================================================
+# ADAPTER TYPES SUMMARY
+# ============================================================================
+# 
+# Types:
+# - executor: Code execution adapters (local_coder, aider)
+# - sandbox: Isolation adapters (e2b_sandbox)
+# - vector_store: Vector database adapters (chroma, qdrant)
+# - graph_store: Graph database adapters (neo4j)
+# - llm_adapter: LLM framework adapters (llamaindex)
+# - event_bus: Event bus adapters (redis)
+# - observability: Observability adapters (langfuse, opentelemetry)
+# - workflow_evolution: Workflow evolution adapters (evoagentx)
+# - agent_runtime: Agent runtime adapters (reactive_agents)
+# - council_review: Council review adapters (llm_council)
+# - agent_learning: Agent learning adapters (aiwaves_agents)
+# - self_improve_loop: Self-improve loop adapters (self_improve_swarms)
+#
+# Maturity Levels:
+# - stable: Production-ready, well-tested
+# - beta: Functional but may have limitations
+# - experimental: Early stage, use with caution
+#
+# ============================================================================
+

@@ -1,0 +1,12 @@
+{
+  "name": "psutil",
+  "version": "7.2.1",
+  "description": "Cross-platform lib for process and system monitoring.",
+  "home_page": "https://github.com/giampaolo/psutil",
+  "documentation_url": null,
+  "github_url": "https://github.com/giampaolo/psutil",
+  "project_urls": {
+    "Homepage": "https://github.com/giampaolo/psutil"
+  },
+  "scraped_at": "2026-01-05T01:16:03.560393"
+}

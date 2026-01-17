@@ -4,7 +4,7 @@ import os
 import shutil
 
 # NEW STANDARD PATH
-DB_PATH = os.path.join(os.getcwd(), "Knowledge", "LocalDB", "chroma_db")
+DB_PATH = os.path.join(os.getcwd(), "platform_data", "knowledge", "LocalDB", "chroma_db")
 
 def test_chroma():
     print(f"[INFO] Cleaning up {DB_PATH}...")

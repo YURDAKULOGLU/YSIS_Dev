@@ -1,0 +1,135 @@
+# YBIS Native Workflow
+# This is the canonical workflow that matches the current hardcoded build_workflow_graph()
+
+name: ybis_native
+version: 1
+description: "Native YBIS workflow with spec-first validation and repair loop"
+
+nodes:
+  - id: spec
+    type: spec_generator
+    description: "Generate SPEC.md from task objective"
+  
+  - id: validate_spec
+    type: spec_validator
+    description: "Validate spec structure and completeness"
+  
+  - id: plan
+    type: planner
+    description: "Generate plan.json from spec"
+  
+  - id: validate_plan
+    type: plan_validator
+    description: "Validate plan against spec requirements"
+  
+  - id: execute
+    type: executor
+    description: "Execute plan using registered executor"
+    config:
+      adapter: "openhands"
+  
+  - id: validate_impl
+    type: impl_validator
+    description: "Validate implementation against spec"
+  
+  - id: verify
+    type: verifier
+    description: "Run verifier (lint + tests)"
+  
+  - id: repair
+    type: repair
+    description: "Attempt to fix errors detected by verifier"
+  
+  - id: gate
+    type: gate
+    description: "Check gates (verification + risk)"
+  
+  - id: debate
+    type: debate
+    description: "Conduct council debate when blocked"
+
+connections:
+  # Main flow
+  - from: START
+    to: spec
+  
+  - from: spec
+    to: validate_spec
+  
+  - from: validate_spec
+    to: plan
+  
+  - from: plan
+    to: validate_plan
+  
+  - from: validate_plan
+    to: execute
+  
+  - from: execute
+    to: validate_impl
+  
+  # Conditional: Loop back to execute if more steps, otherwise to verify
+  # Note: Conditional routing handled in runner via should_continue_steps function
+  - from: validate_impl
+    to: execute
+    condition: "should_continue_steps"
+  
+  - from: validate_impl
+    to: verify
+    condition: "should_continue_steps"
+  
+  # Conditional: Retry via repair or proceed to gate
+  - from: verify
+    to: repair
+    condition: "should_retry_route"
+  
+  - from: verify
+    to: gate
+    condition: "should_retry_route"
+  
+  # Conditional: Repair route - go back to spec/plan if needed, otherwise re-execute
+  - from: repair
+    to: spec
+    condition: "repair_route"
+  
+  - from: repair
+    to: plan
+    condition: "repair_route"
+  
+  - from: repair
+    to: execute
+    condition: "repair_route"
+  
+  - from: repair
+    to: gate
+    condition: "repair_route"
+  
+  # Conditional: Debate if blocked, otherwise end
+  - from: gate
+    to: debate
+    condition: "should_debate"
+  
+  - from: gate
+    to: END
+    condition: "should_debate"
+  
+  - from: debate
+    to: END
+
+requirements:
+  modules:
+    - spec_validator
+    - plan_validator
+    - impl_validator
+    - verifier
+    - gate
+  
+  artifacts:
+    - plan.json
+    - executor_report.json
+    - verifier_report.json
+    - gate_report.json
+    - spec_structure_validation.json
+    - plan_validation.json
+    - implementation_validation.json
+

@@ -1,0 +1,12 @@
+{
+  "name": "pdfplumber",
+  "version": "0.11.8",
+  "description": "Plumb a PDF for detailed information about each char, rectangle, and line.",
+  "home_page": "https://github.com/jsvine/pdfplumber",
+  "documentation_url": null,
+  "github_url": "https://github.com/jsvine/pdfplumber",
+  "project_urls": {
+    "Homepage": "https://github.com/jsvine/pdfplumber"
+  },
+  "scraped_at": "2026-01-05T07:53:19.325126"
+}

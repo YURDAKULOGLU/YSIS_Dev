@@ -1,7 +1,7 @@
 # EXTERNAL AGENTS PIPELINE
 
 > **Constitutional Requirements for External Agents:**
-> All external agents must comply with [`docs/governance/YBIS_CONSTITUTION.md`](governance/YBIS_CONSTITUTION.md):
+> All external agents must comply with [`docs/CONSTITUTION.md`](CONSTITUTION.md):
 > - Use single spine (`scripts/run_orchestrator.py`)
 > - MCP-first operations (`scripts/ybis.py`)
 > - Produce required artifacts (PLAN, RUNBOOK, RESULT, META, CHANGES)

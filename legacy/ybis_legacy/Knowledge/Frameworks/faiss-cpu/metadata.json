@@ -1,0 +1,12 @@
+{
+  "name": "faiss-cpu",
+  "version": "1.13.2",
+  "description": "A library for efficient similarity search and clustering of dense vectors.",
+  "home_page": "https://pypi.org/project/faiss-cpu/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Repository": "https://github.com/kyamagu/faiss-wheels"
+  },
+  "scraped_at": "2026-01-05T00:08:15.632598"
+}

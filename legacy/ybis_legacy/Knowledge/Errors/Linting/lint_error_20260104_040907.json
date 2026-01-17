@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-01-04T04:09:07.689746",
+  "files": [
+    "C:\\Projeler\\YBIS_Dev\\src\\agentic\\core\\executors\\openhands_executor.py"
+  ],
+  "ruff_output": "F821 Undefined name `ModelRouter`\n  --> src\\agentic\\core\\executors\\openhands_executor.py:20:42\n   |\n18 |     \"\"\"\n19 |\n20 |     def __init__(self, router: Optional['ModelRouter'] = None) -> None:\n   |                                          ^^^^^^^^^^^\n21 |         \"\"\"\n22 |         Initialize the OpenHandsExecutor.\n   |\n\nFound 1 error.\n",
+  "error_type": "linting"
+}

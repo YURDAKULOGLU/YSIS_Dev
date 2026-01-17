@@ -1,0 +1,12 @@
+{
+  "name": "instructor",
+  "version": "1.13.0",
+  "description": "structured outputs for llm",
+  "home_page": "https://pypi.org/project/instructor/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "repository": "https://github.com/instructor-ai/instructor"
+  },
+  "scraped_at": "2026-01-04T23:42:07.429002"
+}

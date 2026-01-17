@@ -1,0 +1,16 @@
+{
+  "name": "pytest-asyncio",
+  "version": "1.3.0",
+  "description": "Pytest support for asyncio",
+  "home_page": "https://pypi.org/project/pytest-asyncio/",
+  "documentation_url": "https://pytest-asyncio.readthedocs.io",
+  "github_url": "https://github.com/pytest-dev/pytest-asyncio",
+  "project_urls": {
+    "Bug Tracker": "https://github.com/pytest-dev/pytest-asyncio/issues",
+    "Changelog": "https://pytest-asyncio.readthedocs.io/en/latest/reference/changelog.html",
+    "Documentation": "https://pytest-asyncio.readthedocs.io",
+    "Homepage": "https://github.com/pytest-dev/pytest-asyncio",
+    "Source Code": "https://github.com/pytest-dev/pytest-asyncio"
+  },
+  "scraped_at": "2026-01-04T23:50:57.232408"
+}

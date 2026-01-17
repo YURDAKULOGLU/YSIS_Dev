@@ -1,23 +1,244 @@
-[tool.ruff]
-# Ruff: The fast linter
-line-length = 120
-select = ["E", "F", "I", "W", "UP", "PL"]
-ignore = ["E712"]  # Allow == True/False comparisons (Aider generates these)
+[project]
+name = "ybis-platform"
+version = "0.1.0"
+description = "Governed agent runtime with workflows, syscalls, evidence, and MCP."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.7",
+  "pydantic-settings>=2.3",
+  "langgraph>=0.2",
+  "anyio>=4.0",
+  "rich>=13.0",
+  "httpx>=0.27",
+  "aiosqlite>=0.20",
+  "typer>=0.12",
+  "tenacity>=8.2",
+  "pyyaml>=6.0",
+  "e2b>=1.0.0",
+  "e2b-code-interpreter>=1.0.0",
+  "GitPython>=3.1.40",
+  "mcp>=1.0.0",
+]
 
-[tool.mypy]
-# MyPy: Static type checker (like TSC)
-python_version = "3.12"
-warn_return_any = true
-warn_unused_configs = true
-ignore_missing_imports = true
+[project.scripts]
+ybis = "ybis.cli:main"
+
+[tool.setuptools]
+packages = ["ybis", "ybis.adapters", "ybis.contracts", "ybis.control_plane", "ybis.data_plane", "ybis.dependencies", "ybis.executors", "ybis.migrations", "ybis.orchestrator", "ybis.services", "ybis.services.mcp_tools", "ybis.syscalls", "ybis.workflows", "ybis.cli"]
+package-dir = {"ybis" = "src/ybis"}
+
+[project.optional-dependencies]
+dev = [
+  "ruff>=0.5.0",
+  "mypy>=1.10",
+  "pytest>=8.0",
+  "pytest-asyncio>=0.23",
+  "pytest-cov>=5.0",
+  "pytest-xdist>=3.0.0",  # Parallel test execution
+  "pytest-json-report>=1.5",  # JSON report for structured test output
+  "types-requests",
+  "pre-commit>=3.7",
+  "bandit>=1.7.0",
+  "hypothesis>=6.0",  # Property-based testing (Week 2)
+  "mutmut>=2.4",  # Mutation testing (Week 2)
+  "mkdocs>=1.5",  # Documentation site (Week 2)
+  "mkdocs-material>=9.0",  # Material theme for MkDocs (Week 2)
+  "mkdocstrings[python]>=0.24",  # Auto API docs from docstrings (Week 2)
+  "gptcache>=0.1.0",  # Semantic LLM caching (Week 3)
+  "dspy-ai>=2.0",  # Prompt optimization (Week 3)
+  # Note: Programmatic Tool Calling uses LOCAL Ollama (no anthropic SDK needed)
+  # Note: Mem0 uses LOCAL VectorStore (no mem0ai needed)
+  "pyan3>=1.1.0",
+  "llama-index>=0.10.0",
+  "pip-audit>=2.6.0",
+  "import-linter>=2.0",  # Module boundary enforcement (Constitution III.5)
+]
+# Adapter dependencies (version-pinned per adapter)
+adapters-chroma = [
+  "chromadb>=0.4.0,<0.5.0",
+  "litellm>=0.1.0",
+]
+adapters-qdrant = [
+  "qdrant-client>=1.0.0,<2.0.0",
+  "litellm>=0.1.0",
+]
+adapters-neo4j = [
+  "neo4j>=5.0.0,<6.0.0",
+]
+adapters-llamaindex = [
+  "llama-index>=0.10.0,<0.11.0",
+  "llama-index-core>=0.10.0,<0.11.0",
+]
+adapters-redis = [
+  "redis>=5.0.0,<6.0.0",
+]
+adapters-aider = [
+  "aider-chat>=0.50.0",
+]
+adapters-openhands = [
+  "openhands-ai==1.2.1",
+]
+adapters-langfuse = [
+  "langfuse>=2.0.0,<3.0.0",
+]
+adapters-opentelemetry = [
+  "opentelemetry-api>=1.20.0,<2.0.0",
+  "opentelemetry-sdk>=1.20.0,<2.0.0",
+  "opentelemetry-exporter-otlp>=1.20.0,<2.0.0",
+]
+# Install all adapters: pip install -e ".[adapters-chroma,adapters-qdrant,adapters-neo4j,adapters-llamaindex,adapters-redis,adapters-aider,adapters-langfuse,adapters-opentelemetry]"
+all-adapters = [
+  "chromadb>=0.4.0,<0.5.0",
+  "qdrant-client>=1.0.0,<2.0.0",
+  "neo4j>=5.0.0,<6.0.0",
+  "llama-index>=0.10.0,<0.11.0",
+  "llama-index-core>=0.10.0,<0.11.0",
+  "redis>=5.0.0,<6.0.0",
+  "aider-chat>=0.1.0,<0.2.0",
+  "langfuse>=2.0.0,<3.0.0",
+  "opentelemetry-api>=1.20.0,<2.0.0",
+  "opentelemetry-sdk>=1.20.0,<2.0.0",
+  "opentelemetry-exporter-otlp>=1.20.0,<2.0.0",
+  "litellm>=0.1.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "cli", "tests"]
+extend-exclude = ["workspaces", "vendors", "third_party", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "SIM", "RUF"]
+ignore = ["E501"]  # handled by formatter
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "-ra -q"
+testpaths = ["tests"]
+addopts = """
+    -v
+    --tb=short
+    --strict-markers
+    --strict-config
+    -ra
+"""
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "unit: Fast isolated unit tests",
+    "integration: Tests requiring external services",
+    "e2e: End-to-end workflow tests",
+    "slow: Tests taking > 5 seconds",
+    "smoke: Quick sanity checks",
+    "llm: Tests requiring LLM API (expensive)",
+    "database: Tests requiring database",
+    "vector_store: Tests requiring vector store",
+    "property: Property-based tests using Hypothesis",
+]
 filterwarnings = [
-    "ignore:Pydantic serializer warnings:UserWarning:pydantic.*",
+    "ignore::DeprecationWarning:httpx._models",
+    "ignore::UserWarning:pydantic.main",
+    "ignore::DeprecationWarning:litellm",
 ]
-testpaths = [
-    "tests",
-    "src/agentic/core/plugin_system/tests",
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "src"
+packages = ["ybis"]  # maps to src/ybis
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+disallow_any_generics = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+exclude = "(workspaces|vendors|third_party|.venv)/"
+
+[tool.coverage.run]
+branch = true
+source = ["src/ybis"]
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/migrations/*",
 ]
+parallel = true
+concurrency = ["thread", "greenlet"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+fail_under = 60
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+    "@abstractmethod",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+# Import-linter configuration (Constitution III.5: Layer Discipline)
+# See MODULE_BOUNDARIES.md for rules
+[tool.importlinter]
+root_package = "ybis"
+
+[[tool.importlinter.contracts]]
+name = "Syscalls cannot import from orchestrator"
+type = "forbidden"
+source_modules = ["ybis.syscalls"]
+forbidden_modules = ["ybis.orchestrator", "ybis.workflows"]
+
+[[tool.importlinter.contracts]]
+name = "Adapters cannot import from orchestrator"
+type = "forbidden"
+source_modules = ["ybis.adapters"]
+forbidden_modules = ["ybis.orchestrator"]
+
+[[tool.importlinter.contracts]]
+name = "Data plane cannot import from orchestrator"
+type = "forbidden"
+source_modules = ["ybis.data_plane"]
+forbidden_modules = ["ybis.orchestrator", "ybis.workflows"]
+
+[[tool.importlinter.contracts]]
+name = "Control plane cannot import from orchestrator"
+type = "forbidden"
+source_modules = ["ybis.control_plane"]
+forbidden_modules = ["ybis.orchestrator", "ybis.workflows"]
+
+[[tool.importlinter.contracts]]
+name = "Services cannot import from orchestrator"
+type = "forbidden"
+source_modules = ["ybis.services"]
+forbidden_modules = ["ybis.orchestrator"]
+
+[[tool.importlinter.contracts]]
+name = "Constants can be imported by anyone"
+type = "independence"
+modules = ["ybis.constants"]
+
+[[tool.importlinter.contracts]]
+name = "Contracts can be imported by anyone"
+type = "independence"
+modules = ["ybis.contracts"]
+
+# Hypothesis configuration (Week 2)
+[tool.hypothesis]
+max_examples = 100  # Default number of examples to generate
+deadline = 5000  # Max time per test in milliseconds
+
+# Bandit configuration (Security SAST)
+[tool.bandit]
+exclude_dirs = ["vendors", "legacy", "workspaces/archive", ".venv", "tests"]
+skips = ["B101"]  # Skip assert_used (tests use asserts)

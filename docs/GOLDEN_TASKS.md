@@ -177,7 +177,7 @@ Her golden run artifacts üretir:
 * Beklenen: PASS (kurulum + doküman indirme + RAG ingestion)
 * Success Criteria:
   - Package kuruldu
-  - Dokümanlar indirildi (Knowledge/Frameworks/{name}/docs/)
+  - Dokümanlar indirildi (platform_data/knowledge/Frameworks/{name}/docs/)
   - Dokümanlar RAG'e eklendi
 * Signature: `FRAMEWORK_INSTALL_COMPLETE`
 * Risk: Low

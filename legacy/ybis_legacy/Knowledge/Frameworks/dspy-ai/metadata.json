@@ -1,0 +1,12 @@
+{
+  "name": "dspy-ai",
+  "version": "3.0.4",
+  "description": "DSPy",
+  "home_page": "https://pypi.org/project/dspy-ai/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Homepage": "https://github.com/stanfordnlp/dsp"
+  },
+  "scraped_at": "2026-01-04T23:42:05.424700"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "uvicorn",
+  "version": "0.40.0",
+  "description": "The lightning-fast ASGI server.",
+  "home_page": "https://pypi.org/project/uvicorn/",
+  "documentation_url": null,
+  "github_url": "https://github.com/Kludex/uvicorn",
+  "project_urls": {
+    "Changelog": "https://uvicorn.dev/release-notes",
+    "Funding": "https://github.com/sponsors/encode",
+    "Homepage": "https://uvicorn.dev/",
+    "Source": "https://github.com/Kludex/uvicorn"
+  },
+  "scraped_at": "2026-01-04T23:50:40.585351"
+}

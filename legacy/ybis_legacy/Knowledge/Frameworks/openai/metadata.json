@@ -1,0 +1,13 @@
+{
+  "name": "openai",
+  "version": "2.14.0",
+  "description": "The official Python library for the openai API",
+  "home_page": "https://pypi.org/project/openai/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Homepage": "https://github.com/openai/openai-python",
+    "Repository": "https://github.com/openai/openai-python"
+  },
+  "scraped_at": "2026-01-04T23:44:24.429423"
+}

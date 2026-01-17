@@ -1,0 +1,1666 @@
+{
+  "generated_at": "2026-01-09T02:01:18.089872+00:00",
+  "nodes": [
+    {
+      "path": "docs\\404_CAUSES_EXPLAINED.md",
+      "title": "404_CAUSES_EXPLAINED.md"
+    },
+    {
+      "path": "docs\\ADAPTER_REGISTRY_GUIDE.md",
+      "title": "Adapter Registry Guide"
+    },
+    {
+      "path": "docs\\AGENTS.md",
+      "title": "Agent Instructions (Entry Point)"
+    },
+    {
+      "path": "docs\\AGENT_READ_THIS_FIRST.md",
+      "title": "READ THIS FIRST \u2014 YBIS Bootstrap Factory Agent Operating Manual"
+    },
+    {
+      "path": "docs\\AI_START_HERE.md",
+      "title": "\ud83e\udde0 AI Agent Onboarding: The \"Self-Healing Frankenstein\" Protocol"
+    },
+    {
+      "path": "docs\\ARCH.md",
+      "title": "ARCH.md (Canonical Pointer)"
+    },
+    {
+      "path": "docs\\ARCHITECTURE.md",
+      "title": "ARCHITECTURE"
+    },
+    {
+      "path": "docs\\ARCHITECTURE_V2.md",
+      "title": "YBIS ARCHITECTURE V4.5 (LangGraph + Pydantic + SQLite)"
+    },
+    {
+      "path": "docs\\AUTO_RULES.md",
+      "title": "AUTO_RULES.md (Pointer)"
+    },
+    {
+      "path": "docs\\BOOTSTRAP_FACTORY_FULL.md",
+      "title": "Bootstrap Factory (Full)"
+    },
+    {
+      "path": "docs\\BOOTSTRAP_PLAN.md",
+      "title": "BOOTSTRAP PLAN (Order + Backlog)"
+    },
+    {
+      "path": "docs\\CODE_STANDARDS.md",
+      "title": "CODE_STANDARDS"
+    },
+    {
+      "path": "docs\\CONSTITUTION.md",
+      "title": "YBIS CONSTITUTION (V2.0 - THE SUPREME LAW)"
+    },
+    {
+      "path": "docs\\CORE_BOUNDARY_REFACTOR_PLAN.md",
+      "title": "Core Boundary Refactor Plan"
+    },
+    {
+      "path": "docs\\CURSOR_WORKER_PROMPT.md",
+      "title": "Cursor Worker Mode Prompt"
+    },
+    {
+      "path": "docs\\DISCIPLINE_ANALYSIS.md",
+      "title": "Disiplinsizlik Analizi - Repository Cleanup"
+    },
+    {
+      "path": "docs\\DOC_INDEX.md",
+      "title": "\ud83d\uddfa\ufe0f YBIS Documentation Index"
+    },
+    {
+      "path": "docs\\E2E_STRESS_TEST_PLAN.md",
+      "title": "E2E STRESS TEST PLAN: \"THE ACID TEST\""
+    },
+    {
+      "path": "docs\\E2E_TEST_SANDBOX_VERIFICATION.md",
+      "title": "E2E Test: Sandbox & Git Worktree Verification"
+    },
+    {
+      "path": "docs\\E2E_TEST_UPDATES_SUMMARY.md",
+      "title": "E2E Test Documentation Updates Summary"
+    },
+    {
+      "path": "docs\\EXTERNAL_AGENTS_PIPELINE.md",
+      "title": "EXTERNAL AGENTS PIPELINE"
+    },
+    {
+      "path": "docs\\FINAL_IMPROVEMENTS.md",
+      "title": "FINAL_IMPROVEMENTS.md"
+    },
+    {
+      "path": "docs\\front-end-architecture.md",
+      "title": "Front-End Architecture (Pointer)"
+    },
+    {
+      "path": "docs\\FULL_BRAIN_DUMP.md",
+      "title": "FULL_BRAIN_DUMP.md"
+    },
+    {
+      "path": "docs\\GLOSSARY.md",
+      "title": "Glossary"
+    },
+    {
+      "path": "docs\\GOLDEN_TASKS.md",
+      "title": "GOLDEN TASKS - Contract & Drift Regression Suite"
+    },
+    {
+      "path": "docs\\GOVERNANCE.md",
+      "title": "Governance (Approvals + Review)"
+    },
+    {
+      "path": "docs\\INTERFACES.md",
+      "title": "INTERFACES (Contracts + Syscalls + MCP)"
+    },
+    {
+      "path": "docs\\LATEST_ORGANS_UPDATE.md",
+      "title": "LATEST_ORGANS_UPDATE.md"
+    },
+    {
+      "path": "docs\\LEGACY_CONTAMINATION_ANALYSIS.md",
+      "title": "Legacy Contamination Analysis"
+    },
+    {
+      "path": "docs\\LIBRARY_RECOMMENDATIONS.md",
+      "title": "LIBRARY_RECOMMENDATIONS.md"
+    },
+    {
+      "path": "docs\\META_PLANES.md",
+      "title": "Meta Planes"
+    },
+    {
+      "path": "docs\\MIGRATIONS.md",
+      "title": "MIGRATIONS"
+    },
+    {
+      "path": "docs\\MIGRATION_TECHNICAL_SPEC.md",
+      "title": "MIGRATION_TECHNICAL_SPEC.md"
+    },
+    {
+      "path": "docs\\MIMARI_ISIMLENDIRME_ONERILERI.md",
+      "title": "MIMARI_ISIMLENDIRME_ONERILERI.md"
+    },
+    {
+      "path": "docs\\OPERATIONS.md",
+      "title": "OPERATIONS"
+    },
+    {
+      "path": "docs\\orchestrator_tasks.md",
+      "title": "orchestrator_tasks"
+    },
+    {
+      "path": "docs\\PLAN.md",
+      "title": "PLAN.md (Canonical)"
+    },
+    {
+      "path": "docs\\POLICY_REFERENCE.md",
+      "title": "Policy Reference (Profiles Schema)"
+    },
+    {
+      "path": "docs\\policy_requirements.md",
+      "title": "Policy Requirements (Pointer)"
+    },
+    {
+      "path": "docs\\PRD.md",
+      "title": "PRD.md (Canonical)"
+    },
+    {
+      "path": "docs\\PRODUCT_REQUIREMENTS.md",
+      "title": "Product Requirements (Canonical)"
+    },
+    {
+      "path": "docs\\PROMPTS_WORKFLOWS.md",
+      "title": "PROMPTS AND WORKFLOWS"
+    },
+    {
+      "path": "docs\\protocols.md",
+      "title": "CrewAI Bridge Protocols"
+    },
+    {
+      "path": "docs\\README.md",
+      "title": "README"
+    },
+    {
+      "path": "docs\\REMAINING_GAPS.md",
+      "title": "Remaining Gaps (Legacy vs New) - Grand Document"
+    },
+    {
+      "path": "docs\\REPO_CLEANUP_FINAL_REPORT.md",
+      "title": "Repository Cleanup - Final Report"
+    },
+    {
+      "path": "docs\\REPO_CLEANUP_PLAN.md",
+      "title": "Repository Cleanup Plan"
+    },
+    {
+      "path": "docs\\REPO_CLEANUP_STATUS.md",
+      "title": "Repository Cleanup Status"
+    },
+    {
+      "path": "docs\\RESULT.md",
+      "title": "Result Artifact"
+    },
+    {
+      "path": "docs\\RETRY_LOGIC.md",
+      "title": "Exponential Backoff Implementation"
+    },
+    {
+      "path": "docs\\RUNBOOK.md",
+      "title": "RUNBOOK.md (Canonical)"
+    },
+    {
+      "path": "docs\\SANDBOX_AND_ISOLATION_ANALYSIS.md",
+      "title": "Sandbox & Isolation Analysis"
+    },
+    {
+      "path": "docs\\SANDBOX_AND_ISOLATION_STATUS.md",
+      "title": "Sandbox and Isolation Status"
+    },
+    {
+      "path": "docs\\SANDBOX_INTEGRATION_SUMMARY.md",
+      "title": "Sandbox & Git Worktree Integration Summary"
+    },
+    {
+      "path": "docs\\SCRAPER_PERFORMANCE_OPTIMIZATION.md",
+      "title": "SCRAPER_PERFORMANCE_OPTIMIZATION.md"
+    },
+    {
+      "path": "docs\\SCRIPT_IMPROVEMENTS.md",
+      "title": "SCRIPT_IMPROVEMENTS.md"
+    },
+    {
+      "path": "docs\\SECURITY.md",
+      "title": "SECURITY & POLICY PROFILES"
+    },
+    {
+      "path": "docs\\SECURITY_AUDIT_CHECKLIST.md",
+      "title": "Security Audit Checklist"
+    },
+    {
+      "path": "docs\\SELF_AUDIT_REPORT.md",
+      "title": "Self Audit Report (Pointer)"
+    },
+    {
+      "path": "docs\\SETUP.md",
+      "title": "YBIS_Dev Tier 1 - Setup Guide"
+    },
+    {
+      "path": "docs\\SOTA_SOLUTIONS_RESEARCH.md",
+      "title": "SOTA Solutions Research: Sandbox & Git Worktree"
+    },
+    {
+      "path": "docs\\SPEC.md",
+      "title": "SPEC.md (Canonical Pointer)"
+    },
+    {
+      "path": "docs\\STYLE_GUIDE.md",
+      "title": "Documentation Style Guide"
+    },
+    {
+      "path": "docs\\SYSTEM_AUDIT_REPORT.md",
+      "title": "System Audit Report: Sandbox & Git Worktree Integration"
+    },
+    {
+      "path": "docs\\SYSTEM_EVALUATION.md",
+      "title": "SYSTEM_EVALUATION.md"
+    },
+    {
+      "path": "docs\\SYSTEM_LIMITATIONS.md",
+      "title": "Sistem S\u0131n\u0131rlamalar\u0131"
+    },
+    {
+      "path": "docs\\system_overview.md",
+      "title": "YBIS Software Factory Tier 4.5 Sistemi Genel Bak\u0131\u015f\u0131"
+    },
+    {
+      "path": "docs\\SYSTEM_REFLECTIONS_AND_ERROR_STRATEGY.md",
+      "title": "\ud83e\udde0 YBIS SYSTEM REFLECTIONS & ERROR STRATEGY"
+    },
+    {
+      "path": "docs\\SYSTEM_STATE.md",
+      "title": "YBIS SYSTEM STATE & CONSTITUTION (Tier 4 Stabilized)"
+    },
+    {
+      "path": "docs\\TASKS_FOR_EXECUTOR.md",
+      "title": "EXECUTOR TASK BATCH 17.5: THE SAFETY NET (SANDBOX & WORKTREE)"
+    },
+    {
+      "path": "docs\\temp_brainstorm_append.md",
+      "title": "temp_brainstorm_append.md"
+    },
+    {
+      "path": "docs\\TESTING.md",
+      "title": "TESTING (Golden + Regression)"
+    },
+    {
+      "path": "docs\\TEST_IMPLEMENTATION_SUMMARY.md",
+      "title": "Test Implementation Summary"
+    },
+    {
+      "path": "docs\\test_plan_factory.md",
+      "title": "Factory Mod\u00fcl\u00fc Sistem Test Plan\u0131"
+    },
+    {
+      "path": "docs\\TEST_STRATEGY.md",
+      "title": "TEST STRATEGY: Preventing Common Errors"
+    },
+    {
+      "path": "docs\\THREAT_MODEL.md",
+      "title": "Threat Model (Syscalls + Sandbox)"
+    },
+    {
+      "path": "docs\\VENDOR_FRAMEWORKS_ANALYSIS.md",
+      "title": "Vendor Framework'ler Analizi: Sandbox & Worktree"
+    },
+    {
+      "path": "docs\\WORKFLOWS.md",
+      "title": "WORKFLOWS (LangGraph + Routing)"
+    },
+    {
+      "path": "docs\\yeni_yapi.md",
+      "title": "yeni_yapi.md"
+    },
+    {
+      "path": "docs\\YENI_YAPI_ANALIZ_RAPORU.md",
+      "title": "YENI_YAPI_ANALIZ_RAPORU.md"
+    },
+    {
+      "path": "docs\\00_GENESIS\\ONBOARDING.md",
+      "title": "Onboarding (Legacy)"
+    },
+    {
+      "path": "docs\\adapters\\aider.md",
+      "title": "Aider Executor Adapter"
+    },
+    {
+      "path": "docs\\adapters\\chroma_vector_store.md",
+      "title": "Chroma Vector Store Adapter"
+    },
+    {
+      "path": "docs\\adapters\\e2b_sandbox.md",
+      "title": "E2B Sandbox Adapter"
+    },
+    {
+      "path": "docs\\adapters\\LIFECYCLE_POLICY.md",
+      "title": "Adapter Lifecycle Policy"
+    },
+    {
+      "path": "docs\\adapters\\llamaindex_adapter.md",
+      "title": "LlamaIndex Adapter"
+    },
+    {
+      "path": "docs\\adapters\\local_coder.md",
+      "title": "Local Coder Adapter"
+    },
+    {
+      "path": "docs\\adapters\\neo4j_graph.md",
+      "title": "Neo4j Graph Store Adapter"
+    },
+    {
+      "path": "docs\\adapters\\qdrant_vector_store.md",
+      "title": "Qdrant Vector Store Adapter"
+    },
+    {
+      "path": "docs\\adapters\\README.md",
+      "title": "Adapter Documentation"
+    },
+    {
+      "path": "docs\\adapters\\redis_event_bus.md",
+      "title": "Redis Event Bus Adapter"
+    },
+    {
+      "path": "docs\\architecture\\SPINE_DEFINITION.md",
+      "title": "Spine Definition"
+    },
+    {
+      "path": "docs\\artifacts\\RESULT.md",
+      "title": "Result Artifact Template"
+    },
+    {
+      "path": "docs\\docker\\README.md",
+      "title": "Docker (Legacy)"
+    },
+    {
+      "path": "docs\\governance\\AUTO_RULES.md",
+      "title": "Auto-Generated Governance Rules"
+    },
+    {
+      "path": "docs\\governance\\DATA_RETENTION_POLICY.md",
+      "title": "Data Retention & Governance Policy"
+    },
+    {
+      "path": "docs\\governance\\FRAMEWORK_INTAKE.md",
+      "title": "Framework Intake (Pointer)"
+    },
+    {
+      "path": "docs\\governance\\MESSAGING_GUIDELINE.md",
+      "title": "Messaging Guideline (Quiet Agent)"
+    },
+    {
+      "path": "docs\\governance\\P0_PROTOCOL.md",
+      "title": "[ALERT] P0 (Critical) Task Protocol"
+    },
+    {
+      "path": "docs\\governance\\SANDBOX_PROFILE_MATRIX.md",
+      "title": "Sandbox Profile Validation Matrix"
+    },
+    {
+      "path": "docs\\governance\\SELF_HEALING_PROTOCOL.md",
+      "title": "Self-Healing Protocol V1.0"
+    },
+    {
+      "path": "docs\\governance\\TAGGING_STANDARD.md",
+      "title": "Constitution Tagging Standard"
+    },
+    {
+      "path": "docs\\governance\\VERIFICATION_STANDARDS.md",
+      "title": "YBIS Verification Standards"
+    },
+    {
+      "path": "docs\\governance\\YBIS_CONSTITUTION.md",
+      "title": "YBIS Constitution (Legacy)"
+    },
+    {
+      "path": "docs\\Knowledge\\README.md",
+      "title": "Knowledge Base"
+    },
+    {
+      "path": "docs\\legacy\\README.md",
+      "title": "Legacy Index"
+    },
+    {
+      "path": "docs\\mcp\\TOOLS_REFERENCE.md",
+      "title": "MCP Tools Reference"
+    },
+    {
+      "path": "docs\\scripts\\README.md",
+      "title": "Scripts README"
+    },
+    {
+      "path": "docs\\specs\\GOVERNANCE_ACTION_PLAN.md",
+      "title": "Governance Action Plan (Legacy)"
+    },
+    {
+      "path": "docs\\specs\\PLAN.md",
+      "title": "PLAN.md (Spec Pointer)"
+    },
+    {
+      "path": "docs\\specs\\README.md",
+      "title": "Specs Directory"
+    },
+    {
+      "path": "docs\\specs\\RETRY_LOGIC.md",
+      "title": "RETRY_LOGIC.md (Spec Pointer)"
+    },
+    {
+      "path": "docs\\specs\\RUNBOOK.md",
+      "title": "RUNBOOK.md (Spec Pointer)"
+    },
+    {
+      "path": "docs\\templates\\POSTMORTEM.md",
+      "title": "Postmortem Template"
+    },
+    {
+      "path": "docs\\tests\\README.md",
+      "title": "Tests README"
+    },
+    {
+      "path": "docs\\governance\\00_GENESIS\\CODE_STANDARDS.md",
+      "title": "Code Standards"
+    },
+    {
+      "path": "docs\\governance\\EVIDENCE\\summary.md",
+      "title": "Evidence Summary (Pointer)"
+    },
+    {
+      "path": "docs\\governance\\templates\\FRAMEWORK_INTAKE.md",
+      "title": "Framework Intake Checklist"
+    },
+    {
+      "path": "docs\\governance\\templates\\MANUAL_VERIFICATION.md",
+      "title": "Manual Verification Checklist"
+    },
+    {
+      "path": "docs\\governance\\templates\\POSTMORTEM.md",
+      "title": "Postmortem"
+    },
+    {
+      "path": "docs\\governance\\templates\\SLIM_RESULT.md",
+      "title": "Result: TASK-ID"
+    },
+    {
+      "path": "docs\\platform_data\\knowledge\\README.md",
+      "title": "Knowledge Base (Data Root)"
+    },
+    {
+      "path": "docs\\src\\dashboard\\README.md",
+      "title": "Dashboard (Legacy)"
+    },
+    {
+      "path": "docs\\src\\agentic\\core\\README.md",
+      "title": "Agentic Core (Legacy)"
+    },
+    {
+      "path": "docs\\src\\agentic\\graph\\README.md",
+      "title": "Agentic Graph (Legacy)"
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs\\AGENTS.md",
+      "target": "docs\\CONSTITUTION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENTS.md",
+      "target": "docs\\AI_START_HERE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENTS.md",
+      "target": "docs\\BOOTSTRAP_PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENTS.md",
+      "target": "docs\\INTERFACES.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENTS.md",
+      "target": "docs\\WORKFLOWS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENTS.md",
+      "target": "docs\\CODE_STANDARDS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENTS.md",
+      "target": "docs\\SECURITY.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENTS.md",
+      "target": "docs\\OPERATIONS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENTS.md",
+      "target": "docs\\MIGRATIONS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENTS.md",
+      "target": "docs\\TESTING.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENTS.md",
+      "target": "docs\\BOOTSTRAP_PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENTS.md",
+      "target": "docs\\CONSTITUTION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENTS.md",
+      "target": "docs\\INTERFACES.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\RUNBOOK.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\governance\\00_GENESIS\\CODE_STANDARDS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\META_PLANES.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\GOLDEN_TASKS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\EXTERNAL_AGENTS_PIPELINE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\PROMPTS_WORKFLOWS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\RUNBOOK.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\templates\\POSTMORTEM.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\BOOTSTRAP_FACTORY_FULL.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\AGENT_READ_THIS_FIRST.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\META_PLANES.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\GOLDEN_TASKS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\EXTERNAL_AGENTS_PIPELINE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AGENT_READ_THIS_FIRST.md",
+      "target": "docs\\PROMPTS_WORKFLOWS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AI_START_HERE.md",
+      "target": "docs\\governance\\YBIS_CONSTITUTION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AI_START_HERE.md",
+      "target": "docs\\specs\\GOVERNANCE_ACTION_PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AI_START_HERE.md",
+      "target": "docs\\governance\\YBIS_CONSTITUTION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AI_START_HERE.md",
+      "target": "docs\\specs\\GOVERNANCE_ACTION_PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AI_START_HERE.md",
+      "target": "docs\\ARCHITECTURE_V2.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AI_START_HERE.md",
+      "target": "docs\\PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AI_START_HERE.md",
+      "target": "docs\\RUNBOOK.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AI_START_HERE.md",
+      "target": "docs\\artifacts\\RESULT.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AI_START_HERE.md",
+      "target": "docs\\PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AI_START_HERE.md",
+      "target": "docs\\RESULT.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AI_START_HERE.md",
+      "target": "docs\\SYSTEM_STATE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\ARCH.md",
+      "target": "docs\\ARCHITECTURE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\ARCHITECTURE.md",
+      "target": "docs\\architecture\\SPINE_DEFINITION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\ARCHITECTURE.md",
+      "target": "docs\\system_overview.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\AUTO_RULES.md",
+      "target": "docs\\governance\\AUTO_RULES.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\ARCHITECTURE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\INTERFACES.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\WORKFLOWS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\CODE_STANDARDS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\SECURITY.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\TESTING.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\ARCHITECTURE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\INTERFACES.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\WORKFLOWS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\CODE_STANDARDS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\SECURITY.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\TESTING.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\AGENTS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\WORKFLOWS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\BOOTSTRAP_PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\BOOTSTRAP_PLAN.md",
+      "target": "docs\\ARCHITECTURE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\CONSTITUTION.md",
+      "target": "docs\\SPEC.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\CONSTITUTION.md",
+      "target": "docs\\ARCH.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\CONSTITUTION.md",
+      "target": "docs\\AUTO_RULES.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\CONSTITUTION.md",
+      "target": "docs\\CONSTITUTION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\CONSTITUTION.md",
+      "target": "docs\\AGENTS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\CONSTITUTION.md",
+      "target": "docs\\AI_START_HERE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\CONSTITUTION.md",
+      "target": "docs\\INTERFACES.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DISCIPLINE_ANALYSIS.md",
+      "target": "docs\\REPO_CLEANUP_STATUS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DISCIPLINE_ANALYSIS.md",
+      "target": "docs\\REPO_CLEANUP_FINAL_REPORT.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DISCIPLINE_ANALYSIS.md",
+      "target": "docs\\REPO_CLEANUP_STATUS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DISCIPLINE_ANALYSIS.md",
+      "target": "docs\\REPO_CLEANUP_PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DISCIPLINE_ANALYSIS.md",
+      "target": "docs\\SYSTEM_LIMITATIONS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DISCIPLINE_ANALYSIS.md",
+      "target": "docs\\SYSTEM_LIMITATIONS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DOC_INDEX.md",
+      "target": "docs\\DOC_INDEX.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DOC_INDEX.md",
+      "target": "docs\\AI_START_HERE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DOC_INDEX.md",
+      "target": "docs\\src\\agentic\\graph\\README.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DOC_INDEX.md",
+      "target": "docs\\src\\agentic\\core\\README.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DOC_INDEX.md",
+      "target": "docs\\scripts\\README.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DOC_INDEX.md",
+      "target": "docs\\tests\\README.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DOC_INDEX.md",
+      "target": "docs\\platform_data\\knowledge\\README.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DOC_INDEX.md",
+      "target": "docs\\src\\dashboard\\README.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DOC_INDEX.md",
+      "target": "docs\\docker\\README.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DOC_INDEX.md",
+      "target": "docs\\legacy\\README.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\DOC_INDEX.md",
+      "target": "docs\\SYSTEM_STATE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\E2E_STRESS_TEST_PLAN.md",
+      "target": "docs\\RETRY_LOGIC.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\E2E_STRESS_TEST_PLAN.md",
+      "target": "docs\\RETRY_LOGIC.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\E2E_TEST_SANDBOX_VERIFICATION.md",
+      "target": "docs\\E2E_STRESS_TEST_PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\E2E_TEST_SANDBOX_VERIFICATION.md",
+      "target": "docs\\SANDBOX_INTEGRATION_SUMMARY.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\E2E_TEST_UPDATES_SUMMARY.md",
+      "target": "docs\\E2E_STRESS_TEST_PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\E2E_TEST_UPDATES_SUMMARY.md",
+      "target": "docs\\E2E_TEST_SANDBOX_VERIFICATION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\E2E_TEST_UPDATES_SUMMARY.md",
+      "target": "docs\\SANDBOX_INTEGRATION_SUMMARY.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\E2E_TEST_UPDATES_SUMMARY.md",
+      "target": "docs\\TEST_STRATEGY.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\EXTERNAL_AGENTS_PIPELINE.md",
+      "target": "docs\\CONSTITUTION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\EXTERNAL_AGENTS_PIPELINE.md",
+      "target": "docs\\CONSTITUTION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\README.md",
+      "target": "docs\\ARCHITECTURE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\README.md",
+      "target": "docs\\system_overview.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\README.md",
+      "target": "docs\\CONSTITUTION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REMAINING_GAPS.md",
+      "target": "docs\\CORE_BOUNDARY_REFACTOR_PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REMAINING_GAPS.md",
+      "target": "docs\\adapters\\LIFECYCLE_POLICY.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REMAINING_GAPS.md",
+      "target": "docs\\adapters\\README.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REMAINING_GAPS.md",
+      "target": "docs\\adapters\\local_coder.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REMAINING_GAPS.md",
+      "target": "docs\\adapters\\e2b_sandbox.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REMAINING_GAPS.md",
+      "target": "docs\\adapters\\neo4j_graph.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REMAINING_GAPS.md",
+      "target": "docs\\ADAPTER_REGISTRY_GUIDE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REMAINING_GAPS.md",
+      "target": "docs\\governance\\SANDBOX_PROFILE_MATRIX.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REMAINING_GAPS.md",
+      "target": "docs\\governance\\DATA_RETENTION_POLICY.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_FINAL_REPORT.md",
+      "target": "docs\\AGENT_READ_THIS_FIRST.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_FINAL_REPORT.md",
+      "target": "docs\\AGENT_READ_THIS_FIRST.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_FINAL_REPORT.md",
+      "target": "docs\\README.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_FINAL_REPORT.md",
+      "target": "docs\\AGENTS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\404_CAUSES_EXPLAINED.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\FINAL_IMPROVEMENTS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\FULL_BRAIN_DUMP.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\LATEST_ORGANS_UPDATE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\LIBRARY_RECOMMENDATIONS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\MIGRATION_TECHNICAL_SPEC.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\MIMARI_ISIMLENDIRME_ONERILERI.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\SCRAPER_PERFORMANCE_OPTIMIZATION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\SCRIPT_IMPROVEMENTS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\SYSTEM_EVALUATION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\RETRY_LOGIC.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\AGENT_READ_THIS_FIRST.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\README.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\AGENTS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\404_CAUSES_EXPLAINED.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\FINAL_IMPROVEMENTS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\FULL_BRAIN_DUMP.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\LATEST_ORGANS_UPDATE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\LIBRARY_RECOMMENDATIONS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\MIGRATION_TECHNICAL_SPEC.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\MIMARI_ISIMLENDIRME_ONERILERI.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\SCRAPER_PERFORMANCE_OPTIMIZATION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\SCRIPT_IMPROVEMENTS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\SYSTEM_EVALUATION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\RETRY_LOGIC.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\AGENT_READ_THIS_FIRST.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\yeni_yapi.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\YENI_YAPI_ANALIZ_RAPORU.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\temp_brainstorm_append.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\AI_START_HERE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\ARCHITECTURE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\ARCHITECTURE_V2.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\DOC_INDEX.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\SYSTEM_STATE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\TASKS_FOR_EXECUTOR.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\AGENTS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\README.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "docs\\AGENTS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_STATUS.md",
+      "target": "docs\\REPO_CLEANUP_PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_STATUS.md",
+      "target": "docs\\AGENT_READ_THIS_FIRST.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_STATUS.md",
+      "target": "docs\\AI_START_HERE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_STATUS.md",
+      "target": "docs\\ARCHITECTURE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_STATUS.md",
+      "target": "docs\\ARCHITECTURE_V2.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_STATUS.md",
+      "target": "docs\\DOC_INDEX.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_STATUS.md",
+      "target": "docs\\SYSTEM_STATE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_STATUS.md",
+      "target": "docs\\TASKS_FOR_EXECUTOR.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_STATUS.md",
+      "target": "docs\\AGENTS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_STATUS.md",
+      "target": "docs\\README.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_STATUS.md",
+      "target": "docs\\AGENTS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\SANDBOX_INTEGRATION_SUMMARY.md",
+      "target": "docs\\ARCHITECTURE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\SANDBOX_INTEGRATION_SUMMARY.md",
+      "target": "docs\\INTERFACES.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\SOTA_SOLUTIONS_RESEARCH.md",
+      "target": "docs\\VENDOR_FRAMEWORKS_ANALYSIS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\STYLE_GUIDE.md",
+      "target": "docs\\CONSTITUTION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\STYLE_GUIDE.md",
+      "target": "docs\\AGENTS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\SYSTEM_AUDIT_REPORT.md",
+      "target": "docs\\E2E_STRESS_TEST_PLAN.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\SYSTEM_AUDIT_REPORT.md",
+      "target": "docs\\E2E_TEST_SANDBOX_VERIFICATION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\SYSTEM_AUDIT_REPORT.md",
+      "target": "docs\\SANDBOX_INTEGRATION_SUMMARY.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\SYSTEM_AUDIT_REPORT.md",
+      "target": "docs\\E2E_TEST_UPDATES_SUMMARY.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\SYSTEM_REFLECTIONS_AND_ERROR_STRATEGY.md",
+      "target": "docs\\SELF_AUDIT_REPORT.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\SYSTEM_STATE.md",
+      "target": "docs\\SYSTEM_STATE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\SYSTEM_STATE.md",
+      "target": "docs\\AI_START_HERE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\SYSTEM_STATE.md",
+      "target": "docs\\governance\\YBIS_CONSTITUTION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\TASKS_FOR_EXECUTOR.md",
+      "target": "docs\\SANDBOX_AND_ISOLATION_STATUS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\LIFECYCLE_POLICY.md",
+      "target": "docs\\ADAPTER_REGISTRY_GUIDE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\llamaindex_adapter.md",
+      "target": "docs\\adapters\\chroma_vector_store.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\local_coder.md",
+      "target": "docs\\ADAPTER_REGISTRY_GUIDE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\README.md",
+      "target": "docs\\adapters\\local_coder.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\README.md",
+      "target": "docs\\adapters\\aider.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\README.md",
+      "target": "docs\\adapters\\e2b_sandbox.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\README.md",
+      "target": "docs\\adapters\\chroma_vector_store.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\README.md",
+      "target": "docs\\adapters\\qdrant_vector_store.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\README.md",
+      "target": "docs\\adapters\\neo4j_graph.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\README.md",
+      "target": "docs\\adapters\\llamaindex_adapter.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\README.md",
+      "target": "docs\\adapters\\redis_event_bus.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\README.md",
+      "target": "docs\\ADAPTER_REGISTRY_GUIDE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\README.md",
+      "target": "docs\\ADAPTER_REGISTRY_GUIDE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\adapters\\README.md",
+      "target": "docs\\adapters\\LIFECYCLE_POLICY.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\governance\\DATA_RETENTION_POLICY.md",
+      "target": "docs\\POLICY_REFERENCE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\governance\\DATA_RETENTION_POLICY.md",
+      "target": "docs\\OPERATIONS.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\governance\\DATA_RETENTION_POLICY.md",
+      "target": "docs\\governance\\DATA_RETENTION_POLICY.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\governance\\FRAMEWORK_INTAKE.md",
+      "target": "docs\\governance\\templates\\FRAMEWORK_INTAKE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\governance\\P0_PROTOCOL.md",
+      "target": "docs\\governance\\templates\\MANUAL_VERIFICATION.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\governance\\P0_PROTOCOL.md",
+      "target": "docs\\governance\\EVIDENCE\\summary.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\governance\\SANDBOX_PROFILE_MATRIX.md",
+      "target": "docs\\POLICY_REFERENCE.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\governance\\SANDBOX_PROFILE_MATRIX.md",
+      "target": "docs\\SECURITY.md",
+      "kind": "reference"
+    },
+    {
+      "source": "docs\\mcp\\TOOLS_REFERENCE.md",
+      "target": "docs\\ADAPTER_REGISTRY_GUIDE.md",
+      "kind": "reference"
+    }
+  ],
+  "missing_references": [],
+  "ignored_references": [
+    {
+      "source": "docs\\E2E_STRESS_TEST_PLAN.md",
+      "target": "docs/specs/<task_id>_SPEC.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\E2E_STRESS_TEST_PLAN.md",
+      "target": "docs/specs/<task_id>_SPEC.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\INTERFACES.md",
+      "target": "docs/specs/<task_id>_SPEC.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\PLAN.md",
+      "target": "workspaces/<task_id>/runs/<run_id>/docs/PLAN.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\REMAINING_GAPS.md",
+      "target": "docs/reports/doc_graph.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_FINAL_REPORT.md",
+      "target": "docs/reports/doc_graph.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_FINAL_REPORT.md",
+      "target": "docs/reports/doc_graph.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "*_REPORT.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "*_ANALYSIS.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "*_SUMMARY.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "*_RESULTS.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_PLAN.md",
+      "target": "*_PLAN.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_STATUS.md",
+      "target": "docs/reports/doc_graph.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\REPO_CLEANUP_STATUS.md",
+      "target": "docs/reports/doc_graph.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\RUNBOOK.md",
+      "target": "workspaces/<task_id>/runs/<run_id>/docs/RUNBOOK.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\SPEC.md",
+      "target": "docs/specs/<task_id>_SPEC.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\STYLE_GUIDE.md",
+      "target": "docs/reports/doc_graph.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\governance\\DATA_RETENTION_POLICY.md",
+      "target": "docs/specs/<task_id>_SPEC.md",
+      "reason": "ignored_pattern"
+    },
+    {
+      "source": "docs\\specs\\README.md",
+      "target": "docs/specs/<task_id>_SPEC.md",
+      "reason": "ignored_pattern"
+    }
+  ],
+  "summary": {
+    "total_docs": 126,
+    "total_edges": 196,
+    "ignored_references": 19,
+    "orphans": [
+      "docs\\CURSOR_WORKER_PROMPT.md",
+      "docs\\front-end-architecture.md",
+      "docs\\GLOSSARY.md",
+      "docs\\GOVERNANCE.md",
+      "docs\\LEGACY_CONTAMINATION_ANALYSIS.md",
+      "docs\\orchestrator_tasks.md",
+      "docs\\policy_requirements.md",
+      "docs\\PRD.md",
+      "docs\\PRODUCT_REQUIREMENTS.md",
+      "docs\\protocols.md",
+      "docs\\SANDBOX_AND_ISOLATION_ANALYSIS.md",
+      "docs\\SECURITY_AUDIT_CHECKLIST.md",
+      "docs\\SETUP.md",
+      "docs\\TEST_IMPLEMENTATION_SUMMARY.md",
+      "docs\\test_plan_factory.md",
+      "docs\\THREAT_MODEL.md",
+      "docs\\00_GENESIS\\ONBOARDING.md",
+      "docs\\governance\\MESSAGING_GUIDELINE.md",
+      "docs\\governance\\SELF_HEALING_PROTOCOL.md",
+      "docs\\governance\\TAGGING_STANDARD.md",
+      "docs\\governance\\VERIFICATION_STANDARDS.md",
+      "docs\\Knowledge\\README.md",
+      "docs\\specs\\PLAN.md",
+      "docs\\specs\\README.md",
+      "docs\\specs\\RETRY_LOGIC.md",
+      "docs\\specs\\RUNBOOK.md",
+      "docs\\governance\\templates\\POSTMORTEM.md",
+      "docs\\governance\\templates\\SLIM_RESULT.md"
+    ],
+    "top_inbound": [
+      [
+        "docs\\AGENTS.md",
+        9
+      ],
+      [
+        "docs\\ARCHITECTURE.md",
+        8
+      ],
+      [
+        "docs\\CONSTITUTION.md",
+        7
+      ],
+      [
+        "docs\\ADAPTER_REGISTRY_GUIDE.md",
+        6
+      ],
+      [
+        "docs\\AGENT_READ_THIS_FIRST.md",
+        6
+      ],
+      [
+        "docs\\AI_START_HERE.md",
+        6
+      ],
+      [
+        "docs\\INTERFACES.md",
+        6
+      ],
+      [
+        "docs\\SYSTEM_STATE.md",
+        5
+      ],
+      [
+        "docs\\PLAN.md",
+        4
+      ],
+      [
+        "docs\\README.md",
+        4
+      ]
+    ]
+  }
+}

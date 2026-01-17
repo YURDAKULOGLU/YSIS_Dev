@@ -1,0 +1,14 @@
+{
+  "name": "requests",
+  "version": "2.32.5",
+  "description": "Python HTTP for Humans.",
+  "home_page": "https://requests.readthedocs.io",
+  "documentation_url": "https://requests.readthedocs.io",
+  "github_url": "https://github.com/psf/requests",
+  "project_urls": {
+    "Documentation": "https://requests.readthedocs.io",
+    "Homepage": "https://requests.readthedocs.io",
+    "Source": "https://github.com/psf/requests"
+  },
+  "scraped_at": "2026-01-05T00:02:41.362252"
+}

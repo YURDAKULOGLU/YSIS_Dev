@@ -1,0 +1,15 @@
+{
+  "name": "ruff",
+  "version": "0.14.10",
+  "description": "An extremely fast Python linter and code formatter, written in Rust.",
+  "home_page": "https://docs.astral.sh/ruff",
+  "documentation_url": "https://docs.astral.sh/ruff/",
+  "github_url": null,
+  "project_urls": {
+    "Changelog": "https://github.com/astral-sh/ruff/blob/main/CHANGELOG.md",
+    "Documentation": "https://docs.astral.sh/ruff/",
+    "Homepage": "https://docs.astral.sh/ruff",
+    "Repository": "https://github.com/astral-sh/ruff"
+  },
+  "scraped_at": "2026-01-04T23:54:25.799192"
+}

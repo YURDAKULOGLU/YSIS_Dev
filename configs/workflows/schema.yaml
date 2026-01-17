@@ -1,0 +1,143 @@
+# YBIS Workflow Schema
+# Defines the canonical structure for workflow specifications
+
+schema_version: 1.0
+
+workflow_spec:
+  type: object
+  required:
+    - name
+    - version
+    - nodes
+    - connections
+  properties:
+    name:
+      type: string
+      description: "Unique workflow identifier"
+      pattern: "^[a-z0-9_]+$"
+      examples:
+        - "ybis_native"
+        - "speckit"
+        - "bmad"
+        - "evoagentx"
+    
+    version:
+      type: integer
+      description: "Workflow version (for evolution/migration)"
+      minimum: 1
+      examples:
+        - 1
+        - 2
+    
+    description:
+      type: string
+      description: "Human-readable workflow description"
+      optional: true
+    
+    nodes:
+      type: array
+      description: "List of workflow nodes"
+      minItems: 1
+      items:
+        type: object
+        required:
+          - id
+          - type
+        properties:
+          id:
+            type: string
+            description: "Unique node identifier within workflow"
+            pattern: "^[a-z0-9_]+$"
+          
+          type:
+            type: string
+            description: "Node type (resolved via NodeRegistry)"
+            pattern: "^[a-z0-9_]+$"
+            examples:
+              - "spec_generator"
+              - "planner"
+              - "executor"
+              - "verifier"
+              - "gate"
+              - "debate"
+          
+          config:
+            type: object
+            description: "Optional node-specific configuration"
+            optional: true
+            additionalProperties: true
+    
+    connections:
+      type: array
+      description: "List of edges between nodes"
+      items:
+        type: object
+        required:
+          - from
+          - to
+        properties:
+          from:
+            type: string
+            description: "Source node ID or 'START'"
+            enum: ["START"]  # Or node ID pattern
+          
+          to:
+            type: string
+            description: "Target node ID or 'END'"
+            enum: ["END"]  # Or node ID pattern
+          
+          condition:
+            type: string
+            description: "Optional conditional routing function name"
+            optional: true
+    
+    requirements:
+      type: object
+      description: "Workflow requirements"
+      optional: true
+      properties:
+        modules:
+          type: array
+          description: "Required modules (e.g., verifier, gate)"
+          items:
+            type: string
+        
+        artifacts:
+          type: array
+          description: "Required artifacts (enforced by gate)"
+          items:
+            type: string
+            examples:
+              - "plan.json"
+              - "spec.md"
+              - "executor_report.json"
+              - "verifier_report.json"
+              - "gate_report.json"
+        
+        adapters:
+          type: array
+          description: "Required adapters (checked via policy)"
+          items:
+            type: string
+            examples:
+              - "local_coder"
+              - "e2b_sandbox"
+              - "neo4j_graph"
+
+# Node type registry (for validation)
+node_types:
+  - spec_generator
+  - spec_validator
+  - planner
+  - plan_validator
+  - executor
+  - impl_validator
+  - verifier
+  - repair
+  - gate
+  - debate
+  - artifact_expander
+  - rag_ingest
+  - memory_read
+  - memory_write
+

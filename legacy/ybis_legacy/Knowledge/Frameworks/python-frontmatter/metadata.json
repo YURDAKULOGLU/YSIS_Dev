@@ -1,0 +1,12 @@
+{
+  "name": "python-frontmatter",
+  "version": "1.1.0",
+  "description": "Parse and manage posts with YAML (or other) frontmatter",
+  "home_page": "https://github.com/eyeseast/python-frontmatter",
+  "documentation_url": null,
+  "github_url": "https://github.com/eyeseast/python-frontmatter",
+  "project_urls": {
+    "Homepage": "https://github.com/eyeseast/python-frontmatter"
+  },
+  "scraped_at": "2026-01-05T01:13:32.982626"
+}

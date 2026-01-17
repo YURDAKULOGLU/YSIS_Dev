@@ -6,7 +6,7 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -15,8 +15,8 @@ services:
     image: neo4j:5.15-community
     container_name: ybis-neo4j
     ports:
-      - "7474:7474"  # HTTP Browser UI
-      - "7687:7687"  # Bolt Protocol
+      - "7474:7474" # HTTP Browser UI
+      - "7687:7687" # Bolt Protocol
     environment:
       NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-ybis-graph-2025}
       NEO4J_PLUGINS: '["apoc", "graph-data-science"]'
@@ -30,7 +30,7 @@ services:
       - neo4j_logs:/logs
       - neo4j_import:/import
     healthcheck:
-      test: ["CMD", "sh", "-c", "cypher-shell -u neo4j -p $${NEO4J_PASSWORD:-ybis-graph-2025} 'RETURN 1'"]
+      test: [ "CMD", "sh", "-c", "cypher-shell -u neo4j -p $${NEO4J_PASSWORD:-ybis-graph-2025} 'RETURN 1'" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -47,29 +47,7 @@ services:
       - IS_PERSISTENT=TRUE
       - ANONYMIZED_TELEMETRY=FALSE
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1"]  # Try root API endpoint
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ybis-ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    # GPU support (uncomment if you have NVIDIA GPU)
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      test: [ "CMD-SHELL", "timeout 5s bash -c ':> /dev/tcp/localhost/8000' || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -85,8 +63,8 @@ services:
       - PYTHONUNBUFFERED=1
       - PYTHONUTF8=1
       - GITHUB_TOKEN=${GITHUB_TOKEN}
-      - OLLAMA_API_BASE=http://ollama:11434
-      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_API_BASE=http://host.docker.internal:11434
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
       - REDIS_HOST=redis
       - REDIS_URL=redis://redis:6379/0
       - NEO4J_URI=bolt://neo4j:7687
@@ -101,8 +79,6 @@ services:
       neo4j:
         condition: service_healthy
       chromadb:
-        condition: service_healthy
-      ollama:
         condition: service_healthy
     restart: always
     logging:
@@ -121,8 +97,8 @@ services:
     volumes:
       - .:/app
     environment:
-      - OLLAMA_API_BASE=http://ollama:11434
-      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_API_BASE=http://host.docker.internal:11434
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
       - REDIS_HOST=redis
       - REDIS_URL=redis://redis:6379/0
       - NEO4J_URI=bolt://neo4j:7687
@@ -136,7 +112,6 @@ services:
       - redis
       - neo4j
       - chromadb
-      - ollama
 
   viz:
     build:
@@ -152,10 +127,44 @@ services:
       - neo4j
     restart: unless-stopped
 
+  # New Architecture Services (YBIS Platform)
+  mcp-platform:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.app
+    environment:
+      - PLATFORM_PROFILE=default
+      - CONTROL_PLANE_DB=/data/control_plane.sqlite
+    volumes:
+      - ./:/repo
+      - platform_data:/data
+    working_dir: /repo
+    command: [ "python", "-m", "ybis.services.mcp_server" ]
+    ports:
+      - "8765:8765"
+    profiles: [ "platform" ]
+
+  worker-platform:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.app
+    environment:
+      - PLATFORM_PROFILE=default
+      - CONTROL_PLANE_DB=/data/control_plane.sqlite
+    volumes:
+      - ./:/repo
+      - platform_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /repo
+    command: [ "python", "-m", "ybis.services.worker" ]
+    depends_on:
+      - mcp-platform
+    profiles: [ "platform" ]
+
 volumes:
   redis_data:
   neo4j_data:
   neo4j_logs:
   neo4j_import:
   chroma_data:
-  ollama_data:
+  platform_data:

@@ -1,0 +1,353 @@
+OSS Temporal Service metrics reference | Temporal Platform Documentation
+
+
+
+[Skip to main content](#__docusaurus_skipToContent_fallback)
+
+On this page
+
+OSS Temporal Service metrics
+
+The information on this page is relevant to open source [Temporal Service deployments](/temporal-service).
+
+See [Cloud metrics](/cloud/metrics/) for metrics emitted by [Temporal Cloud](/cloud/overview).
+
+See [SDK metrics](/references/sdk-metrics) for metrics emitted by the [SDKs](/encyclopedia/temporal-sdks).
+
+A Temporal Service emits a range of metrics to help operators get visibility into the Temporal Service's performance and to set up alerts.
+
+All metrics emitted by the Temporal Service are listed in [metric\_defs.go](https://github.com/temporalio/temporal/blob/main/common/metrics/metric_defs.go).
+
+For details on setting up metrics in your Temporal Service configuration, see the [Temporal Service configuration reference](/references/configuration#global).
+
+The [dashboards repository](https://github.com/temporalio/dashboards) contains community-driven Grafana dashboard templates that can be used as a starting point for monitoring the Temporal Service and SDK metrics.
+You can use these templates as references to build your own dashboards.
+For any metrics that are missing in the dashboards, use [metric\_defs.go](https://github.com/temporalio/temporal/blob/main/common/metrics/metric_defs.go) as a reference.
+
+Note that, apart from these metrics emitted by the Temporal Service, you should also monitor infrastructure-specific metrics like CPU, memory, and network for all hosts that are running Temporal Service services.
+
+## Common metrics[​](#common-metrics "Direct link to Common metrics")
+
+Temporal emits metrics for each gRPC service request.
+These metrics are emitted with `type`, `operation`, and `namespace` tags, which provide visibility into Service usage and show the request rates across Services, Namespaces, and Operations.
+
+* Use the `operation` tag in your query to get request rates, error rates, or latencies per operation.
+* Use the `service_name` tag with the [service role tag values](https://github.com/temporalio/temporal/blob/bba148cf1e1642fd39fa0174423b183d5fc62d95/common/metrics/defs.go#L108) to get details for the specific service.
+
+All common tags that you can add in your query are defined in the [metric\_defs.go](https://github.com/temporalio/temporal/blob/main/common/metrics/metric_defs.go) file.
+
+For example, to see service requests by operation on the Frontend Service, use the following:
+
+`sum by (operation) (rate(service_requests{service_name="frontend"}[2m]))`
+
+Note: All metrics queries in this topic are [Prometheus queries](https://prometheus.io/docs/prometheus/latest/querying/basics/).
+
+The following list describes some metrics you can get started with.
+
+### `service_requests`[​](#service_requests "Direct link to service_requests")
+
+Shows service requests received per Task Queue.
+Example: Service requests by operation
+`sum(rate(service_requests{operation=\"AddWorkflowTask\"}[2m]))`
+
+### `service_latency`[​](#service_latency "Direct link to service_latency")
+
+Shows latencies for all Client request operations.
+Usually these are the starting point to investigate which operation is experiencing high-latency issues.
+Example: P95 service latency by operation for the Frontend Service
+`histogram_quantile(0.95, sum(rate(service_latency_bucket{service_name="frontend"}[5m])) by (operation, le))`
+
+### `service_error_with_type`[​](#service_error_with_type "Direct link to service_error_with_type")
+
+(Available only in v1.17.0+) Identifies errors encountered by the service.
+Example: Service errors by type for the Frontend Service
+`sum(rate(service_error_with_type{service_name="frontend"}[5m])) by (error_type)`
+
+### `client_errors`[​](#client_errors "Direct link to client_errors")
+
+An indicator for connection issues between different Server roles.
+Example: Client errors
+`sum(rate(client_errors{service_name="frontend",service_role="history"}[5m]))`
+
+In addition to these, you can define some service-specific metrics to get performance details for each service.
+Start with the following list, and use [metric\_defs.go](https://github.com/temporalio/temporal/blob/main/common/metrics/metric_defs.go) to define additional metrics as required.
+
+## Matching Service metrics[​](#matching-service-metrics "Direct link to Matching Service metrics")
+
+### `poll_success`[​](#poll_success "Direct link to poll_success")
+
+Shows for Tasks that are successfully matched to a poller.
+Example: `sum(rate(poll_success{}[5m]))`
+
+### `poll_timeouts`[​](#poll_timeouts "Direct link to poll_timeouts")
+
+Shows when no Tasks are available for the poller within the poll timeout.
+Example: `sum(rate(poll_timeouts{}[5m]))`
+
+### `asyncmatch_latency`[​](#asyncmatch_latency "Direct link to asyncmatch_latency")
+
+Measures the time from creation to delivery for async matched Tasks.
+The larger this latency, the longer Tasks are sitting in the queue waiting for your Workers to pick them up.
+Example: `histogram_quantile(0.95, sum(rate(asyncmatch_latency_bucket{service_name="matching"}[5m])) by (operation, le))`
+
+### `no_poller_tasks`[​](#no_poller_tasks "Direct link to no_poller_tasks")
+
+Emitted whenever a task is added to a task queue that has no poller, and is a counter metric.
+This is usually an indicator that either the Worker or the starter programs are using the wrong Task Queue.
+
+## History Service metrics[​](#history-service-metrics "Direct link to History Service metrics")
+
+A History Task is an internal Task in Temporal that is created as part of a transaction to update Workflow state and is processed by the Temporal History service.
+It is critical to ensure that the History Task processing system is healthy.
+The following key metrics can be used to monitor the History Service health:
+
+### `task_requests`[​](#task_requests "Direct link to task_requests")
+
+Emitted on every Task process request.
+Example: `sum(rate(task_requests{operation=~"TransferActive.*"}[1m]))`
+
+### `task_errors`[​](#task_errors "Direct link to task_errors")
+
+Emitted on every Task process error.
+Example: `sum(rate(task_errors{operation=~"TransferActive.*"}[1m]))`
+
+### `task_attempt`[​](#task_attempt "Direct link to task_attempt")
+
+Number of attempts on each Task Execution.
+A Task is retried forever, and each retry increases the attempt count.
+Example: `histogram_quantile(0.95, sum(rate(task_attempt_bucket{operation=~"TransferActive.*"}[1m])) by (operation, le))`
+
+### `task_latency_processing`[​](#task_latency_processing "Direct link to task_latency_processing")
+
+Shows the processing latency per attempt.
+Example: `histogram_quantile(0.95, sum(rate(task_latency_processing_bucket{operation=~"TransferActive.*",service_name="history"}[1m])) by (operation, le))`
+
+### `task_latency`[​](#task_latency "Direct link to task_latency")
+
+Measures the in-memory latency across multiple attempts.
+
+### `task_latency_queue`[​](#task_latency_queue "Direct link to task_latency_queue")
+
+Measures the duration, end-to-end, from when the Task should be executed (from the time it was fired) to when the Task is done.
+
+### `task_latency_load`[​](#task_latency_load "Direct link to task_latency_load")
+
+(Available only in v1.18.0+) Measures the duration from Task generation to Task loading (Task schedule to start latency for persistence queue).
+
+### `task_latency_schedule`[​](#task_latency_schedule "Direct link to task_latency_schedule")
+
+(Available only in v1.18.0+) Measures the duration from Task submission (to the Task scheduler) to processing (Task schedule to start latency for in-memory queue).
+
+### `queue_latency_schedule`[​](#queue_latency_schedule "Direct link to queue_latency_schedule")
+
+(Available only in v1.18.0+) Measures the time to schedule 100 Tasks in one Task channel in the host-level Task scheduler.
+If fewer than 100 Tasks are in the Task channel for 30 seconds, the latency is scaled to 100 Tasks upon emission.
+Note: This is still an experimental metric and is subject to change.
+
+### `service_latency_userlatency`[​](#service_latency_userlatency "Direct link to service_latency_userlatency")
+
+Shows the latency introduced because of Workflow logic.
+For example, if you have one Workflow scheduling many Activities or Child Workflows at the same time, it can cause a per-Workflow lock contention.
+The wait period for the per-Workflow lock is counted as `userlatency`.
+
+The `operation` tag contains details about Task type and Active versus Standby statuses, and can be used to get request rates, error rates, or latencies per operation, which can help identify issues caused by database problems.
+
+## Persistence metrics[​](#persistence-metrics "Direct link to Persistence metrics")
+
+Temporal Server emits metrics for every persistence database read and write.
+Some of the most important ones are the following:
+
+### `persistence_requests`[​](#persistence_requests "Direct link to persistence_requests")
+
+Emitted on every persistence request.
+Examples:
+
+* Prometheus query for getting the total number of persistence requests by operation for the History Service:
+  `sum by (operation) (rate(persistence_requests{service_name="history"}[1m]))`
+* Prometheus query for getting the total number of persistence requests by operation for the Matching Service:
+  `sum by (operation) (rate(persistence_requests{service_name="matching"}[1m]))`
+
+### `persistence_errors`[​](#persistence_errors "Direct link to persistence_errors")
+
+Shows all persistence errors.
+This metric is a good indicator for connection issues between the Temporal Service and the persistence store.
+Example:
+
+* Prometheus query for getting all persistence errors by service (history)
+  `sum (rate(persistence_errors{service_name="history"}[1m]))`
+
+### `persistence_error_with_type`[​](#persistence_error_with_type "Direct link to persistence_error_with_type")
+
+Shows all errors related to the persistence store with type, and contain an `error_type` tag.
+
+* Prometheus query for getting persistence errors with type by (history) and by error type:
+  `sum(rate(persistence_error_with_type{service_name="history"}[1m])) by (error_type)`
+
+### `persistence_latency`[​](#persistence_latency "Direct link to persistence_latency")
+
+Shows the latency on persistence operations.
+Example:
+
+* Prometheus query for getting latency by percentile:
+  `histogram_quantile(0.95, sum(rate(persistence_latency_bucket{service_name="history"}[1m])) by (operation, le))`
+
+## Schedule metrics[​](#schedule-metrics "Direct link to Schedule metrics")
+
+Temporal emits metrics that track the performance and outcomes of these Scheduled Executions.
+
+Below are additional metrics that can help you monitor and optimize your Scheduled Workflow Executions.
+
+### `schedule_buffer_overruns`[​](#schedule_buffer_overruns "Direct link to schedule_buffer_overruns")
+
+Indicates instances where the buffer for holding Scheduled Workflows exceeds its maximum capacity.
+This scenario typically occurs when schedules with a `buffer_all` overlap policy have their average run length exceeding the average schedule interval.
+
+Example: To monitor buffer overruns.
+
+`sum(rate(schedule_buffer_overruns{namespace="$namespace"}[5m]))`
+
+### `schedule_missed_catchup_window`[​](#schedule_missed_catchup_window "Direct link to schedule_missed_catchup_window")
+
+Tracks occurrences when the system fails to execute a Scheduled Action within the defined catchup window.
+Missed catchup windows can result from extended outages beyond the configured catchup period.
+
+Example: To identify missed catchup opportunities.
+
+`sum(rate(schedule_missed_catchup_window{namespace="$namespace"}[5m]))`
+
+### `schedule_rate_limited`[​](#schedule_rate_limited "Direct link to schedule_rate_limited")
+
+Reflects instances where the creation of Workflows by a Schedule is throttled due to rate limiting policies within a Namespace.
+This metric is crucial for identifying scheduling patterns that frequently hit rate limits, potentially causing missed catchup windows.
+
+Example: To assess the impact of rate limiting on Scheduled Executions.
+
+`sum(rate(schedule_rate_limited{namespace="$namespace"}[5m]))`
+
+### `schedule_action_success`[​](#schedule_action_success "Direct link to schedule_action_success")
+
+Measures the successful execution of Workflows as per their schedules or through manual triggers.
+This metric is confirms that Workflows are running as expected without delays or errors.
+
+Example: To track the success rate of Scheduled Workflow Executions.
+
+`sum(rate(schedule_action_success{namespace="$namespace"}[5m]))`
+
+## Workflow metrics[​](#workflow-metrics "Direct link to Workflow metrics")
+
+These metrics pertain to Workflow statistics.
+
+### `workflow_cancel`[​](#workflow_cancel "Direct link to workflow_cancel")
+
+Number of Workflows canceled before completing execution.
+
+### `workflow_continued_as_new`[​](#workflow_continued_as_new "Direct link to workflow_continued_as_new")
+
+Number of Workflow Executions that were Continued-As-New from a past execution.
+
+### `workflow_failed`[​](#workflow_failed "Direct link to workflow_failed")
+
+Number of Workflows that failed before completion.
+
+### `workflow_success`[​](#workflow_success "Direct link to workflow_success")
+
+Number of Workflows that successfully completed.
+
+### `workflow_timeout`[​](#workflow_timeout "Direct link to workflow_timeout")
+
+Number of Workflows that timed out before completing execution.
+
+## Nexus metrics[​](#nexus-metrics "Direct link to Nexus metrics")
+
+These metrics pertain to Nexus Operations.
+
+### Nexus Machinery in the History Service[​](#nexus-machinery-in-the-history-service "Direct link to Nexus Machinery in the History Service")
+
+See [architecture document](https://github.com/temporalio/temporal/blob/5d55d6c707bd68d8f3274c57ae702331adf05e6e/docs/architecture/nexus.md#scheduler)
+for more info.
+
+#### In-Memory Buffer[​](#in-memory-buffer "Direct link to In-Memory Buffer")
+
+`dynamic_worker_pool_scheduler_enqueued_tasks`: A counter that is incremented when a task is enqueued to the buffer.
+
+`dynamic_worker_pool_scheduler_dequeued_tasks`: A counter that is incremented when a task is dequeued from the buffer.
+
+`dynamic_worker_pool_scheduler_rejected_tasks`: A counter that is incremented when the buffer is full and adding the
+task is rejected.
+
+`dynamic_worker_pool_scheduler_buffer_size`: A gauge that periodically samples the size of the buffer.
+
+### Concurrency Limiter[​](#concurrency-limiter "Direct link to Concurrency Limiter")
+
+`dynamic_worker_pool_scheduler_active_workers`: A gauge that periodically samples the number of running goroutines.
+
+#### Rate Limiter[​](#rate-limiter "Direct link to Rate Limiter")
+
+`rate_limited_task_runnable_wait_time`: A histogram representing the time a task spends waiting for the rate limiter.
+
+#### Circuit Breaker[​](#circuit-breaker "Direct link to Circuit Breaker")
+
+`circuit_breaker_executable_blocked`: A counter that is incremented every time a task execution is blocked by the
+circuit breaker.
+
+#### Task Executors[​](#task-executors "Direct link to Task Executors")
+
+`nexus_outbound_requests`: A counter representing the number of Nexus outbound requests made by the history service.
+
+`nexus_outbound_latency`: A histogram representing the latency of outbound Nexus requests made by the history service.
+
+`callback_outbound_requests`: A counter representing the number of callback outbound requests made by the history
+service.
+
+`callback_outbound_latency`: A histogram representing the latency histogram of outbound callback requests made by the
+history service.
+
+### Nexus Machinery on the Frontend Service[​](#nexus-machinery-on-the-frontend-service "Direct link to Nexus Machinery on the Frontend Service")
+
+#### `nexus_requests`[​](#nexus_requests "Direct link to nexus_requests")
+
+The number of Nexus requests received by the service.
+
+Type: Counter
+
+#### `nexus_latency`[​](#nexus_latency "Direct link to nexus_latency")
+
+Latency of Nexus requests.
+
+Type: Histogram
+
+#### `nexus_request_preprocess_errors`[​](#nexus_request_preprocess_errors "Direct link to nexus_request_preprocess_errors")
+
+The number of Nexus requests for which pre-processing failed.
+
+Type: Counter
+
+#### `nexus_completion_requests`[​](#nexus_completion_requests "Direct link to nexus_completion_requests")
+
+The number of Nexus completion (callback) requests received by the service.
+
+Type: Counter
+
+#### `nexus_completion_latency`[​](#nexus_completion_latency "Direct link to nexus_completion_latency")
+
+Latency histogram of Nexus completion (callback) requests.
+
+Type: Histogram
+
+#### `nexus_completion_request_preprocess_errors`[​](#nexus_completion_request_preprocess_errors "Direct link to nexus_completion_request_preprocess_errors")
+
+The number of Nexus completion requests for which pre-processing failed.
+
+Type: Counter
+
+* [Common metrics](#common-metrics)
+  + [`service_requests`](#service_requests)+ [`service_latency`](#service_latency)+ [`service_error_with_type`](#service_error_with_type)+ [`client_errors`](#client_errors)* [Matching Service metrics](#matching-service-metrics)
+    + [`poll_success`](#poll_success)+ [`poll_timeouts`](#poll_timeouts)+ [`asyncmatch_latency`](#asyncmatch_latency)+ [`no_poller_tasks`](#no_poller_tasks)* [History Service metrics](#history-service-metrics)
+      + [`task_requests`](#task_requests)+ [`task_errors`](#task_errors)+ [`task_attempt`](#task_attempt)+ [`task_latency_processing`](#task_latency_processing)+ [`task_latency`](#task_latency)+ [`task_latency_queue`](#task_latency_queue)+ [`task_latency_load`](#task_latency_load)+ [`task_latency_schedule`](#task_latency_schedule)+ [`queue_latency_schedule`](#queue_latency_schedule)+ [`service_latency_userlatency`](#service_latency_userlatency)* [Persistence metrics](#persistence-metrics)
+        + [`persistence_requests`](#persistence_requests)+ [`persistence_errors`](#persistence_errors)+ [`persistence_error_with_type`](#persistence_error_with_type)+ [`persistence_latency`](#persistence_latency)* [Schedule metrics](#schedule-metrics)
+          + [`schedule_buffer_overruns`](#schedule_buffer_overruns)+ [`schedule_missed_catchup_window`](#schedule_missed_catchup_window)+ [`schedule_rate_limited`](#schedule_rate_limited)+ [`schedule_action_success`](#schedule_action_success)* [Workflow metrics](#workflow-metrics)
+            + [`workflow_cancel`](#workflow_cancel)+ [`workflow_continued_as_new`](#workflow_continued_as_new)+ [`workflow_failed`](#workflow_failed)+ [`workflow_success`](#workflow_success)+ [`workflow_timeout`](#workflow_timeout)* [Nexus metrics](#nexus-metrics)
+              + [Nexus Machinery in the History Service](#nexus-machinery-in-the-history-service)
+                - [In-Memory Buffer](#in-memory-buffer)+ [Concurrency Limiter](#concurrency-limiter)
+                  - [Rate Limiter](#rate-limiter)- [Circuit Breaker](#circuit-breaker)- [Task Executors](#task-executors)+ [Nexus Machinery on the Frontend Service](#nexus-machinery-on-the-frontend-service)
+                    - [`nexus_requests`](#nexus_requests)- [`nexus_latency`](#nexus_latency)- [`nexus_request_preprocess_errors`](#nexus_request_preprocess_errors)- [`nexus_completion_requests`](#nexus_completion_requests)- [`nexus_completion_latency`](#nexus_completion_latency)- [`nexus_completion_request_preprocess_errors`](#nexus_completion_request_preprocess_errors)

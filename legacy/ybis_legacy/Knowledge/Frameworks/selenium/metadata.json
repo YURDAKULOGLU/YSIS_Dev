@@ -1,0 +1,12 @@
+{
+  "name": "selenium",
+  "version": "4.39.0",
+  "description": "Official Python bindings for Selenium WebDriver",
+  "home_page": "https://www.selenium.dev",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Homepage": "https://www.selenium.dev"
+  },
+  "scraped_at": "2026-01-05T01:15:34.310350"
+}

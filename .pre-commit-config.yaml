@@ -1,9 +1,11 @@
 # Pre-commit configuration for YBIS_Dev
+# Constitution V3.0 compliant - Local development quality gates
 # Excludes legacy/ and other non-production paths from validation
 
 exclude: |
   (?x)^(
     legacy/|
+    vendors/|
     .sandbox_worker/|
     workspaces/archive/|
     Knowledge/Legacy_KB/|
@@ -12,7 +14,11 @@ exclude: |
     config/integration_settings\.json
   )
 
+default_language_version:
+  python: python3.11
+
 repos:
+  # Standard pre-commit hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
@@ -27,11 +33,117 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
+      - id: check-added-large-files
+        args: [--maxkb=1000]
 
+  # Ruff - Fast Python linter and formatter (Constitution V.1: Test Pyramid)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.0
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        types: [python]
+      - id: ruff-format
+        types: [python]
+
+  # Mypy - Type checking (Constitution IV.4: Type Safety)
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-all]
+        args: [--strict, --ignore-missing-imports]
+        types: [python]
+        exclude: ^(legacy/|vendors/|tests/)
+
+  # Security - Bandit (SAST for Python)
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.8
+    hooks:
+      - id: bandit
+        args: ["-c", "pyproject.toml", "-r", "src"]
+        exclude: |
+          (?x)^(
+            vendors/|
+            legacy/|
+            workspaces/archive/
+          )
+
+  # Security - detect-secrets (hardcoded secrets detection)
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ["--baseline", ".secrets.baseline"]
+        exclude: |
+          (?x)^(
+            vendors/|
+            legacy/|
+            workspaces/archive/|
+            \.secrets\.baseline
+          )
+
+  # Security - Safety (dependency CVE scan)
+  - repo: https://github.com/pyupio/safety
+    rev: 3.2.9
+    hooks:
+      - id: safety
+        args: ["--json"]
+        exclude: |
+          (?x)^(
+            vendors/|
+            legacy/
+          )
+
+  # Import-linter - Module boundary enforcement (Constitution III.5: Layer Discipline)
+  - repo: https://github.com/seddonym/import-linter
+    rev: v2.0
+    hooks:
+      - id: import-linter
+        args: [--config=pyproject.toml]
+
+  # Commit message validation (Constitution X.1: Git Discipline)
   - repo: local
     hooks:
+      - id: commit-msg-format
+        name: Validate commit message format
+        entry: python scripts/validate_commit_msg.py
+        language: system
+        stages: [commit-msg]
+        pass_filenames: false
+
+  # Local custom hooks
+  - repo: local
+    hooks:
+      # Emoji check (Constitution VI.2: Naming Consistency)
+      - id: emoji-check
+        name: Check for emoji/unicode in code
+        entry: python scripts/check_emoji.py
+        language: system
+        types: [python, text]
+        pass_filenames: true
+
+      # Verify code (existing)
       - id: verify-code
         name: verify_code (staged)
         entry: python scripts/verify_code.py --staged --quiet
         language: system
         pass_filenames: false
+
+      # Pytest (only if Python files changed, Constitution V.1: Test Pyramid)
+      - id: pytest
+        name: pytest (unit tests)
+        entry: python -m pytest tests/unit/ --tb=short -q
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: false
+
+      # Hypothesis property-based tests (Week 2)
+      - id: hypothesis
+        name: Hypothesis property-based tests
+        entry: python -m pytest tests/property/ --tb=short -q -m property
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: false

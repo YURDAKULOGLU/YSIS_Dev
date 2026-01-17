@@ -1,0 +1,50 @@
+# Council Review Workflow
+# Uses llm-council adapter for multi-model review
+
+name: council_review
+version: 1
+description: "Council review workflow using llm-council adapter for multi-model review"
+
+nodes:
+  - id: execute
+    type: executor
+    description: "Execute plan using registered executor"
+    config:
+      adapter: "local_coder"
+  
+  - id: council_review
+    type: council_reviewer
+    description: "Review execution using llm-council adapter"
+    config:
+      adapter: "llm_council"
+  
+  - id: gate
+    type: gate
+    description: "Check gates (verification + risk + artifacts)"
+
+connections:
+  - from: START
+    to: execute
+  
+  - from: execute
+    to: council_review
+  
+  - from: council_review
+    to: gate
+  
+  - from: gate
+    to: END
+
+requirements:
+  modules:
+    - executor
+    - gate
+  
+  adapters:
+    - llm_council
+  
+  artifacts:
+    - executor_report.json
+    - council_review_report.json
+    - gate_report.json
+

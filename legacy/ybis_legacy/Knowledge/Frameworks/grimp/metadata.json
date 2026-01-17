@@ -1,0 +1,13 @@
+{
+  "name": "grimp",
+  "version": "3.14",
+  "description": "Builds a queryable graph of the imports within one or more Python packages.",
+  "home_page": "https://pypi.org/project/grimp/",
+  "documentation_url": "https://grimp.readthedocs.io/",
+  "github_url": "https://github.com/python-grimp/grimp/",
+  "project_urls": {
+    "Documentation": "https://grimp.readthedocs.io/",
+    "Source-code": "https://github.com/python-grimp/grimp/"
+  },
+  "scraped_at": "2026-01-04T23:44:34.021412"
+}

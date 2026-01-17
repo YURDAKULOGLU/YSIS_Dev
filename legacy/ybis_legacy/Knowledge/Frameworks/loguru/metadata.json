@@ -1,0 +1,14 @@
+{
+  "name": "loguru",
+  "version": "0.7.3",
+  "description": "Python logging made (stupidly) simple",
+  "home_page": "https://pypi.org/project/loguru/",
+  "documentation_url": "https://loguru.readthedocs.io/en/stable/index.html",
+  "github_url": null,
+  "project_urls": {
+    "Changelog": "https://github.com/Delgan/loguru/blob/master/CHANGELOG.rst",
+    "Documentation": "https://loguru.readthedocs.io/en/stable/index.html",
+    "Homepage": "https://github.com/Delgan/loguru"
+  },
+  "scraped_at": "2026-01-04T23:51:12.058762"
+}

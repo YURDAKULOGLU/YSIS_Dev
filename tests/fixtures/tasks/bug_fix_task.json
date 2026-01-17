@@ -1,0 +1,9 @@
+{
+  "id": "BUG-001",
+  "title": "Fix calculation error",
+  "objective": "The calculate_sum function returns incorrect results for floating point numbers",
+  "status": "pending",
+  "priority": "high",
+  "labels": ["bug", "math"]
+}
+

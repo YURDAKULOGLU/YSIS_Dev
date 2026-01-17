@@ -1,0 +1,13 @@
+{
+  "name": "sympy",
+  "version": "1.14.0",
+  "description": "Computer algebra system (CAS) in Python",
+  "home_page": "https://sympy.org",
+  "documentation_url": null,
+  "github_url": "https://github.com/sympy/sympy",
+  "project_urls": {
+    "Homepage": "https://sympy.org",
+    "Source": "https://github.com/sympy/sympy"
+  },
+  "scraped_at": "2026-01-04T23:50:50.719030"
+}

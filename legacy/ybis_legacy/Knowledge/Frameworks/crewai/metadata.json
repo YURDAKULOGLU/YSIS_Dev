@@ -1,0 +1,14 @@
+{
+  "name": "crewai",
+  "version": "1.7.2",
+  "description": "Cutting-edge framework for orchestrating role-playing, autonomous AI agents. By fostering collaborative intelligence, CrewAI empowers agents to work together seamlessly, tackling complex tasks.",
+  "home_page": "https://pypi.org/project/crewai/",
+  "documentation_url": "https://docs.crewai.com",
+  "github_url": null,
+  "project_urls": {
+    "Documentation": "https://docs.crewai.com",
+    "Homepage": "https://crewai.com",
+    "Repository": "https://github.com/crewAIInc/crewAI"
+  },
+  "scraped_at": "2026-01-05T00:53:05.049706"
+}

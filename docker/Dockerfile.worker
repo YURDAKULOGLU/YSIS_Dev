@@ -27,4 +27,4 @@ ENV PROJECT_ROOT=/app
 ENV PYTHONPATH=/app
 
 # Default command (will be overridden by compose)
-CMD ["python", "scripts/worker.py"]
+CMD ["python", "scripts/ybis_worker.py"]

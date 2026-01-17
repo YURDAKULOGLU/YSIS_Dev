@@ -1,0 +1,14 @@
+{
+  "name": "spade",
+  "version": "4.1.2",
+  "description": "Smart Python Agent Development Environment",
+  "home_page": "https://spadeagents.eu",
+  "documentation_url": "http://spade-mas.readthedocs.io/",
+  "github_url": null,
+  "project_urls": {
+    "Documentation": "http://spade-mas.readthedocs.io/",
+    "Homepage": "https://spadeagents.eu",
+    "Repository": "https://github.com/javipalanca/spade"
+  },
+  "scraped_at": "2026-01-05T02:03:09.719114"
+}

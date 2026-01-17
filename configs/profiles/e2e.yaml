@@ -1,0 +1,72 @@
+profile: e2e
+sandbox:
+  enabled: true
+  type: "local"
+  network: false
+exec:
+  allowlist:
+    - "python"
+    - "pytest"
+    - "ruff"
+    - "git"
+paths:
+  protected:
+    - "src/ybis/contracts/"
+    - "src/ybis/syscalls/"
+    - "src/ybis/control_plane/"
+    - "src/ybis/orchestrator/gates.py"
+    - "src/ybis/migrations/"
+    - "src/ybis/constants.py"
+gates:
+  require_approval_on_protected_paths: true
+  max_patch_lines_without_approval: 400
+  require_verifier_pass: true
+  spec_compliance_threshold: 0.7
+event_bus:
+  enabled: false  # Event bus disabled for E2E tests
+  adapter: "redis"
+verifier:
+  run_ruff: false
+  run_pytest: false
+  emit_warnings: false
+  ruff_paths:
+    - "src/ybis"
+  pytest_paths: []
+planner:
+  mode: "heuristic"
+features:
+  vector_store: false
+  code_graph: false
+  llamaindex: false
+  memory: false
+adapters:
+  # E2E profile: minimal adapters for testing
+  local_coder:
+    enabled: true  # Default executor
+  aider:
+    enabled: false
+  e2b_sandbox:
+    enabled: false  # Use local sandbox for E2E
+  chroma_vector_store:
+    enabled: false
+  qdrant_vector_store:
+    enabled: false
+  neo4j_graph:
+    enabled: false
+  llamaindex_adapter:
+    enabled: false
+  # Vendor adapters (experimental, disabled for E2E)
+  evoagentx:
+    enabled: false
+  reactive_agents:
+    enabled: false
+  llm_council:
+    enabled: false
+  aiwaves_agents:
+    enabled: false
+  self_improve_swarms:
+    enabled: false
+llm:
+  planner_model: "ollama/llama3.2:3b"
+  coder_model: "ollama/qwen2.5-coder:32b"
+  api_base: "http://localhost:11434"

@@ -8,7 +8,7 @@ def check_pulse():
 
     # 1. DB Check
     try:
-        conn = sqlite3.connect('Knowledge/LocalDB/tasks.db')
+        conn = sqlite3.connect('platform_data/knowledge/LocalDB/tasks.db')
         cursor = conn.cursor()
         cursor.execute("SELECT count(*) FROM tasks")
         count = cursor.fetchone()[0]
@@ -36,3 +36,4 @@ def check_pulse():
 
 if __name__ == "__main__":
     check_pulse()
+

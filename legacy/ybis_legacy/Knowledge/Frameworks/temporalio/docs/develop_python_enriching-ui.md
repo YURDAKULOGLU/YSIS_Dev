@@ -1,0 +1,125 @@
+Enriching the User Interface - Python SDK | Temporal Platform Documentation
+
+
+
+[Skip to main content](#__docusaurus_skipToContent_fallback)
+
+On this page
+
+Temporal supports adding context to Workflows and events with metadata.
+This helps users identify and understand Workflows and their operations.
+
+## Adding Summary and Details to Workflows[​](#adding-summary-and-details-to-workflows "Direct link to Adding Summary and Details to Workflows")
+
+### Starting a Workflow[​](#starting-a-workflow "Direct link to Starting a Workflow")
+
+When starting a Workflow, you can provide a static summary and details to help identify the Workflow in the UI:
+
+```
+# Start a Workflow with static summary and details  
+handle = await client.start_workflow(  
+    YourWorkflow.run,  
+    "workflow input",  
+    id="your-workflow-id",  
+    task_queue="your-task-queue",  
+    static_summary="Order processing for customer #12345",  
+    static_details="Processing premium order with expedited shipping"  
+)
+```
+
+`static_summary` is a single-line description that appears in the Workflow list view, limited to 200 bytes.
+`static_details` can be multi-line and provides more comprehensive information that appears in the Workflow details view, with a larger limit of 20K bytes.
+
+The input format is standard Markdown excluding images, HTML, and scripts.
+
+You can also use the `execute_workflow` method with the same parameters:
+
+```
+result = await client.execute_workflow(  
+    YourWorkflow.run,  
+    "workflow input",  
+    id="your-workflow-id",  
+    task_queue="your-task-queue",  
+    static_summary="Order processing for customer #12345",  
+    static_details="Processing premium order with expedited shipping"  
+)
+```
+
+### Inside the Workflow[​](#inside-the-workflow "Direct link to Inside the Workflow")
+
+Within a Workflow, you can get and set the *current Workflow details*.
+Unlike static summary/details set at Workflow start, this value can be updated throughout the life of the Workflow.
+Current Workflow details also takes Markdown format (excluding images, HTML, and scripts) and can span multiple lines.
+
+```
+@workflow.defn  
+class YourWorkflow:  
+    @workflow.run  
+    async def run(self, input: str) -> str:  
+        # Get the current details  
+        current_details = workflow.get_current_details()  
+        print(f"Current details: {current_details}")  
+          
+        # Set/update the current details  
+        workflow.set_current_details("Updated workflow details with new status")  
+          
+        return "Workflow completed"
+```
+
+### Adding Summary to Activities and Timers[​](#adding-summary-to-activities-and-timers "Direct link to Adding Summary to Activities and Timers")
+
+You can attach a metadata parameter `summary` to Activities when starting them from within a Workflow:
+
+```
+@workflow.defn  
+class YourWorkflow:  
+    @workflow.run  
+    async def run(self, input: str) -> str:  
+        # Start an activity with a summary  
+        result = await workflow.execute_activity(  
+            your_activity,  
+            input,  
+            start_to_close_timeout=timedelta(seconds=10),  
+            summary="Processing user data"  
+        )  
+        return result
+```
+
+Similarly, you can attach a `summary` to Timers within a Workflow:
+
+```
+@workflow.defn  
+class YourWorkflow:  
+    @workflow.run  
+    async def run(self, input: str) -> str:  
+        # Create a timer with a summary  
+        await workflow.sleep(timedelta(minutes=5), summary="Waiting for payment confirmation")  
+        return "Timer completed"
+```
+
+The input format for `summary` is a string, and limited to 200 bytes.
+
+## Viewing Summary and Details in the UI[​](#viewing-summary-and-details-in-the-ui "Direct link to Viewing Summary and Details in the UI")
+
+Once you've added summaries and details to your Workflows, Activities, and Timers, you can view this enriched information in the Temporal Web UI.
+Navigate to your Workflow's details page to see the metadata displayed in two key locations:
+
+### Workflow Overview Section[​](#workflow-overview-section "Direct link to Workflow Overview Section")
+
+At the top of the Workflow details page, you'll find the Workflow-level metadata:
+
+* **Summary & Details** - Displays the static summary and static details set when starting the Workflow
+* **Current Details** - Displays the dynamic details that can be updated during Workflow execution
+
+All Workflow details support standard Markdown formatting (excluding images, HTML, and scripts), allowing you to create rich, structured information displays.
+
+### Event History[​](#event-history "Direct link to Event History")
+
+Individual events in the Workflow's Event History display their associated summaries when available.
+
+Workflow, Activity and Timer summaries appear in purple text next to their corresponding events, providing immediate context without requiring you to expand the Event details.
+When you do expand an Event, the summary is also prominently displayed in the detailed view.
+
+* [Adding Summary and Details to Workflows](#adding-summary-and-details-to-workflows)
+  + [Starting a Workflow](#starting-a-workflow)+ [Inside the Workflow](#inside-the-workflow)+ [Adding Summary to Activities and Timers](#adding-summary-to-activities-and-timers)* [Viewing Summary and Details in the UI](#viewing-summary-and-details-in-the-ui)
+    + [Workflow Overview Section](#workflow-overview-section)+ [Event History](#event-history)

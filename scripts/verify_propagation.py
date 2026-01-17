@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 def run_propagation():
-    print("🧬 Starting Self-Propagation Test...")
+    print(" Starting Self-Propagation Test...")
 
     root = Path(os.getcwd())
     sub_factory = root / "workspaces" / "sub_factory"

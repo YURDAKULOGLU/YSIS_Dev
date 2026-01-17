@@ -1,0 +1,98 @@
+name: self_develop
+version: 1
+description: "YBIS-native self-development workflow with reflection and evidence-first governance"
+
+nodes:
+  - id: reflect
+    type: self_reflect
+    description: "Reflect on system state and identify improvements"
+  
+  - id: analyze
+    type: self_analyze
+    description: "Analyze reflection and prioritize improvements"
+  
+  - id: propose
+    type: self_propose
+    description: "Propose specific improvements as tasks"
+  
+  - id: spec
+    type: spec_generator
+    description: "Generate SPEC.md for proposed improvement"
+  
+  - id: plan
+    type: planner
+    description: "Generate PLAN.json for implementation"
+  
+  - id: execute
+    type: executor
+    description: "Execute self-change"
+    config:
+      adapter: "local_coder"
+  
+  - id: verify
+    type: verifier
+    description: "Verify self-change (tests + lint)"
+  
+  - id: gate
+    type: self_gate
+    description: "Stricter gate for self-changes"
+  
+  - id: integrate
+    type: self_integrate
+    description: "Integrate self-change (with rollback plan)"
+
+connections:
+  - from: START
+    to: reflect
+  
+  - from: reflect
+    to: analyze
+  
+  - from: analyze
+    to: propose
+  
+  - from: propose
+    to: spec
+  
+  - from: spec
+    to: plan
+  
+  - from: plan
+    to: execute
+  
+  - from: execute
+    to: verify
+  
+  - from: verify
+    to: gate
+  
+  - from: gate
+    to: integrate
+  
+  - from: integrate
+    to: END
+
+requirements:
+  modules:
+    - spec_generator
+    - planner
+    - executor
+    - verifier
+    - gate
+  adapters:
+    - self_reflect
+    - self_analyze
+    - self_propose
+    - self_gate
+    - self_integrate
+  artifacts:
+    - reflection_report.json
+    - analysis_report.json
+    - proposal_report.json
+    - spec.md
+    - plan.json
+    - executor_report.json
+    - verifier_report.json
+    - gate_report.json
+    - rollback_plan.json
+

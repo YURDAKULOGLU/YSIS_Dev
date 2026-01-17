@@ -1,0 +1,44 @@
+# CODEOWNERS - Protected Path Review Requirements
+#
+# This file defines code owners for protected paths.
+# Changes to protected paths require approval from code owners.
+#
+# Format: <path> <@owner1> <@owner2> ...
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Core Architecture (Highest Protection)
+/src/ybis/contracts/          @ybis-core
+/src/ybis/syscalls/           @ybis-core
+/src/ybis/control_plane/      @ybis-core
+/src/ybis/orchestrator/gates.py @ybis-core
+/src/ybis/migrations/         @ybis-core
+/src/ybis/constants.py       @ybis-core
+
+# Governance & Policy
+/docs/governance/             @ybis-core
+/configs/profiles/            @ybis-core
+/configs/adapters.yaml        @ybis-core
+
+# Enforcement Scripts
+/scripts/lint_core_boundary.py @ybis-core
+/.github/workflows/enforcement.yml @ybis-core
+
+# Constitution & Architecture Docs
+/docs/CONSTITUTION.md         @ybis-core
+/docs/AI_START_HERE.md        @ybis-core
+/docs/BOOTSTRAP_PLAN.md       @ybis-core
+/docs/INTERFACES.md           @ybis-core
+/docs/WORKFLOWS.md            @ybis-core
+/docs/CODE_STANDARDS.md       @ybis-core
+/docs/SECURITY.md             @ybis-core
+
+# Adapter Registry & Bootstrap
+/src/ybis/adapters/registry.py @ybis-core
+/src/ybis/services/adapter_bootstrap.py @ybis-core
+/src/ybis/services/adapter_catalog.py @ybis-core
+
+# Policy Provider
+/src/ybis/services/policy.py  @ybis-core
+
+# All other paths
+*                            @ybis-core

@@ -1,0 +1,79 @@
+name: example_parallel
+version: 1
+description: "Example workflow with parallel node execution"
+
+nodes:
+  - id: spec
+    type: spec_generator
+    description: "Generate spec"
+  
+  - id: plan
+    type: planner
+    description: "Generate plan"
+  
+  # Parallel execution: Both test1 and test2 run simultaneously
+  - id: test1
+    type: executor
+    description: "Test execution 1"
+    config:
+      adapter: "local_coder"
+      test_path: "tests/unit"
+  
+  - id: test2
+    type: executor
+    description: "Test execution 2"
+    config:
+      adapter: "local_coder"
+      test_path: "tests/integration"
+  
+  - id: verify
+    type: verifier
+    description: "Verify results"
+  
+  - id: gate
+    type: gate
+    description: "Final gate"
+
+connections:
+  - from: START
+    to: spec
+  
+  - from: spec
+    to: plan
+  
+  # PARALLEL EXECUTION: Both test1 and test2 start after plan
+  # LangGraph automatically executes them in parallel
+  - from: plan
+    to: test1
+  
+  - from: plan
+    to: test2
+  
+  # Synchronization: Both test1 and test2 must complete before verify
+  # LangGraph automatically waits for all parallel nodes
+  - from: test1
+    to: verify
+  
+  - from: test2
+    to: verify
+  
+  - from: verify
+    to: gate
+  
+  - from: gate
+    to: END
+
+requirements:
+  modules:
+    - spec_generator
+    - planner
+    - executor
+    - verifier
+    - gate
+  artifacts:
+    - spec.md
+    - plan.json
+    - executor_report.json
+    - verifier_report.json
+    - gate_report.json
+

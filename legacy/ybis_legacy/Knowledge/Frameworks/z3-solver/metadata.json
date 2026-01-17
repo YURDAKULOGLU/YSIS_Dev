@@ -1,0 +1,12 @@
+{
+  "name": "z3-solver",
+  "version": "4.15.4.0",
+  "description": "an efficient SMT solver library",
+  "home_page": "https://github.com/Z3Prover/z3",
+  "documentation_url": null,
+  "github_url": "https://github.com/Z3Prover/z3",
+  "project_urls": {
+    "Homepage": "https://github.com/Z3Prover/z3"
+  },
+  "scraped_at": "2026-01-05T01:15:33.022017"
+}

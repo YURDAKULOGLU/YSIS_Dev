@@ -1,0 +1,13 @@
+{
+  "name": "opentelemetry-api",
+  "version": "1.39.1",
+  "description": "OpenTelemetry Python API",
+  "home_page": "https://pypi.org/project/opentelemetry-api/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Homepage": "https://github.com/open-telemetry/opentelemetry-python/tree/main/opentelemetry-api",
+    "Repository": "https://github.com/open-telemetry/opentelemetry-python"
+  },
+  "scraped_at": "2026-01-05T09:03:31.570679"
+}

@@ -1,0 +1,110 @@
+profile: default
+sandbox:
+  enabled: true
+  type: "docker"  # Options: "e2b" (E2B sandbox), "local" (subprocess), "docker"
+  network: false
+exec:
+  allowlist:
+    - "python"
+    - "pytest"
+    - "ruff"
+    - "git"
+paths:
+  protected:
+    - "src/ybis/contracts/"
+    - "src/ybis/syscalls/"
+    - "src/ybis/control_plane/"
+    - "src/ybis/orchestrator/gates.py"
+    - "src/ybis/migrations/"
+    - "src/ybis/constants.py"
+gates:
+  require_approval_on_protected_paths: true
+  max_patch_lines_without_approval: 400
+  require_verifier_pass: true
+  spec_compliance_threshold: 0.7
+event_bus:
+  enabled: false  # Event bus disabled by default (opt-in)
+  adapter: "redis"  # Options: "redis", "nats" (future)
+verifier:
+  emit_warnings: true
+features:
+  vector_store: auto
+  code_graph: auto
+  llamaindex: auto
+  memory: auto
+executor:
+  default: "local_coder"  # Default executor name
+adapters:
+  # Executor adapters
+  local_coder:
+    enabled: true  # Default executor (always enabled)
+  aider:
+    enabled: false  # Aider executor (optional)
+  openhands:
+    enabled: true  # OpenHands executor (enabled for workflow selection)
+  # Sandbox adapters
+  e2b_sandbox:
+    enabled: false  # E2B sandbox disabled (docker/local runtime in use)
+  # Memory/Graph adapters (optional)
+  chroma_vector_store:
+    enabled: false  # ChromaDB vector store
+  qdrant_vector_store:
+    enabled: true  # Qdrant vector store
+  neo4j_graph:
+    enabled: false  # Neo4j graph database
+  mem0:
+    enabled: true  # Mem0 agent memory (Week 4)
+    mode: auto  # "cloud" | "local" | "auto" | "fallback"
+    # auto: Selects based on LLM provider (Ollama=local, OpenAI=cloud)
+    # cloud: Uses Mem0 hosted platform (requires MEM0_API_KEY)
+    # local: Uses Mem0 self-hosted (requires mem0ai package)
+    # fallback: Uses YBIS VectorStore (always available)
+  byterover:
+    enabled: true  # ByteRover team knowledge sharing (Week 5)
+    # api_key: Set via BYTEROVER_API_KEY env var (optional, for cloud mode)
+    # team_id: Team identifier (optional)
+    # project_id: Project identifier (optional)
+    # Falls back to VectorStore if ByteRover not available
+  crewai:
+    enabled: true  # CrewAI multi-agent orchestration (Week 5)
+    # Uses local Ollama by default (from policy llm config)
+    # Falls back to reactive-agents if not available
+  autogen:
+    enabled: true  # AutoGen multi-agent conversations (Week 5)
+    # Uses local Ollama by default (from policy llm config)
+    # Falls back to llm-council if not available
+  # LLM adapters
+  llamaindex_adapter:
+    enabled: false  # LlamaIndex integration
+  # Vendor adapters (experimental)
+  evoagentx:
+    enabled: true  # EvoAgentX workflow evolution (Task 3: Enabled)
+  agent0:
+    enabled: true  # Agent0 alias for EvoAgentX workflow evolution
+  reactive_agents:
+    enabled: false  # Reactive-agents agent runtime
+  llm_council:
+    enabled: false  # LLM-council multi-model review
+  aiwaves_agents:
+    enabled: false  # AIWaves-agents learning
+  self_improve_swarms:
+    enabled: false  # Self-Improve-Swarms self-improvement loop
+  # Observability adapters
+  langfuse_observability:
+    enabled: true  # Langfuse observability (requires LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY)
+  opentelemetry_observability:
+    enabled: true  # OpenTelemetry observability (requires OpenTelemetry collector)
+llm:
+  planner_model: "ollama/llama3.2:3b"  # Fast for planning
+  coder_model: "ollama/qwen2.5-coder:32b"  # Strong for coding
+  api_base: "http://localhost:11434"
+openhands:
+  model: "ollama/qwen2.5-coder:32b"
+  max_iterations: 30
+  timeout: 600
+# Auto-generated rules from Lesson Engine (DO NOT EDIT MANUALLY)
+auto_rules:
+  pre_hooks: []      # Commands to run before execution
+  blocked_patterns: []  # Import patterns to block
+  required_checks: []   # Required verification checks
+  require_tests_pass: false

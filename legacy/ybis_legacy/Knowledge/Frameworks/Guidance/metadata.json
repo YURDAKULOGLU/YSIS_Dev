@@ -1,0 +1,12 @@
+{
+  "name": "guidance",
+  "version": "0.3.0",
+  "description": "A guidance language for controlling large language models.",
+  "home_page": "https://github.com/guidance-ai/guidance",
+  "documentation_url": null,
+  "github_url": "https://github.com/guidance-ai/guidance",
+  "project_urls": {
+    "Homepage": "https://github.com/guidance-ai/guidance"
+  },
+  "scraped_at": "2026-01-05T08:06:57.683920"
+}

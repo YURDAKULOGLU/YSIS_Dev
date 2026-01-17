@@ -1,0 +1,14 @@
+{
+  "name": "hiredis",
+  "version": "3.3.0",
+  "description": "Python wrapper for hiredis",
+  "home_page": "https://github.com/redis/hiredis-py",
+  "documentation_url": null,
+  "github_url": "https://github.com/redis/hiredis-py",
+  "project_urls": {
+    "Changes": "https://github.com/redis/hiredis-py/releases",
+    "Homepage": "https://github.com/redis/hiredis-py",
+    "Issue tracker": "https://github.com/redis/hiredis-py/issues"
+  },
+  "scraped_at": "2026-01-05T08:07:21.004118"
+}

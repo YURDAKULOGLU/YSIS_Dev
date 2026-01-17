@@ -1,0 +1,15 @@
+{
+  "name": "tree-sitter-language-pack",
+  "version": "0.13.0",
+  "description": "Comprehensive collection of 160+ tree-sitter language parsers",
+  "home_page": "https://pypi.org/project/tree-sitter-language-pack/",
+  "documentation_url": "https://github.com/Goldziher/tree-sitter-language-pack#readme",
+  "github_url": null,
+  "project_urls": {
+    "documentation": "https://github.com/Goldziher/tree-sitter-language-pack#readme",
+    "homepage": "https://github.com/Goldziher/tree-sitter-language-pack",
+    "issues": "https://github.com/Goldziher/tree-sitter-language-pack/issues",
+    "repository": "https://github.com/Goldziher/tree-sitter-language-pack"
+  },
+  "scraped_at": "2026-01-05T01:16:13.678778"
+}

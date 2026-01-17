@@ -1,0 +1,13 @@
+{
+  "name": "markdownify",
+  "version": "1.2.2",
+  "description": "Convert HTML to markdown.",
+  "home_page": "https://pypi.org/project/markdownify/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Download": "http://github.com/matthewwithanm/python-markdownify/tarball/master",
+    "Homepage": "http://github.com/matthewwithanm/python-markdownify"
+  },
+  "scraped_at": "2026-01-05T00:02:37.743984"
+}

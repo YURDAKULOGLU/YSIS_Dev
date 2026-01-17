@@ -1,0 +1,12 @@
+{
+  "name": "huggingface-hub",
+  "version": "1.2.3",
+  "description": "Client library to download and publish models, datasets and other repos on the huggingface.co hub",
+  "home_page": "https://github.com/huggingface/huggingface_hub",
+  "documentation_url": null,
+  "github_url": "https://github.com/huggingface/huggingface_hub",
+  "project_urls": {
+    "Homepage": "https://github.com/huggingface/huggingface_hub"
+  },
+  "scraped_at": "2026-01-05T08:07:07.894173"
+}

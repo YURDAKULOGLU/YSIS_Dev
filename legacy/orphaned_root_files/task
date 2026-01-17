@@ -1,0 +1,29 @@
+# Task Description
+
+## Objective
+Develop a comprehensive software solution that integrates user authentication and role-based access control for a web application, ensuring secure and efficient management of user permissions.
+
+## Instructions
+1. Start by understanding the requirements fully, including security standards and user needs.
+2. Identify all necessary components and resources needed for completion, such as programming languages, frameworks, and databases.
+3. Break down the task into manageable steps, focusing on authentication mechanisms, role definitions, and access control implementation.
+4. Execute each step carefully, ensuring quality at each stage through thorough testing and validation.
+5. Review your work to confirm that all aspects of the task have been completed as described, including functionality, security, and user experience.
+6. Document any issues encountered and how they were resolved, maintaining detailed records for future reference.
+7. Submit the final product or report on completion, including documentation and testing results.
+
+# Execution
+
+from adapters import AiderExecutor
+from contracts import plan_code
+
+class Task:
+    def execute(self):
+        return "Task executed"
+
+executor = AiderExecutor()
+code = plan_code()
+
+task_instance = Task()
+result = task_instance.execute()
+print(result)

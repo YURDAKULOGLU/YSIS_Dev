@@ -1,0 +1,111 @@
+name: Release Workflow
+
+on:
+  push:
+    tags:
+      - "v*.*.*"  # Trigger on version tags (e.g., v1.0.0)
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (e.g., 1.0.0)"
+        required: true
+        type: string
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for changelog
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install pip-audit
+
+      - name: Run all enforcement checks
+        run: |
+          # Core boundary lint
+          python scripts/lint_core_boundary.py
+          
+          # Tests
+          pytest tests/ -v --tb=short
+          
+          # Linter
+          ruff check src/ tests/
+          
+          # Type checking
+          mypy src/ybis --ignore-missing-imports
+          
+          # Security scan
+          bandit -r src/ybis -f json -o bandit-report.json
+
+      - name: Validate adapter catalog
+        run: |
+          python -c "
+          from src.ybis.services.adapter_catalog import get_catalog
+          catalog = get_catalog()
+          errors = catalog.validate_catalog()
+          if errors:
+              print('Catalog validation failed:')
+              for error in errors:
+                  print(f'  - {error}')
+              exit(1)
+          print('Catalog validation passed')
+          "
+
+      - name: Check adapter CVEs
+        run: |
+          python scripts/check_adapter_cves.py
+        continue-on-error: false
+
+      - name: Generate release artifacts
+        run: |
+          # Create release directory
+          mkdir -p release
+          
+          # Copy key files
+          cp README.md release/
+          cp pyproject.toml release/
+          cp -r configs release/
+          cp -r docs release/
+          
+          # Create release manifest
+          python -c "
+          import json
+          from pathlib import Path
+          from src.ybis.services.adapter_catalog import get_catalog
+          
+          catalog = get_catalog()
+          adapters = catalog.list_adapters()
+          
+          manifest = {
+              'version': '${{ github.ref_name }}',
+              'date': '$(date -u +%Y-%m-%dT%H:%M:%SZ)',
+              'adapters': [{'name': a['name'], 'type': a['type'], 'maturity': a['maturity']} for a in adapters],
+              'total_adapters': len(adapters)
+          }
+          
+          Path('release/manifest.json').write_text(json.dumps(manifest, indent=2))
+          "
+        continue-on-error: true
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release/**
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

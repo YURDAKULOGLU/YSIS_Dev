@@ -1,0 +1,14 @@
+{
+  "name": "outlines",
+  "version": "1.2.9",
+  "description": "Probabilistic Generative Model Programming",
+  "home_page": "https://pypi.org/project/outlines/",
+  "documentation_url": "https://dottxt-ai.github.io/outlines/",
+  "github_url": null,
+  "project_urls": {
+    "documentation": "https://dottxt-ai.github.io/outlines/",
+    "homepage": "https://github.com/dottxt-ai/outlines",
+    "repository": "https://github.com/dottxt-ai/outlines"
+  },
+  "scraped_at": "2026-01-05T00:27:02.393014"
+}

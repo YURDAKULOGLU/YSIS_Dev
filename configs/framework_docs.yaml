@@ -1,0 +1,35 @@
+# Framework Documentation Auto-Sync Configuration
+#
+# This file configures which framework documentation to download and cache locally.
+# Documentation is cached in docs/frameworks/<name>/
+
+frameworks:
+  # Example: LangGraph
+  langgraph:
+    source: "github"
+    url: "https://github.com/langchain-ai/langgraph"
+    version: "latest"
+    enabled: true
+
+  # Example: FastAPI
+  fastapi:
+    source: "github"
+    url: "https://github.com/tiangolo/fastapi"
+    version: "latest"
+    enabled: true
+
+  # Example: Pydantic
+  pydantic:
+    source: "github"
+    url: "https://github.com/pydantic/pydantic"
+    version: "latest"
+    enabled: true
+
+  # Example: Direct URL
+  # ollama:
+  #   source: "direct"
+  #   url: "https://ollama.ai/docs"
+  #   version: "latest"
+  #   enabled: false
+
+

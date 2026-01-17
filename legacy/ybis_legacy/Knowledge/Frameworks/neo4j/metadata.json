@@ -1,0 +1,19 @@
+{
+  "name": "neo4j",
+  "version": "6.0.3",
+  "description": "Neo4j Bolt driver for Python",
+  "home_page": "https://pypi.org/project/neo4j/",
+  "documentation_url": "https://neo4j.com/docs/python-manual/current/",
+  "github_url": null,
+  "project_urls": {
+    "Changelog": "https://github.com/neo4j/neo4j-python-driver/wiki",
+    "Discord": "https://discord.com/invite/neo4j",
+    "Docs (API Reference)": "https://neo4j.com/docs/api/python-driver/current/",
+    "Docs (Manual)": "https://neo4j.com/docs/python-manual/current/",
+    "Forum": "https://community.neo4j.com/c/drivers-stacks/python/",
+    "Homepage": "https://neo4j.com/",
+    "Issue Tracker": "https://github.com/neo4j/neo4j-python-driver/issues",
+    "Repository": "https://github.com/neo4j/neo4j-python-driver"
+  },
+  "scraped_at": "2026-01-05T01:13:32.393431"
+}

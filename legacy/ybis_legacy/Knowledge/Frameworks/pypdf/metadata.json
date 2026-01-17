@@ -1,0 +1,15 @@
+{
+  "name": "pypdf",
+  "version": "6.5.0",
+  "description": "A pure-python PDF library capable of splitting, merging, cropping, and transforming PDF files",
+  "home_page": "https://pypi.org/project/pypdf/",
+  "documentation_url": "https://pypdf.readthedocs.io/en/latest/",
+  "github_url": "https://github.com/py-pdf/pypdf",
+  "project_urls": {
+    "Bug Reports": "https://github.com/py-pdf/pypdf/issues",
+    "Changelog": "https://pypdf.readthedocs.io/en/latest/meta/CHANGELOG.html",
+    "Documentation": "https://pypdf.readthedocs.io/en/latest/",
+    "Source": "https://github.com/py-pdf/pypdf"
+  },
+  "scraped_at": "2026-01-05T00:08:19.239349"
+}

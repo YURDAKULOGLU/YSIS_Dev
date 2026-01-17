@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-01-04T04:08:30.162809",
+  "files": [
+    "C:\\Projeler\\YBIS_Dev\\src\\agentic\\core\\executors\\openhands_executor.py"
+  ],
+  "ruff_output": "F821 Undefined name `default_router`\n  --> src\\agentic\\core\\executors\\openhands_executor.py:23:33\n   |\n21 |             router: Optional router for model configuration.\n22 |         \"\"\"\n23 |         self.router = router or default_router\n   |                                 ^^^^^^^^^^^^^^\n24 |\n25 |     def name(self) -> str:\n   |\n\nF821 Undefined name `log_event`\n  --> src\\agentic\\core\\executors\\openhands_executor.py:51:9\n   |\n49 |         \"\"\"\n50 |         # Placeholder implementation\n51 |         log_event(\"Executing plan with OpenHandsExecutor\", component=\"openhands_executor\")\n   |         ^^^^^^^^^\n52 |\n53 |         # Example: Simulate a successful execution\n   |\n\nFound 2 errors.\n",
+  "error_type": "linting"
+}

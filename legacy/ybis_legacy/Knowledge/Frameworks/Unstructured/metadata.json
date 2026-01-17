@@ -1,0 +1,12 @@
+{
+  "name": "unstructured",
+  "version": "0.18.24",
+  "description": "A library that prepares raw documents for downstream ML tasks.",
+  "home_page": "https://github.com/Unstructured-IO/unstructured",
+  "documentation_url": null,
+  "github_url": "https://github.com/Unstructured-IO/unstructured",
+  "project_urls": {
+    "Homepage": "https://github.com/Unstructured-IO/unstructured"
+  },
+  "scraped_at": "2026-01-05T07:53:17.365773"
+}

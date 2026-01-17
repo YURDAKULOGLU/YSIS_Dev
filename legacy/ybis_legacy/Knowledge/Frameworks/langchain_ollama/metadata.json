@@ -1,0 +1,18 @@
+{
+  "name": "langchain_ollama",
+  "version": "1.0.1",
+  "description": "An integration package connecting Ollama and LangChain",
+  "home_page": "https://pypi.org/project/langchain-ollama/",
+  "documentation_url": "https://reference.langchain.com/python/integrations/langchain_ollama/",
+  "github_url": "https://github.com/langchain-ai/langchain/tree/master/libs/partners/ollama",
+  "project_urls": {
+    "Changelog": "https://github.com/langchain-ai/langchain/releases?q=%22langchain-ollama%22",
+    "Documentation": "https://reference.langchain.com/python/integrations/langchain_ollama/",
+    "Homepage": "https://docs.langchain.com/oss/python/integrations/providers/ollama",
+    "Reddit": "https://www.reddit.com/r/LangChain/",
+    "Slack": "https://www.langchain.com/join-community",
+    "Source": "https://github.com/langchain-ai/langchain/tree/master/libs/partners/ollama",
+    "Twitter": "https://x.com/LangChainAI"
+  },
+  "scraped_at": "2026-01-05T00:52:54.772872"
+}

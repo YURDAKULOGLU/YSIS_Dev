@@ -1,0 +1,65 @@
+# Reactive Agents Workflow
+# Uses reactive-agents adapter for tool-using agent execution
+
+name: reactive_agent
+version: 1
+description: "Reactive agents workflow using reactive-agents adapter with tool support"
+
+nodes:
+  - id: spec
+    type: spec_generator
+    description: "Generate SPEC.md from task objective"
+  
+  - id: plan
+    type: planner
+    description: "Generate plan.json from spec"
+  
+  - id: agent_runtime
+    type: agent_runtime
+    description: "Execute agent using reactive-agents adapter"
+    config:
+      adapter: "reactive_agents"
+  
+  - id: verify
+    type: verifier
+    description: "Run verifier (lint + tests)"
+  
+  - id: gate
+    type: gate
+    description: "Check gates (verification + risk + artifacts)"
+
+connections:
+  - from: START
+    to: spec
+  
+  - from: spec
+    to: plan
+  
+  - from: plan
+    to: agent_runtime
+  
+  - from: agent_runtime
+    to: verify
+  
+  - from: verify
+    to: gate
+  
+  - from: gate
+    to: END
+
+requirements:
+  modules:
+    - spec_generator
+    - planner
+    - verifier
+    - gate
+  
+  adapters:
+    - reactive_agents
+  
+  artifacts:
+    - plan.json
+    - agent_runtime_report.json
+    - verifier_report.json
+    - gate_report.json
+

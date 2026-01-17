@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+"""
+YBIS Worker - Script entry point for background task processing.
+"""
+import asyncio
+import sys
+from pathlib import Path
+
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+from src.ybis.services.worker import main  # noqa: E402
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

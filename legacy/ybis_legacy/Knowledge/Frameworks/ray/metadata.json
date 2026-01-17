@@ -1,0 +1,12 @@
+{
+  "name": "ray",
+  "version": "2.53.0",
+  "description": "Ray provides a simple, universal API for building distributed applications.",
+  "home_page": "https://github.com/ray-project/ray",
+  "documentation_url": null,
+  "github_url": "https://github.com/ray-project/ray",
+  "project_urls": {
+    "Homepage": "https://github.com/ray-project/ray"
+  },
+  "scraped_at": "2026-01-05T01:24:19.494644"
+}

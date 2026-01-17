@@ -1,0 +1,77 @@
+Side Effects - Java SDK | Temporal Platform Documentation
+
+
+
+[Skip to main content](#__docusaurus_skipToContent_fallback)
+
+On this page
+
+## Side Effects[​](#side-effects "Direct link to Side Effects")
+
+Side Effects are used to execute non-deterministic code, such as generating a UUID or a random number, without compromising determinism in the Workflow.
+This is done by storing the non-deterministic results of the Side Effect into the Workflow [Event History](/workflow-execution/event#event-history).
+
+A Side Effect does not re-execute during a Replay. Instead, it returns the recorded result from the Workflow Execution Event History.
+
+Side Effects should not fail. An exception that is thrown from the Side Effect causes failure and retry of the current Workflow Task.
+
+An Activity or a Local Activity may also be used instead of a Side effect, as its result is also persisted in Workflow Execution History.
+
+note
+
+You shouldn't modify the Workflow state inside a Side Effect function, because it is not reexecuted during Replay. Side Effect function should be used to return a value.
+
+To use a Side Effect in Java, set the [`sideEffect()`](https://www.javadoc.io/doc/io.temporal/temporal-sdk/latest/io/temporal/workflow/Workflow.html#sideEffect(java.lang.Class,io.temporal.workflow.Functions.Func)) function in your Workflow Execution and return the non-deterministic code.
+
+```
+int random = Workflow.sideEffect(Integer.class, () -> random.nextInt(100));  
+if random < 50 {  
+       ....  
+} else {  
+       ....  
+}
+```
+
+Here's another example that uses `sideEffect()`.
+
+```
+// implementation of the @WorkflowMethod  
+public void execute() {  
+    int randomInt = Workflow.sideEffect( int.class, () -> {  
+        Random random = new SecureRandom();  
+        return random.nextInt();  
+    });  
+  
+    String userHome = Workflow.sideEffect(String.class, () -> System.getenv("USER_HOME"));  
+  
+    if(randomInt % 2 == 0) {  
+        // ...  
+    } else {  
+        // ...  
+    }  
+}
+```
+
+Java also provides a deterministic method to generate random numbers or random UUIDs.
+
+To generate random numbers in a deterministic method, use [`newRandom()`](https://javadoc.io/doc/io.temporal/temporal-sdk/latest/io/temporal/workflow/Workflow.html#newRandom).
+
+```
+// implementation of the @WorkflowMethod  
+public void execute() {  
+    int randomInt = Workflow.newRandom().nextInt();  
+    // ...  
+}
+```
+
+To generate a random UUID in a deterministic method, use [`randomUUID()`](https://www.javadoc.io/static/io.temporal/temporal-sdk/latest/io/temporal/workflow/Workflow.html#newRandom()).
+
+```
+// implementation of the @WorkflowMethod  
+public void execute() {  
+    String randomUUID = Workflow.randomUUID().toString();  
+    // ...  
+}
+```
+
+* [Side Effects](#side-effects)

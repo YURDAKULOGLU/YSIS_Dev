@@ -1,6 +1,71 @@
 {
   "defaultModel": "sonnet",
   "permissions": {
-    "allow": []
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash:git *",
+      "Bash:python *",
+      "Bash:npm *",
+      "Bash:make *",
+      "mcp__ybis__*"
+    ],
+    "deny": [
+      "Bash:rm -rf /*",
+      "Bash:sudo *"
+    ]
+  },
+  "mcpServers": {
+    "ybis": {
+      "command": "python",
+      "args": ["scripts/ybis_mcp_server.py"],
+      "cwd": "C:\\Projeler\\YBIS_Dev"
+    }
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "command": "python .claude/hooks/pre_tool_use.py",
+        "description": "YBIS security and rate limiting hook"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "command": "python .claude/hooks/post_tool_use.py",
+        "description": "YBIS metrics and verification"
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "*",
+        "command": "python .claude/hooks/notification.py",
+        "description": "YBIS notification routing"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "command": "python .claude/hooks/stop.py",
+        "description": "YBIS cleanup and reporting"
+      }
+    ]
+  },
+  "plugins": {
+    "enabled": ["ybis-integration"],
+    "disabled": []
+  },
+  "skills": {
+    "ybis-task-executor": {
+      "enabled": true,
+      "auto_invoke": false,
+      "preferred_model": "sonnet"
+    }
+  },
+  "memory": {
+    "enabled": true,
+    "path": ".claude/memory"
   }
 }

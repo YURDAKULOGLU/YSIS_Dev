@@ -1,0 +1,12 @@
+{
+  "name": "cohere",
+  "version": "5.20.1",
+  "description": null,
+  "home_page": "https://pypi.org/project/cohere/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Repository": "https://github.com/cohere-ai/cohere-python"
+  },
+  "scraped_at": "2026-01-05T08:07:03.248263"
+}

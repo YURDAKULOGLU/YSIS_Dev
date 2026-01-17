@@ -1,0 +1,13 @@
+{
+  "name": "groq",
+  "version": "1.0.0",
+  "description": "The official Python library for the groq API",
+  "home_page": "https://pypi.org/project/groq/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Homepage": "https://github.com/groq/groq-python",
+    "Repository": "https://github.com/groq/groq-python"
+  },
+  "scraped_at": "2026-01-05T08:07:06.687062"
+}

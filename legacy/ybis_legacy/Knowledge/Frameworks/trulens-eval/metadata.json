@@ -1,0 +1,14 @@
+{
+  "name": "trulens-eval",
+  "version": "2.5.2",
+  "description": "Backwards-compatibility package for API of trulens_eval<1.0.0 using API of trulens-*>=1.0.0.",
+  "home_page": "https://trulens.org/",
+  "documentation_url": "https://trulens.org/getting_started/",
+  "github_url": null,
+  "project_urls": {
+    "Documentation": "https://trulens.org/getting_started/",
+    "Homepage": "https://trulens.org/",
+    "Repository": "https://github.com/truera/trulens"
+  },
+  "scraped_at": "2026-01-05T08:06:56.187214"
+}

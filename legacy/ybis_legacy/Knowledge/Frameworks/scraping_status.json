@@ -1,0 +1,67 @@
+{
+  "requirements_count": 78,
+  "scraped_count": 110,
+  "missing": [
+    "guidance",
+    "langfuse",
+    "memgpt",
+    "ragas",
+    "unstructured"
+  ],
+  "extra": [
+    "AgentForge",
+    "AiwavesAgents",
+    "AssistantAI",
+    "AutoGPT",
+    "AutoGen",
+    "BabyAGI",
+    "Chainlit",
+    "ChatDev",
+    "DSPy",
+    "Embedchain",
+    "EvoAgentX",
+    "Flowise",
+    "GPTResearcher",
+    "Guidance",
+    "Infrastructure",
+    "LangFuse",
+    "Langroid",
+    "LlamaAgents",
+    "LlamaIndex",
+    "MLflow",
+    "MemGPT",
+    "MetaGPT",
+    "MicrosoftAgentFramework",
+    "OpenDevin",
+    "OpenHands",
+    "OpenInterpreter",
+    "OpenTelemetry",
+    "Poetiq",
+    "PydanticAI",
+    "Ragas",
+    "ReactiveAgents",
+    "Self-Improve-Swarms",
+    "SemanticKernel",
+    "SuperAGI",
+    "Unstructured",
+    "aider",
+    "pyautogen"
+  ],
+  "duplicates": [
+    {
+      "name": "instructor",
+      "files": 243,
+      "size_mb": 1.6770992279052734
+    },
+    {
+      "name": "Ragas",
+      "files": 101,
+      "size_mb": 1.1302947998046875
+    }
+  ],
+  "statistics": {
+    "total_files": 1207,
+    "total_size_mb": 11.843672752380371,
+    "average_files_per_package": 10.972727272727273
+  }
+}

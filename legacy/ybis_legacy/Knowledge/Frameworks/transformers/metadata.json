@@ -1,0 +1,12 @@
+{
+  "name": "transformers",
+  "version": "4.57.3",
+  "description": "State-of-the-art Machine Learning for JAX, PyTorch and TensorFlow",
+  "home_page": "https://github.com/huggingface/transformers",
+  "documentation_url": null,
+  "github_url": "https://github.com/huggingface/transformers",
+  "project_urls": {
+    "Homepage": "https://github.com/huggingface/transformers"
+  },
+  "scraped_at": "2026-01-05T01:13:35.215872"
+}

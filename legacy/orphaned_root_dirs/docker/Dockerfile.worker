@@ -1,0 +1,30 @@
+# Dockerfile for YBIS_Dev Worker
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Numpy FIRST as binary to avoid build issues
+RUN pip install --only-binary :all: numpy
+
+# Install Aider and other tools globally
+RUN pip install aider-chat streamlit pytest pydantic-settings
+
+# Copy requirements if exists (optional, fallback to direct pip)
+COPY requirements.txt .
+RUN pip install -r requirements.txt || echo "No requirements.txt found, skipping"
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONUTF8=1
+ENV PROJECT_ROOT=/app
+ENV PYTHONPATH=/app
+
+# Default command (will be overridden by compose)
+CMD ["python", "scripts/worker.py"]

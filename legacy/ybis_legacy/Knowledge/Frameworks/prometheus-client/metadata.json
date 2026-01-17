@@ -1,0 +1,13 @@
+{
+  "name": "prometheus-client",
+  "version": "0.23.1",
+  "description": "Python client for the Prometheus monitoring system.",
+  "home_page": "https://pypi.org/project/prometheus-client/",
+  "documentation_url": "https://prometheus.github.io/client_python/",
+  "github_url": null,
+  "project_urls": {
+    "Documentation": "https://prometheus.github.io/client_python/",
+    "Homepage": "https://github.com/prometheus/client_python"
+  },
+  "scraped_at": "2026-01-05T00:30:09.368063"
+}

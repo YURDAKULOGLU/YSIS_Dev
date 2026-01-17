@@ -1,5 +1,5 @@
 ## Docs Index
 
-- Spine definition: `docs/architecture/SPINE_DEFINITION.md`
+- Spine definition: `docs/ARCHITECTURE.md`
 - System overview: `docs/system_overview.md`
-- Governance: `docs/governance/YBIS_CONSTITUTION.md`
+- Governance: `docs/CONSTITUTION.md`

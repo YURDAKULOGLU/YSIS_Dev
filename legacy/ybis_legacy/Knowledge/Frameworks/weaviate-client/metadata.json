@@ -1,0 +1,15 @@
+{
+  "name": "weaviate-client",
+  "version": "4.19.2",
+  "description": "A python native Weaviate client",
+  "home_page": "https://github.com/weaviate/weaviate-python-client",
+  "documentation_url": "https://weaviate-python-client.readthedocs.io",
+  "github_url": "https://github.com/weaviate/weaviate-python-client",
+  "project_urls": {
+    "Documentation": "https://weaviate-python-client.readthedocs.io",
+    "Homepage": "https://github.com/weaviate/weaviate-python-client",
+    "Source": "https://github.com/weaviate/weaviate-python-client",
+    "Tracker": "https://github.com/weaviate/weaviate-python-client/issues"
+  },
+  "scraped_at": "2026-01-05T00:05:38.911367"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "litellm",
+  "version": "1.80.11",
+  "description": "Library to easily interface with LLM API providers",
+  "home_page": "https://pypi.org/project/litellm/",
+  "documentation_url": "https://docs.litellm.ai",
+  "github_url": null,
+  "project_urls": {
+    "Documentation": "https://docs.litellm.ai",
+    "Homepage": "https://litellm.ai",
+    "Repository": "https://github.com/BerriAI/litellm",
+    "documentation": "https://docs.litellm.ai",
+    "repository": "https://github.com/BerriAI/litellm"
+  },
+  "scraped_at": "2026-01-04T23:42:19.875534"
+}

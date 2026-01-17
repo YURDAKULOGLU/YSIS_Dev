@@ -1,0 +1,16 @@
+{
+  "name": "tree-sitter",
+  "version": "0.25.2",
+  "description": "Python bindings to the Tree-sitter parsing library",
+  "home_page": "https://pypi.org/project/tree-sitter/",
+  "documentation_url": "https://tree-sitter.github.io/py-tree-sitter/",
+  "github_url": "https://github.com/tree-sitter/py-tree-sitter",
+  "project_urls": {
+    "Discord": "https://discord.gg/w7nTvsVJhm",
+    "Documentation": "https://tree-sitter.github.io/py-tree-sitter/",
+    "Homepage": "https://tree-sitter.github.io/tree-sitter/",
+    "Matrix": "https://matrix.to/#/#tree-sitter-chat:matrix.org",
+    "Source": "https://github.com/tree-sitter/py-tree-sitter"
+  },
+  "scraped_at": "2026-01-04T23:52:21.257474"
+}

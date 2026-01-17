@@ -1,0 +1,95 @@
+site_name: YBIS Platform Documentation
+site_description: Agentic Development Platform - Self-Bootstrapping, Zero Reinvention
+site_url: https://ybis.dev
+repo_url: https://github.com/your-org/ybis
+repo_name: YBIS Platform
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.annotate
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: true
+            show_root_heading: true
+            show_root_toc_entry: true
+            show_root_full_path: false
+            show_object_full_path: false
+            show_category_heading: true
+            show_if_no_docstring: false
+            separate_signature: true
+            heading_level: 3
+            filters:
+              - "!^_"  # Exclude private members
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Quick Start: getting-started/quick-start.md
+    - Installation: getting-started/installation.md
+    - Configuration: getting-started/configuration.md
+  - Constitution: constitution.md
+  - Discipline: discipline.md
+  - Architecture:
+    - Overview: architecture/overview.md
+    - Workflows: architecture/workflows.md
+    - Syscalls: architecture/syscalls.md
+    - Contracts: architecture/contracts.md
+  - API Reference:
+    - Syscalls: api/syscalls.md
+    - Contracts: api/contracts.md
+    - Adapters: api/adapters.md
+  - Governance:
+    - Commit Standards: governance/commit-standards.md
+    - PR Standards: governance/pr-standards.md
+    - Code Review: governance/code-review-checklist.md
+  - Development:
+    - Testing: development/testing.md
+    - Contributing: development/contributing.md
+  - Vendor Research:
+    - Integration Plan: vendor-research/comprehensive-vendor-integration-plan-2026.md
+    - Advanced Philosophies: vendor-research/advanced-agent-philosophies-2026.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+
+

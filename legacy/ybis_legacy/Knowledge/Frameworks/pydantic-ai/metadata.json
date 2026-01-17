@@ -1,0 +1,15 @@
+{
+  "name": "pydantic-ai",
+  "version": "1.39.0",
+  "description": "Agent Framework / shim to use Pydantic with LLMs",
+  "home_page": "https://pypi.org/project/pydantic-ai/",
+  "documentation_url": "https://ai.pydantic.dev",
+  "github_url": "https://github.com/pydantic/pydantic-ai",
+  "project_urls": {
+    "Changelog": "https://github.com/pydantic/pydantic-ai/releases",
+    "Documentation": "https://ai.pydantic.dev",
+    "Homepage": "https://ai.pydantic.dev",
+    "Source": "https://github.com/pydantic/pydantic-ai"
+  },
+  "scraped_at": "2026-01-05T08:07:02.315460"
+}

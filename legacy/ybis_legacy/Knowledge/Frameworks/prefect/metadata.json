@@ -1,0 +1,15 @@
+{
+  "name": "prefect",
+  "version": "3.6.9",
+  "description": "Workflow orchestration and management.",
+  "home_page": "https://pypi.org/project/prefect/",
+  "documentation_url": "https://docs.prefect.io",
+  "github_url": "https://github.com/PrefectHQ/prefect",
+  "project_urls": {
+    "Changelog": "https://github.com/PrefectHQ/prefect/releases",
+    "Documentation": "https://docs.prefect.io",
+    "Source": "https://github.com/PrefectHQ/prefect",
+    "Tracker": "https://github.com/PrefectHQ/prefect/issues"
+  },
+  "scraped_at": "2026-01-05T01:47:14.009220"
+}

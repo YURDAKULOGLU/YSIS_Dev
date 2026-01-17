@@ -1,0 +1,14 @@
+{
+  "name": "aiofiles",
+  "version": "25.1.0",
+  "description": "File support for asyncio.",
+  "home_page": "https://pypi.org/project/aiofiles/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Bug Tracker": "https://github.com/Tinche/aiofiles/issues",
+    "Changelog": "https://github.com/Tinche/aiofiles#history",
+    "Repository": "https://github.com/Tinche/aiofiles"
+  },
+  "scraped_at": "2026-01-05T09:03:30.290019"
+}

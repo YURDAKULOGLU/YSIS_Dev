@@ -1,0 +1,82 @@
+# Self-Improve Workflow
+# YBIS-native proactive self-improvement loop
+
+name: self_improve
+version: 2
+description: "Proactive self-improvement workflow (YBIS-native)"
+
+nodes:
+  - id: reflect
+    type: self_improve_reflect
+    description: "Reflect on system state and identify improvements"
+  
+  - id: plan
+    type: self_improve_plan
+    description: "Plan improvements based on reflection"
+  
+  - id: implement
+    type: self_improve_implement
+    description: "Implement improvement plan"
+  
+  - id: test
+    type: self_improve_test
+    description: "Test implementation"
+  
+  - id: integrate
+    type: self_improve_integrate
+    description: "Integrate tested implementation"
+  
+  - id: repair
+    type: self_improve_repair
+    description: "Repair lint/test failures automatically"
+  
+  - id: gate
+    type: gate
+    description: "Check gates (verification + risk + artifacts)"
+
+connections:
+  - from: START
+    to: reflect
+  
+  - from: reflect
+    to: plan
+  
+  - from: plan
+    to: implement
+  
+  - from: implement
+    to: test
+  
+  - from: test
+    to: integrate
+    condition: test_failed
+    route: integrate
+  
+  - from: test
+    to: repair
+    condition: test_failed
+    route: repair
+  
+  - from: repair
+    to: implement
+  
+  - from: integrate
+    to: gate
+  
+  - from: gate
+    to: END
+
+requirements:
+  modules:
+    - planner
+    - executor
+    - verifier
+    - gate
+  artifacts:
+    - reflection_report.json
+    - improvement_plan.json
+    - implementation_report.json
+    - test_report.json
+    - integration_report.json
+    - gate_report.json
+

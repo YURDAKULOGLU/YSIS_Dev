@@ -1,0 +1,13 @@
+{
+  "name": "markdown-it-py",
+  "version": "4.0.0",
+  "description": "Python port of markdown-it. Markdown parsing, done right!",
+  "home_page": "https://pypi.org/project/markdown-it-py/",
+  "documentation_url": "https://markdown-it-py.readthedocs.io",
+  "github_url": null,
+  "project_urls": {
+    "Documentation": "https://markdown-it-py.readthedocs.io",
+    "Homepage": "https://github.com/executablebooks/markdown-it-py"
+  },
+  "scraped_at": "2026-01-04T23:45:54.181104"
+}

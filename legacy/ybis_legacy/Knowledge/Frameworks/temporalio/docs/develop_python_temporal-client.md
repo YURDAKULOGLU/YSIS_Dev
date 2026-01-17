@@ -1,0 +1,601 @@
+Temporal Client - Python SDK | Temporal Platform Documentation
+
+
+
+[Skip to main content](#__docusaurus_skipToContent_fallback)
+
+On this page
+
+A [Temporal Client](/encyclopedia/temporal-sdks#temporal-client) enables you to communicate with the Temporal Service.
+Communication with a Temporal Service lets you perform actions such as starting Workflow Executions, sending Signals and
+Queries to Workflow Executions, getting Workflow results, and more.
+
+This page shows you how to do the following using the Python SDK with the Temporal Client:
+
+* [Connect to a local development Temporal Service](#connect-to-development-service)
+* [Connect to Temporal Cloud](#connect-to-temporal-cloud)
+* [Start a Workflow Execution](#start-workflow-execution)
+* [Get Workflow results](#get-workflow-results)
+
+A Temporal Client cannot be initialized and used inside a Workflow. However, it is acceptable and common to use a
+Temporal Client inside an Activity to communicate with a Temporal Service.
+
+## Connect to development Temporal Service[​](#connect-to-development-service "Direct link to Connect to development Temporal Service")
+
+Use [`Client.connect`](https://python.temporal.io/temporalio.client.Client.html#connect) to create a client. Connection
+options include the Temporal Server address, Namespace, and (optionally) TLS configuration. You can provide these
+options directly in code, load them from **environment variables**, or a **TOML configuration file** using the
+[`envconfig`](https://python.temporal.io/temporalio.envconfig.html) helpers. We recommend environment variables or a
+configuration file for secure, repeatable configuration.
+
+When you’re running a Temporal Service locally (such as with the
+[Temporal CLI dev server](https://docs.temporal.io/cli/server#start-dev)), the required options are minimal. If you
+don't specify a host/port, most connections default to `127.0.0.1:7233` and the `default` Namespace.
+
+* Configuration File* Environment Variables* Code
+
+You can use a TOML configuration file to set connection options for the Temporal Client. The configuration file lets you
+configure multiple profiles, each with its own set of connection options. You can then specify which profile to use when
+creating the Temporal Client. You can use the environment variable `TEMPORAL_CONFIG_FILE` to specify the location of the
+TOML file or provide the path to the file directly in code. If you don't provide the configuration file path, the SDK
+looks for it at the path `~/.config/temporalio/temporal.toml` or the equivalent on your OS. Refer to
+[Environment Configuration](/develop/environment-configuration#configuration-methods) for more details about configuration
+files and profiles.
+
+info
+
+The connection options set in configuration files have lower precedence than environment variables. This means that if
+you set the same option in both the configuration file and as an environment variable, the environment variable value
+overrides the option set in the configuration file.
+
+For example, the following TOML configuration file defines two profiles: `default` and `prod`. Each profile has its own
+set of connection options.
+
+config.toml
+
+```
+# Default profile for local development  
+[profile.default]  
+address = "localhost:7233"  
+namespace = "default"  
+  
+# Optional: Add custom gRPC headers  
+[profile.default.grpc_meta]  
+my-custom-header = "development-value"  
+trace-id = "dev-trace-123"  
+  
+# Production profile for Temporal Cloud  
+[profile.prod]  
+address = "your-namespace.a1b2c.tmprl.cloud:7233"  
+namespace = "your-namespace"  
+api_key = "your-api-key-here"  
+  
+# TLS configuration for production  
+[profile.prod.tls]  
+# TLS auto-enables when TLS config or an API key is present  
+# disabled = false  
+client_cert_path = "/etc/temporal/certs/client.pem"  
+client_key_path  = "/etc/temporal/certs/client.key"  
+  
+# Custom headers for production  
+[profile.prod.grpc_meta]  
+environment     = "production"  
+service-version = "v1.2.3"
+```
+
+You can create a Temporal Client using a profile from the configuration file using the
+`ClientConfig.load_client_connect_config` function as follows. In this example, you load the `default` profile for local
+development:
+
+```
+import asyncio  
+from pathlib import Path  
+  
+from temporalio.client import Client  
+from temporalio.envconfig import ClientConfig  
+  
+  
+async def main():  
+    """  
+    Loads the default profile from the config.toml file in this directory.  
+    """  
+    print("--- Loading default profile from config.toml ---")  
+  
+    # For this sample to be self-contained, we explicitly provide the path to  
+    # the config.toml file included in this directory.  
+    # By default though, the config.toml file will be loaded from  
+    # ~/.config/temporalio/temporal.toml (or the equivalent standard config directory on your OS).  
+    config_file = Path(__file__).parent / "config.toml"  
+  
+    # load_client_connect_config is a helper that loads a profile and prepares  
+    # the config dictionary for Client.connect. By default, it loads the  
+    # "default" profile.  
+    connect_config = ClientConfig.load_client_connect_config(  
+        config_file=str(config_file)  
+    )  
+  
+    print(f"Loaded 'default' profile from {config_file}.")  
+    print(f"  Address: {connect_config.get('target_host')}")  
+    print(f"  Namespace: {connect_config.get('namespace')}")  
+    print(f"  gRPC Metadata: {connect_config.get('rpc_metadata')}")  
+  
+    print("\nAttempting to connect to client...")  
+    try:  
+        await Client.connect(**connect_config)  # type: ignore  
+        print("✅ Client connected successfully!")  
+    except Exception as e:  
+        print(f"❌ Failed to connect: {e}")  
+  
+  
+if __name__ == "__main__":  
+    asyncio.run(main())
+```
+
+Use the `envconfig` package to set connection options for the Temporal Client using environment variables. For a list of
+all available environment variables and their default values, refer to
+[Environment Configuration](/references/client-environment-configuration).
+
+For example, the following code snippet loads all environment variables and creates a Temporal Client with the options
+specified in those variables. If you have defined a configuration file at either the default location
+(`~/.config/temporalio/temporal.toml`) or a custom location specified by the `TEMPORAL_CONFIG_FILE` environment
+variable, this will also load the default profile in the configuration file. However, any options set via environment
+variables will take precedence.
+
+Set the following environment variables before running your Python application. Replace the placeholder values with your
+actual configuration. Since this is for a local development Temporal Service, the values connect to `localhost:7233` and
+the `default` Namespace. You may omit these variables entirely since they're the defaults.
+
+```
+export TEMPORAL_NAMESPACE="default"  
+export TEMPORAL_ADDRESS="localhost:7233"
+```
+
+After setting the environment variables, you can create a Temporal Client as follows:
+
+```
+import asyncio  
+from pathlib import Path  
+  
+from temporalio.client import Client  
+from temporalio.envconfig import ClientConfig  
+  
+async def main():  
+    # load_client_connect_config is a helper that loads a profile and prepares  
+    # the config dictionary for Client.connect. By default, it loads the  
+    # "default" profile.  
+    connect_config = ClientConfig.load_client_connect_config()  
+  
+    print(f"  Address: {connect_config.get('target_host')}")  
+    print(f"  Namespace: {connect_config.get('namespace')}")  
+    print(f"  gRPC Metadata: {connect_config.get('rpc_metadata')}")  
+  
+    print("\nAttempting to connect to client...")  
+    try:  
+        await Client.connect(**connect_config)  # type: ignore  
+        print("✅ Client connected successfully!")  
+    except Exception as e:  
+        print(f"❌ Failed to connect: {e}")  
+  
+  
+if __name__ == "__main__":  
+    asyncio.run(main())
+```
+
+If you don't want to use environment variables or a configuration file, you can specify connection options directly in
+code. This is convenient for local development and testing. You can also load a base configuration from environment
+variables or a configuration file, and then override specific options in code.
+
+Use the `connect()` method on the `Client` class to create and connect to a Temporal Client to the Temporal Service.
+
+[View the source code](https://github.com/temporalio/documentation/blob/main/sample-apps/python/your_app/run_workflow_dacx.py)
+
+in the context of the rest of the application code.
+
+```
+# ...  
+async def main():  
+    client = await Client.connect("localhost:7233")  
+  
+    result = await client.execute_workflow(  
+        YourWorkflow.run,  
+        "your name",  
+        id="your-workflow-id",  
+        task_queue="your-task-queue",  
+    )  
+  
+    print(f"Result: {result}")  
+  
+  
+if __name__ == "__main__":  
+    asyncio.run(main())
+```
+
+## Connect to Temporal Cloud[​](#connect-to-temporal-cloud "Direct link to Connect to Temporal Cloud")
+
+You can connect to Temporal Cloud using either an [API key](/cloud/api-keys) or through mTLS. Connection to Temporal
+Cloud or any secured Temporal Service requires additional connection options compared to connecting to an unsecured
+local development instance:
+
+* Your credentials for authentication.
+  + If you are using an API key, provide the API key value.
+  + If you are using mTLS, provide the mTLS CA certificate and mTLS private key.
+* Your *Namespace and Account ID* combination, which follows the format `<namespace_id>.<account_id>`.
+* The *endpoint* may vary. The most common endpoint used is the gRPC regional endpoint, which follows the format:
+  `<region>.<cloud_provider>.api.temporal.io:7233`.
+* For Namespaces with High Availability features with API key authentication enabled, use the gRPC Namespace endpoint:
+  `<namespace>.<account>.tmprl.cloud:7233`. This allows automated failover without needing to switch endpoints.
+
+You can find the Namespace and Account ID, as well as the endpoint, on the Namespaces tab:
+
+![The Namespace and Account ID combination on the left, and the regional endpoint on the right](/assets/images/namespaces-and-regional-endpoints-5d0328eb623fc5e3307226a01a5f35b1.png)
+
+You can provide these connection options using environment variables, a configuration file, or directly in code.
+
+* Configuration File* Environment Variables* Code
+
+You can use a TOML configuration file to set connection options for the Temporal Client. The configuration file lets you
+configure multiple profiles, each with its own set of connection options. You can then specify which profile to use when
+creating the Temporal Client. For a list of all available configuration options you can set in the TOML file, refer to
+[Environment Configuration](/references/client-environment-configuration).
+
+You can use the environment variable `TEMPORAL_CONFIG_FILE` to specify the location of the TOML file or provide the path
+to the file directly in code. If you don't provide the path to the configuration file, the SDK looks for it at the
+default path `~/.config/temporalio/temporal.toml`.
+
+info
+
+The connection options set in configuration files have lower precedence than environment variables. This means that if
+you set the same option in both the configuration file and as an environment variable, the environment variable value
+overrides the option set in the configuration file.
+
+For example, the following TOML configuration file defines a `staing` profile with the necessary connection options to
+connect to Temporal Cloud via an API key:
+
+For example, the following TOML configuration file defines a `staging` profile with the necessary connection options to
+connect to Temporal Cloud via an API key:
+
+```
+# Cloud profile for Temporal Cloud  
+[profile.staging]  
+address = "your-namespace.a1b2c.tmprl.cloud:7233"  
+namespace = "your-namespace"  
+api_key = "your-api-key-here"
+```
+
+If you want to use mTLS authentication instead of an API key, replace the `api_key` field with your mTLS certificate and
+private key:
+
+```
+# Cloud profile for Temporal Cloud  
+[profile.staging]  
+address = "your-namespace.a1b2c.tmprl.cloud:7233"  
+namespace = "your-namespace"  
+tls_client_cert_data = "your-tls-client-cert-data"  
+tls_client_key_path = "your-tls-client-key-path"
+```
+
+With the connections options defined in the configuration file, use the
+[`connect` method](https://python.temporal.io/temporalio.client.Client.html#connect) on the `Client` class to create a
+Temporal Client using the `staging` profile as follows. After loading the profile, you can also programmatically
+override specific connection options before creating the client.
+
+```
+import asyncio  
+from pathlib import Path  
+  
+from temporalio.client import Client  
+from temporalio.envconfig import ClientConfig  
+  
+  
+async def main():  
+    """  
+    Demonstrates loading a named profile and overriding values programmatically.  
+    """  
+    print("--- Loading 'staging' profile with programmatic overrides ---")  
+  
+    config_file = Path(__file__).parent / "config.toml"  
+    profile_name = "staging"  
+  
+    print(  
+        "The 'staging' profile in config.toml has an incorrect address (localhost:9999)."  
+    )  
+    print("We'll programmatically override it to the correct address.")  
+  
+    # Load the 'staging' profile.  
+    connect_config = ClientConfig.load_client_connect_config(  
+        profile=profile_name,  
+        config_file=str(config_file),  
+    )  
+  
+    # Override the target host to the correct address.  
+    # This is the recommended way to override configuration values.  
+    connect_config["target_host"] = "localhost:7233"  
+  
+    print(f"\nLoaded '{profile_name}' profile from {config_file} with overrides.")  
+    print(  
+        f"  Address: {connect_config.get('target_host')} (overridden from localhost:9999)"  
+    )  
+    print(f"  Namespace: {connect_config.get('namespace')}")  
+  
+    print("\nAttempting to connect to client...")  
+    try:  
+        await Client.connect(**connect_config)  # type: ignore  
+        print("✅ Client connected successfully!")  
+    except Exception as e:  
+        print(f"❌ Failed to connect: {e}")  
+  
+  
+if __name__ == "__main__":  
+    asyncio.run(main())
+```
+
+The following environment variables are required to connect to Temporal Cloud:
+
+* `TEMPORAL_NAMESPACE`: Your Namespace and Account ID combination in the format `<namespace_id>.<account_id>`.
+* `TEMPORAL_ADDRESS`: The gRPC endpoint for your Temporal Cloud Namespace.
+* `TEMPORAL_API_KEY`: Your API key value. Required if you are using API key authentication.
+* `TEMPORAL_TLS_CLIENT_CERT_DATA` or `TEMPORAL_TLS_CLIENT_CERT_PATH`: Your mTLS client certificate data or file path.
+  Required if you are using mTLS authentication.
+* `TEMPORAL_TLS_CLIENT_KEY_DATA` or `TEMPORAL_TLS_CLIENT_KEY_PATH`: Your mTLS client private key data or file path.
+  Required if you are using mTLS authentication.
+
+Ensure these environment variables exist in your environment before running your Python application.
+
+Import the `EnvConfig` package to set connection options for the Temporal Client using environment variables. The
+`MustLoadDefaultClientOptions` function will automatically load all environment variables. For a list of all available
+environment variables and their default values, refer to [Environment Configuration](/develop/environment-configuration).
+
+For example, the following code snippet loads all environment variables and creates a Temporal Client with the options
+specified in those variables. If you have defined a configuration file at either the default location
+(`~/.config/temporalio/temporal.toml`) or a custom location specified by the `TEMPORAL_CONFIG_FILE` environment
+variable, this will also load the default profile in the configuration file. However, any options set via environment
+variables will take precedence.
+
+After setting the environment variables, use the following code to create the Temporal Client:
+
+```
+import asyncio  
+from pathlib import Path  
+  
+from temporalio.client import Client  
+from temporalio.envconfig import ClientConfig  
+  
+async def main():  
+    # load_client_connect_config is a helper that loads a profile and prepares  
+    # the config dictionary for Client.connect. By default, it loads the  
+    # "default" profile.  
+    connect_config = ClientConfig.load_client_connect_config()  
+  
+    print(f"  Address: {connect_config.get('target_host')}")  
+    print(f"  Namespace: {connect_config.get('namespace')}")  
+    print(f"  gRPC Metadata: {connect_config.get('rpc_metadata')}")  
+  
+    print("\nAttempting to connect to client...")  
+    try:  
+        await Client.connect(**connect_config)  # type: ignore  
+        print("✅ Client connected successfully!")  
+    except Exception as e:  
+        print(f"❌ Failed to connect: {e}")  
+  
+  
+if __name__ == "__main__":  
+    asyncio.run(main())
+```
+
+You can also specify connection options directly in code to connect to Temporal Cloud. To create an initial connection,
+provide the endpoint, Namespace and Account ID combination, and API key values to the `Client.connect` method.
+
+```
+client = await Client.connect(  
+    <endpoint>,  
+    namespace=<namespace_id>.<account_id>,  
+    api_key=<APIKey>,  
+    tls=True,  
+)
+```
+
+To connect using mTLS instead of an API key, provide the mTLS certificate and private key as follows:
+
+[View the source code](https://github.com/temporalio/documentation/blob/main/sample-apps/python/your_app/run_workflow_dacx.py)
+
+in the context of the rest of the application code.
+
+```
+from temporalio.client import Client, TLSConfig  
+# ...  
+# ...  
+async def main():  
+    with open("client-cert.pem", "rb") as f:  
+        client_cert = f.read()  
+    with open("client-private-key.pem", "rb") as f:  
+        client_private_key = f.read()  
+    client = await Client.connect(  
+        "your-custom-namespace.tmprl.cloud:7233",  
+        namespace="<your-custom-namespace>.<account-id>",  
+        tls=TLSConfig(  
+            client_cert=client_cert,  
+            client_private_key=client_private_key,  
+            # domain=domain, # TLS domain  
+            # server_root_ca_cert=server_root_ca_cert, # ROOT CA to validate the server cert  
+        ),  
+    )
+```
+
+For more information about managing and generating client certificates for Temporal Cloud, see
+[How to manage certificates in Temporal Cloud](/cloud/certificates).
+
+For more information about configuring TLS to secure inter- and intra-network communication for a Temporal Service, see
+[Temporal Customization Samples](https://github.com/temporalio/samples-server).
+
+## Start a Workflow Execution[​](#start-workflow-execution "Direct link to Start a Workflow Execution")
+
+**How to start a Workflow Execution using the Python SDK**
+
+[Workflow Execution](/workflow-execution) semantics rely on several parameters—that is, to start a Workflow Execution
+you must supply a Task Queue that will be used for the Tasks (one that a Worker is polling), the Workflow Type,
+language-specific contextual data, and Workflow Function parameters.
+
+In the examples below, all Workflow Executions are started using a Temporal Client. To spawn Workflow Executions from
+within another Workflow Execution, use either the [Child Workflow](/develop/python/child-workflows) or External Workflow
+APIs.
+
+See the [Customize Workflow Type](/develop/python/core-application#workflow-type) section to see how to customize the
+name of the Workflow Type.
+
+A request to spawn a Workflow Execution causes the Temporal Service to create the first Event
+([WorkflowExecutionStarted](/references/events#workflowexecutionstarted)) in the Workflow Execution Event History. The
+Temporal Service then creates the first Workflow Task, resulting in the first
+[WorkflowTaskScheduled](/references/events#workflowtaskscheduled) Event.
+
+To start a Workflow Execution in Python, use either the
+[`start_workflow()`](https://python.temporal.io/temporalio.client.Client.html#start_workflow) or
+[`execute_workflow()`](https://python.temporal.io/temporalio.client.Client.html#execute_workflow) asynchronous methods
+in the Client.
+
+[View the source code](https://github.com/temporalio/documentation/blob/main/sample-apps/python/your_app/run_workflow_dacx.py)
+
+in the context of the rest of the application code.
+
+```
+# ...  
+async def main():  
+    client = await Client.connect("localhost:7233")  
+  
+    result = await client.execute_workflow(  
+        YourWorkflow.run,  
+        "your name",  
+        id="your-workflow-id",  
+        task_queue="your-task-queue",  
+    )  
+  
+    print(f"Result: {result}")  
+  
+  
+if __name__ == "__main__":  
+    asyncio.run(main())
+```
+
+### Set a Workflow's Task Queue[​](#set-task-queue "Direct link to Set a Workflow's Task Queue")
+
+**How to set a Workflow's Task Queue using the Python SDK**
+
+In most SDKs, the only Workflow Option that must be set is the name of the [Task Queue](/task-queue).
+
+For any code to execute, a Worker Process must be running that contains a Worker Entity that is polling the same Task
+Queue name.
+
+To set a Task Queue in Python, specify the `task_queue` argument when executing a Workflow with either
+[`start_workflow()`](https://python.temporal.io/temporalio.client.Client.html#start_workflow) or
+[`execute_workflow()`](https://python.temporal.io/temporalio.client.Client.html#execute_workflow) methods.
+
+[View the source code](https://github.com/temporalio/documentation/blob/main/sample-apps/python/your_app/run_workflow_dacx.py)
+
+in the context of the rest of the application code.
+
+```
+# ...  
+async def main():  
+    client = await Client.connect("localhost:7233")  
+  
+    result = await client.execute_workflow(  
+        YourWorkflow.run,  
+        "your name",  
+        id="your-workflow-id",  
+        task_queue="your-task-queue",  
+    )  
+  
+    print(f"Result: {result}")  
+  
+  
+if __name__ == "__main__":  
+    asyncio.run(main())
+```
+
+### Set a Workflow Id[​](#workflow-id "Direct link to Set a Workflow Id")
+
+**How to set a Workflow Id using the Python SDK**
+
+You must set a [Workflow Id](/workflow-execution/workflowid-runid#workflow-id).
+
+When setting a Workflow Id, we recommended mapping it to a business process or business entity identifier, such as an
+order identifier or customer identifier.
+
+To set a Workflow Id in Python, specify the `id` argument when executing a Workflow with either
+[`start_workflow()`](https://python.temporal.io/temporalio.client.Client.html#start_workflow) or
+[`execute_workflow()`](https://python.temporal.io/temporalio.client.Client.html#execute_workflow) methods.
+
+The `id` argument should be a unique identifier for the Workflow Execution.
+
+[View the source code](https://github.com/temporalio/documentation/blob/main/sample-apps/python/your_app/run_workflow_dacx.py)
+
+in the context of the rest of the application code.
+
+```
+# ...  
+async def main():  
+    client = await Client.connect("localhost:7233")  
+  
+    result = await client.execute_workflow(  
+        YourWorkflow.run,  
+        "your name",  
+        id="your-workflow-id",  
+        task_queue="your-task-queue",  
+    )  
+  
+    print(f"Result: {result}")  
+  
+  
+if __name__ == "__main__":  
+    asyncio.run(main())
+```
+
+### Get the results of a Workflow Execution[​](#get-workflow-results "Direct link to Get the results of a Workflow Execution")
+
+**How to get the results of a Workflow Execution using the Python SDK**
+
+If the call to start a Workflow Execution is successful, you will gain access to the Workflow Execution's Run Id.
+
+The Workflow Id, Run Id, and Namespace may be used to uniquely identify a Workflow Execution in the system and get its
+result.
+
+It's possible to both block progress on the result (synchronous execution) or get the result at some other point in time
+(asynchronous execution).
+
+In the Temporal Platform, it's also acceptable to use Queries as the preferred method for accessing the state and
+results of Workflow Executions.
+
+Use [`start_workflow()`](https://python.temporal.io/temporalio.client.Client.html#start_workflow) or
+[`get_workflow_handle()`](https://python.temporal.io/temporalio.client.Client.html#get_workflow_handle) to return a
+Workflow handle. Then use the [`result`](https://python.temporal.io/temporalio.client.WorkflowHandle.html#result) method
+to await on the result of the Workflow.
+
+To get a handle for an existing Workflow by its Id, you can use
+[`get_workflow_handle()`](https://python.temporal.io/temporalio.client.Client.html#get_workflow_handle), or use
+[`get_workflow_handle_for()`](https://python.temporal.io/temporalio.client.Client.html#get_workflow_handle_for) for type
+safety.
+
+Then use [`describe()`](https://python.temporal.io/temporalio.client.WorkflowHandle.html#describe) to get the current
+status of the Workflow. If the Workflow does not exist, this call fails.
+
+[View the source code](https://github.com/temporalio/documentation/blob/main/sample-apps/python/your_app/get_workflow_results_dacx.py)
+
+in the context of the rest of the application code.
+
+```
+# ...  
+async def main():  
+    client = await Client.connect("localhost:7233")  
+  
+    handle = client.get_workflow_handle(  
+        workflow_id="your-workflow-id",  
+    )  
+    results = await handle.result()  
+    print(f"Result: {results}")  
+  
+  
+if __name__ == "__main__":  
+    asyncio.run(main())
+```
+
+* [Connect to development Temporal Service](#connect-to-development-service)* [Connect to Temporal Cloud](#connect-to-temporal-cloud)* [Start a Workflow Execution](#start-workflow-execution)
+      + [Set a Workflow's Task Queue](#set-task-queue)+ [Set a Workflow Id](#workflow-id)+ [Get the results of a Workflow Execution](#get-workflow-results)

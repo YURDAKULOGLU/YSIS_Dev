@@ -1,0 +1,9 @@
+{
+  "id": "DEBATE-20260104040055",
+  "topic": "Framework Intake: CLI-TASK",
+  "initiator": "steward",
+  "proposal": "Architectural Debate for CLI-TASK.\n\nThis task involves framework intake or core system changes.\nQuestions for the Council:\n1. Does this introduce new external dependencies?\n2. Is the implementation homogeneous with existing adapters?\n3. Are there deterministic gates for this change?\n",
+  "messages": [],
+  "status": "open",
+  "started_at": "2026-01-04T04:00:55.099492"
+}

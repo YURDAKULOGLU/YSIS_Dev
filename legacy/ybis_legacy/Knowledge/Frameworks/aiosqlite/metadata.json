@@ -1,0 +1,13 @@
+{
+  "name": "aiosqlite",
+  "version": "0.22.1",
+  "description": "asyncio bridge to the standard sqlite3 module",
+  "home_page": "https://pypi.org/project/aiosqlite/",
+  "documentation_url": "https://aiosqlite.omnilib.dev",
+  "github_url": "https://github.com/omnilib/aiosqlite",
+  "project_urls": {
+    "Documentation": "https://aiosqlite.omnilib.dev",
+    "Github": "https://github.com/omnilib/aiosqlite"
+  },
+  "scraped_at": "2026-01-05T01:16:04.510854"
+}

@@ -1,141 +1,93 @@
-import asyncio
-from datetime import datetime
-from typing import Optional, List
-from unittest.mock import AsyncMock, MagicMock
-from src.agentic.core.graphs.orchestrator_graph import OrchestratorGraph
-from src.agentic.core.protocols import PlannerProtocol, ExecutorProtocol, VerifierProtocol, TaskState, Plan, CodeResult, VerificationResult
+"""
+Tests for LangGraph Skeleton.
 
-class MockPlanner(PlannerProtocol):
-    async def plan(self, task: str, context: dict) -> Plan:
-        return Plan(
-            objective="Test Objective",
-            steps=["Step 1", "Step 2"],
-            files_to_modify=["file1.py"],
-            dependencies=[],
-            risks=[],
-            success_criteria=["Criteria 1"],
-            metadata={}
-        )
+DoD:
+- The graph compiles and runs end-to-end
+- All artifacts (plan.json, executor_report.json, verifier_report.json, gate_report.json) are found in the run folder after execution
+"""
 
-    def name(self) -> str:
-        return "MockPlanner"
+import json
+import tempfile
+import warnings
+from pathlib import Path
 
-class MockExecutor(ExecutorProtocol):
-    async def execute(self, plan: Plan, sandbox_path: str, error_history: Optional[List[str]] = None, retry_count: int = 0) -> CodeResult:
-        return CodeResult(
-            files_modified={"file1.py": "content"},
-            commands_run=[],
-            outputs={},
-            success=True,
-            error=None
-        )
+import pytest
 
-    def name(self) -> str:
-        return "MockExecutor"
+# Suppress third-party library warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="httpx")
+warnings.filterwarnings("ignore", category=UserWarning, module="pydantic.main")
 
-class MockVerifier(VerifierProtocol):
-    async def verify(self, code_result: CodeResult, sandbox_path: str) -> VerificationResult:
-        if self.fail_verification:
-            return VerificationResult(
-                lint_passed=False,
-                tests_passed=False,
-                coverage=0.5,
-                errors=["Test error"],
-                warnings=[],
-                logs={}
+from src.ybis.contracts import RunContext
+from src.ybis.data_plane import init_run_structure
+from src.ybis.orchestrator import build_workflow_graph
+
+
+def test_graph_execution():
+    """Test that graph compiles and runs end-to-end."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # Mock PROJECT_ROOT
+        import src.ybis.data_plane.workspace as ws_module
+
+        original_root = ws_module.PROJECT_ROOT
+        ws_module.PROJECT_ROOT = Path(tmpdir)
+
+        try:
+            task_id = "T-001"
+            run_id = "R-001"
+
+            # Initialize run structure
+            run_path = init_run_structure(task_id, run_id)
+
+            # Build graph
+            graph = build_workflow_graph()
+
+            # Create initial state (with all required fields)
+            initial_state: dict = {
+                "task_id": task_id,
+                "run_id": run_id,
+                "run_path": run_path,
+                "trace_id": f"trace-{task_id}-{run_id}",
+                "task_objective": "Test objective",
+                "status": "pending",
+                "retries": 0,
+                "max_retries": 2,
+                "error_context": None,
+                "current_step": 0,
+            }
+
+            # Run graph
+            final_state = graph.invoke(initial_state)
+
+            # Verify final state
+            assert final_state["status"] in ["completed", "failed"]
+            assert final_state["task_id"] == task_id
+            assert final_state["run_id"] == run_id
+
+            # Verify all artifacts exist
+            ctx = RunContext(
+                task_id=task_id,
+                run_id=run_id,
+                run_path=run_path,
+                trace_id=f"trace-{task_id}-{run_id}",
             )
-        else:
-            return VerificationResult(
-                lint_passed=True,
-                tests_passed=True,
-                coverage=0.8,
-                errors=[],
-                warnings=[],
-                logs={}
-            )
 
-    def name(self) -> str:
-        return "MockVerifier"
+            assert ctx.plan_path.exists(), "plan.json should exist"
+            assert ctx.executor_report_path.exists(), "executor_report.json should exist"
+            assert ctx.verifier_report_path.exists(), "verifier_report.json should exist"
+            assert ctx.gate_report_path.exists(), "gate_report.json should exist"
 
-    def __init__(self, fail_verification: bool = False):
-        self.fail_verification = fail_verification
+            # Verify artifacts are valid JSON
+            plan_data = json.loads(ctx.plan_path.read_text())
+            assert plan_data["task_id"] == task_id
 
+            executor_data = json.loads(ctx.executor_report_path.read_text())
+            assert "success" in executor_data
 
-class DummyGitManager:
-    async def commit_task(self, task_id: str, message: str, allowed_files: list[str] | None = None) -> bool:
-        return True
+            verifier_data = json.loads(ctx.verifier_report_path.read_text())
+            assert "lint_passed" in verifier_data
 
-def test_retry_logic():
-    planner = MockPlanner()
-    executor = MockExecutor()
-    verifier = MockVerifier(fail_verification=True)
+            gate_data = json.loads(ctx.gate_report_path.read_text())
+            assert "decision" in gate_data
 
-    orchestrator_graph = OrchestratorGraph(
-        planner=planner,
-        executor=executor,
-        verifier=verifier,
-        git_manager=DummyGitManager()
-    )
-
-    initial_state: TaskState = {
-        "task_id": "1",
-        "task_description": "Test task",
-        "phase": "init",
-        "plan": None,
-        "code_result": None,
-        "verification": None,
-        "retry_count": 0,
-        "max_retries": 2,
-        "error": None,
-        "started_at": datetime.now(),
-        "completed_at": None,
-        "artifacts_path": "/tmp",
-        "error_history": [],
-        "failed_at": None
-    }
-
-    final_state = asyncio.run(orchestrator_graph.run_task(initial_state))
-
-    assert final_state.phase == 'failed'
-    assert len(final_state.error_history) >= 2  # Failures before hitting max_retries
-    assert final_state.retry_count == 2  # Reached max_retries
-
-def test_successful_verification():
-    planner = MockPlanner()
-    executor = MockExecutor()
-    verifier = MockVerifier(fail_verification=False)
-
-    orchestrator_graph = OrchestratorGraph(
-        planner=planner,
-        executor=executor,
-        verifier=verifier,
-        git_manager=DummyGitManager()
-    )
-
-    initial_state: TaskState = {
-        "task_id": "1",
-        "task_description": "Test task",
-        "phase": "init",
-        "plan": None,
-        "code_result": None,
-        "verification": None,
-        "retry_count": 0,
-        "max_retries": 2,
-        "error": None,
-        "started_at": datetime.now(),
-        "completed_at": None,
-        "artifacts_path": "/tmp",
-        "error_history": [],
-        "failed_at": None
-    }
-
-    final_state = asyncio.run(orchestrator_graph.run_task(initial_state))
-
-    assert final_state.phase == 'done'
-    assert len(final_state.error_history) == 0
-    assert final_state.retry_count == 0
-
-# Run tests
-if __name__ == "__main__":
-    test_retry_logic()
-    test_successful_verification()
+        finally:
+            ws_module.PROJECT_ROOT = original_root

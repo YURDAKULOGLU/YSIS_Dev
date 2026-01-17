@@ -1,0 +1,12 @@
+{
+  "name": "google-generativeai",
+  "version": "0.8.6",
+  "description": "Google Generative AI High level API client library and tools.",
+  "home_page": "https://github.com/google/generative-ai-python",
+  "documentation_url": null,
+  "github_url": "https://github.com/google/generative-ai-python",
+  "project_urls": {
+    "Homepage": "https://github.com/google/generative-ai-python"
+  },
+  "scraped_at": "2026-01-05T01:13:28.613353"
+}

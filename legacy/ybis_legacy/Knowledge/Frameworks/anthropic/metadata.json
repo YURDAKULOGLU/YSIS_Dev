@@ -1,0 +1,13 @@
+{
+  "name": "anthropic",
+  "version": "0.75.0",
+  "description": "The official Python library for the anthropic API",
+  "home_page": "https://pypi.org/project/anthropic/",
+  "documentation_url": null,
+  "github_url": null,
+  "project_urls": {
+    "Homepage": "https://github.com/anthropics/anthropic-sdk-python",
+    "Repository": "https://github.com/anthropics/anthropic-sdk-python"
+  },
+  "scraped_at": "2026-01-04T23:44:22.404247"
+}
