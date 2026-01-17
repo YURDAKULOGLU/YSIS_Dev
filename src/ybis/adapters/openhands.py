@@ -282,7 +282,7 @@ class OpenHandsAdapter:
 ## AI SYSTEM CONSTITUTION (MANDATORY)
 You MUST follow these rules or the run will be terminated:
 1. **Startup**: State "Context loaded, constitutional protocols active" as your first action.
-2. **Surgical Edits**: Use the editor tool (`str_replace_editor`) for targeted edits. Use `str_replace` only (do NOT use `insert`). PROHIBITED: sed/grep/find and rewriting files entirely unless necessary.  
+2. **Surgical Edits**: Use the editor tool (`str_replace_editor`) for targeted edits. Use `str_replace` only (do NOT use `insert`). PROHIBITED: sed/grep/find and rewriting files entirely unless necessary.
 3. **Scope Control**: Only modify the target files listed above. Unplanned writes to config files or legacy directories trigger a Security Violation.
 4. **Sentinel Compliance**:
     - All Python functions MUST have type hints.
